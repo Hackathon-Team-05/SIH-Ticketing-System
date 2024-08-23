@@ -15,14 +15,14 @@ const Dropdown = () => {
     const [ticketCount, setTicketCount] = useState(1);
     const [totalAmount, setTotalAmount] = useState(0);
 
-    // Fetch states on component mount
+
     useEffect(() => {
         axios.get('http://localhost:3000/api/states')
             .then(response => setStates(response.data))
             .catch(error => console.error('Error fetching states:', error));
     }, []);
 
-    // Fetch cities when a state is selected
+
     useEffect(() => {
         if (selectedState) {
             axios.get(`http://localhost:3000/api/cities?state_code=${selectedState}`)
@@ -33,7 +33,7 @@ const Dropdown = () => {
         }
     }, [selectedState]);
 
-    // Fetch museums when a city is selected
+
     useEffect(() => {
         if (selectedCity) {
             axios.get(`http://localhost:3000/api/museums?city=${selectedCity}`)
@@ -44,7 +44,7 @@ const Dropdown = () => {
         }
     }, [selectedCity]);
 
-    // Fetch prices when a museum is selected
+
     useEffect(() => {
         if (selectedMuseum) {
             console.log(selectedMuseum);
@@ -54,7 +54,7 @@ const Dropdown = () => {
         }
     }, [selectedMuseum]);
 
-    // Calculate total amount when ticket type or count changes
+
     useEffect(() => {
         if (prices && prices[ticketType]) {
             const price = prices[ticketType];
@@ -118,7 +118,7 @@ const Dropdown = () => {
                 <select
                     value={selectedCity}
                     onChange={e => setSelectedCity(e.target.value)}
-                    disabled={!selectedState} // Disable if no state selected
+                    disabled={!selectedState}
                 >
                     <option value="">--Select City--</option>
                     {cities.map(city => (
@@ -135,7 +135,7 @@ const Dropdown = () => {
                 <select
                     value={selectedMuseum}
                     onChange={e => setSelectedMuseum(e.target.value)}
-                    disabled={!selectedCity} // Disable if no city selected
+                    disabled={!selectedCity}
                 >
                     <option value="">--Select Museum--</option>
                     {museums.map(museum => (
@@ -152,7 +152,7 @@ const Dropdown = () => {
                 <select
                     value={ticketType}
                     onChange={e => setTicketType(e.target.value)}
-                    disabled={!selectedMuseum} // Disable if no museum selected
+                    disabled={!selectedMuseum}
                 >
                     {getTicketOptions(prices).map(option => (
                         <option key={option.value} value={option.value}>
@@ -171,7 +171,7 @@ const Dropdown = () => {
                     min="1"
                     value={ticketCount}
                     onChange={e => setTicketCount(e.target.value)}
-                    disabled={!selectedMuseum} // Disable if no museum selected
+                    disabled={!selectedMuseum}
                 />
             </div>
 

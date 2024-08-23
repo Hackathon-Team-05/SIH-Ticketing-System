@@ -7,9 +7,7 @@ from flask_cors import CORS
 
 os.environ[
     'COHERE_API_KEY'] = 'WxPWfSIHVASNIFMlfnLMrViai4iKklvMl1jvfVu5'
-
-model_name = "google/flan-t5-large"
-db_url = 'sqlite:///../../heritage_culture_data/heritage_culture.db'
+db_url = 'sqlite:///../heritage_culture_data/heritage_culture.db'
 
 llm = ChatCohere()
 

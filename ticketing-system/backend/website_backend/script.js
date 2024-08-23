@@ -74,7 +74,7 @@ app.get('/api/prices', (req, res) => {
         if (!row) {
             return res.status(404).json({error: `Item not found IN database {${museum}}`});
         }
-        res.json(row); // Assuming there is only one price record per museum
+        res.json(row);
     });
 });
 const conversationFilePath = path.join(__dirname, '../conversation_history.json'); // Adjusted path

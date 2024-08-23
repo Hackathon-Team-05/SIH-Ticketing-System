@@ -8,8 +8,8 @@ function App() {
   const [count, setCount] = useState(0)
 
 return (<>
-  <Dropdown/>
-  {/*<Chatbot/>*/}
+  {/*<Dropdown/>*/}
+  <Chatbot/>
 </>)
 }
 
