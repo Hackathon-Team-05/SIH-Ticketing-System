@@ -1,4 +1,4 @@
-// SpeechRecognition.js
+
 export const startSpeechRecognition = (onResult, onError) => {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
         alert('Your browser does not support speech recognition. Please try Chrome or Firefox.');

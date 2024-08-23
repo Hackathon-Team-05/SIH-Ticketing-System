@@ -8,7 +8,7 @@ const path = require("path");
 const app = express();
 app.use(cors()); // Enable CORS for your React frontend
 app.use(express.json());
-const sqlDbPath = join(__dirname, '../../heritage_culture_data/heritage_culture.db');
+const sqlDbPath = "../heritage_culture_data/heritage_culture.db";
 
 const db = new sqlite3.Database(sqlDbPath);
 
