@@ -1,0 +1,178 @@
+.message-container::-webkit-scrollbar {
+    display: none;
+}
+.main-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.flex-item-big {
+    flex: 0 1 auto;
+    width: 70%;
+    height: 80%;
+    max-width: 100%;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.gradient-border {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to right, #4a90e2, #9013fe);
+    border-radius: 15px;
+}
+
+.gradient-border-up {
+    width: 100%;
+    height: 100%;
+    border: #8600f4 2px solid;
+    background-image: url("/assets/ChatBot/culture-2.jpeg");
+    background-size: cover;
+    background-position: center;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+}
+
+.ticket-title-div {
+    margin: 20px;
+    gap: 15px;
+    color: white;
+    backdrop-filter: blur(14px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-size: cover;
+    max-height: 150px;
+    background-image: url("/assets/ChatBot/wooden-back.png");
+    padding: 10px;
+    border-radius: 15px;
+    border: black solid 2px;
+}
+
+.scrollable {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.message-container {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 10px;
+    height: calc(100% - 50px);
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.message {
+    padding: 10px;
+    border-radius: 20px;
+    margin: 5px;
+    max-width: 80%;
+    word-wrap: break-word;
+    display: inline-block;
+    font-size: 14px;
+}
+
+.message.user {
+    background: linear-gradient(to right, #4a90e2, #9013fe);
+    align-self: flex-end;
+    color: white;
+    font-weight: 900;
+    text-align: right;
+}
+
+.message.bot {
+    color: darkblue;
+    background-color: #f2f5f7;
+    align-self: flex-start;
+    text-align: left;
+    border: 1px solid darkblue;
+}
+
+@keyframes popUp {
+    0% {
+        opacity: 0;
+        transform: scale(0);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.message-anim {
+    animation: popUp 0.27s;
+}
+
+.msgBtnBox {
+    padding: 7px;
+    display: flex;
+    flex: 1;
+    gap: 5px;
+    background-color: white;
+    border: black 2px solid;
+    border-radius: 20px;
+    align-items: flex-end;
+}
+
+.message-input {
+    width: 100%;
+    outline: none;
+    border: none;
+}
+
+.send-button {
+    color: white;
+    padding-left: 10px;
+    padding-right: 10px;
+    background: linear-gradient(to right, #4a90e2, #9013fe);
+    border-radius: 25px;
+    border: none;
+    font-weight: 900;
+}
+
+.chatbot-footer {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+
+}
+
+.shortcuts {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.shortcut_btn {
+    width: max-content;
+    height: 30px;
+    border-radius: 10px;
+    border: 2px solid #9013fe;color: white;font-weight: 900;
+    background: linear-gradient(to right, #4a90e2, #9013fe);
+}
