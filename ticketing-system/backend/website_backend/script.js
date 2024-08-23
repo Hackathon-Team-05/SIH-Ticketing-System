@@ -6,7 +6,7 @@ const {join} = require("node:path");
 const path = require("path");
 
 const app = express();
-app.use(cors()); // Enable CORS for your React frontend
+app.use(cors());
 app.use(express.json());
 const sqlDbPath = "../heritage_culture_data/heritage_culture.db";
 
