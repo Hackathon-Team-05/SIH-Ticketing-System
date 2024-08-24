@@ -59,7 +59,7 @@
     background-image: url("../../../public/assets/ChatBot/wooden-back.png");
     padding: 10px;
     border-radius: 15px;
-    border: black solid 2px;
+
 }
 
 .scrollable {
@@ -133,7 +133,7 @@
     flex: 1;
     gap: 5px;
     background-color: white;
-    border: #2f008d 2px solid;
+    border: #aa00fd 2px solid;
     border-radius: 20px;
     align-items: center;
 }
