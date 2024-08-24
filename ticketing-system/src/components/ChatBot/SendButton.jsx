@@ -1,5 +1,5 @@
 import React from 'react';
-import './CircularButton.css'; // Import the CSS for styling
+import './CircularButton.css';
 
 const SendButton = () => {
     return (

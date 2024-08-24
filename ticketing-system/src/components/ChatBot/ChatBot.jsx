@@ -12,6 +12,7 @@ import axios from "axios";
 import nlp from 'compromise';
 import SpeakerButton from "./SpeakerButton.jsx";
 import {GENERAL_INQUIRY, GREETINGS, MUSEUM_TICKET_BOOK_QUERY} from "./query_constants";
+import ArrowRightIcon from "./ArrowRightIcon";
 
 
 const Chatbot = () => {
@@ -24,6 +25,9 @@ const Chatbot = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [hintText, setHintText] = useState("Type your message here...");
     const [enterTicketNumber, setEnterTicketNumber] = useState(false);
+    const [dialogTitle, setDialogTitle] = useState("Ticket Booking");
+    const [dialogContent, setDialogContent] = useState("Verify your number to proceed further.");
+    const [hasInput, setHasInput] = useState(false);
 
 
     // useEffect(() => {
@@ -120,6 +124,11 @@ const Chatbot = () => {
 
         } else if (data.intent === MUSEUM_TICKET_BOOK_QUERY) {
             console.log("This is a book ticket command")
+            setDialogTitle("Ticket Booking")
+            setDialogContent("Verify your mobile number to proceed further.")
+
+            setIsOpen(prev => !prev)
+            setHasInput(true)
             return true
         }
         return false
@@ -150,9 +159,10 @@ const Chatbot = () => {
 
         if (await isQueryQuestion(input)) {
             try {
+                setInput('')
                 const result = await axios.post('http://localhost:5000/chat', {"message": input});
                 setConversation([...newConversation, {sender: 'bot', text: result.data.response}]);
-                setInput('')
+
                 setIsLoading(false)
 
 
@@ -189,10 +199,13 @@ const Chatbot = () => {
                     .then(response => {
                         console.log(response.data);
                         setConversation([...newConversation, {sender: 'bot', text: response.data[0].generated_text}]);
+                        setIsLoading(false);
+
                     })
                     .catch(error => {
                         console.error('Error making request:', error);
                         setConversation([...newConversation, {sender: 'bot', text: error}]);
+                        setIsLoading(false);
 
                     });
 
@@ -327,15 +340,16 @@ const Chatbot = () => {
                                         icon={<MicrophoneButton style={{color: 'black'}}/>}
                                         style={{backgroundColor: '#ffffff', borderColor: '#007bff'}}
                                 />
+
                             </div>
 
                         </div>
                     </div>
                 </div>
             </div>
-            <AlertDialog isOpen={isOpen} onClose={() => setIsOpen(false)}
-                         dialogContent={"Please speak your message. The speech recognition process is active."}
-                         dialogTitle={"Listening..."}/>
+            <AlertDialog hasInput={hasInput} isOpen={isOpen} onClose={() => setIsOpen(false)}
+                         dialogContent={dialogContent}
+                         dialogTitle={dialogTitle}/>
 
         </div>
 

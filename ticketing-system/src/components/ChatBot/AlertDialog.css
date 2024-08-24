@@ -1,0 +1,17 @@
+.main-div {
+    display: flex;
+    border: #8500f4 solid 3px;
+    flex-direction: row;
+
+    border-radius: 16px;
+    padding: 15px;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+}
+.button{
+    border-radius: 20px;
+    width: 35px;
+    height: 35px;
+
+}
