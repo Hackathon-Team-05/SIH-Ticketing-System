@@ -4,6 +4,8 @@ const cors = require('cors');
 const fs = require('fs');
 const {join} = require("node:path");
 const path = require("path");
+const natural = require('natural');
+const {intentTrainingData} = require("./training_data");
 
 const app = express();
 app.use(cors());
@@ -126,7 +128,15 @@ app.post('/api/conversation', (req, res) => {
         });
     });
 });
-
+const classifier = new natural.BayesClassifier();
+intentTrainingData.forEach(item => classifier.addDocument(item.text, item.intent));
+classifier.train();
+app.post('/classify', (req, res) => {
+    const {message} = req.body;
+    console.log(message)
+    const predictedIntent = classifier.classify(message);
+    res.json({intent: predictedIntent});
+});
 app.listen(3000, () => {
     console.log('Server started on port 3000');
 });

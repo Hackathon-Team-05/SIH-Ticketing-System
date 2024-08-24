@@ -34,3 +34,21 @@ export const ticketPrompt = [
     "Enter the ID or number of your ticket.",
     "Please input your ticket ID or number."
 ];
+export const welcomeMsgs = [
+    "Welcome to the e-ticket system for Museums of India! I'm here to assist you with booking your tickets.",
+    "Hello! Explore India's rich heritage with ease. I'm here to help you with your museum ticketing needs.",
+    "Welcome! Discover the wonders of Indian museums. Let me assist you in booking your e-tickets.",
+    "Hi there! I'm here to guide you through booking tickets for India's incredible museums.",
+    "Greetings! Get ready to explore India's cultural treasures. I can help you with your e-ticket bookings.",
+    "Hello and welcome! Let me assist you in securing your tickets for the Museums of India.",
+    "Welcome aboard! I'm here to make your museum visit in India easy with seamless e-ticketing support."
+];
+export const trainingData = [
+    {text: "I want to book a museum ticket", intent: "Museum Ticket Booking"},
+    {text: "Can you help me with a ticket?", intent: "Museum Ticket Booking"},
+    {text: "Hello", intent: "Greetings"},
+    {text: "Hi there!", intent: "Greetings"},
+    {text: "Give me the number of museums i can book ticket for?", intent: "General Inquiry"},
+
+    {text: "Tell me about the museum", intent: "General Inquiry"}
+];

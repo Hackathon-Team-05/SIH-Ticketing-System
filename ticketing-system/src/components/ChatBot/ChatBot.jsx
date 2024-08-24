@@ -7,7 +7,7 @@ import SendButton from "./SendButton.jsx";
 import {startSpeechRecognition} from './SpeechRecognition';
 import AlertDialog from "./AlertDialog.jsx";
 import {RingLoader} from 'react-spinners';
-import {notValidPrompts, ticketPrompt, ticketStructurePrompt} from './text_data.js';
+import {notValidPrompts, ticketPrompt, ticketStructurePrompt, welcomeMsgs} from './text_data.js';
 import axios from "axios";
 import nlp from 'compromise';
 import SpeakerButton from "./SpeakerButton.jsx";
@@ -45,17 +45,9 @@ const Chatbot = () => {
 
 
     useEffect(() => {
-        const welcomeMsgs = [
-            "Welcome to the e-ticket system for Museums of India! I'm here to assist you with booking your tickets.",
-            "Hello! Explore India's rich heritage with ease. I'm here to help you with your museum ticketing needs.",
-            "Welcome! Discover the wonders of Indian museums. Let me assist you in booking your e-tickets.",
-            "Hi there! I'm here to guide you through booking tickets for India's incredible museums.",
-            "Greetings! Get ready to explore India's cultural treasures. I can help you with your e-ticket bookings.",
-            "Hello and welcome! Let me assist you in securing your tickets for the Museums of India.",
-            "Welcome aboard! I'm here to make your museum visit in India easy with seamless e-ticketing support."
-        ];
-        const randomIndex = Math.floor(Math.random() * welcomeMsgs.length);
-        const selectedWelcomeMessage = welcomeMsgs[randomIndex];
+        const welcomeMsg = welcomeMsgs;
+        const randomIndex = Math.floor(Math.random() * welcomeMsg.length);
+        const selectedWelcomeMessage = welcomeMsg[randomIndex];
 
         setWelcomeMessage(selectedWelcomeMessage);
     }, []);
@@ -98,7 +90,18 @@ const Chatbot = () => {
         return false;
     }
 
-    function isQueryQuestion(input) {
+    async function isQueryQuestion(input) {
+        const options = {
+            method: 'POST', // Specify the HTTP method
+            headers: {
+                'Content-Type': 'application/json', // Set the content type to JSON
+            },
+            body: JSON.stringify({message:input}) // Convert the JavaScript object to a JSON string
+        };
+
+        const response = await fetch('http://localhost:3000/classify', options);
+        const data = await response.json();
+        console.log(data)
         return true
     }
 
@@ -125,7 +128,7 @@ const Chatbot = () => {
         const newConversation = [...conversation, {sender: 'user', text: input}];
         setConversation(newConversation);
 
-        if (isQueryQuestion(input)) {
+        if (await isQueryQuestion(input)) {
             try {
                 const result = await axios.post('http://localhost:5000/chat', {"message": input});
                 setConversation([...newConversation, {sender: 'bot', text: result.data.response}]);
@@ -277,7 +280,7 @@ const Chatbot = () => {
                                                     />}
                                                     style={{
                                                         backgroundColor: '#ffffff',
-                                                        alignSelf:'flex-end'
+                                                        alignSelf: 'flex-end'
                                                     }}
                                             />
 
