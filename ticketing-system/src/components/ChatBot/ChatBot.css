@@ -97,7 +97,7 @@
     align-self: flex-end;
     color: white;
     font-weight: 900;
-    text-align: right;
+    text-align: left;
 }
 
 .message.bot {
