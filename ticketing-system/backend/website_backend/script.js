@@ -133,7 +133,6 @@ intentTrainingData.forEach(item => classifier.addDocument(item.text, item.intent
 classifier.train();
 app.post('/classify', (req, res) => {
     const {message} = req.body;
-    console.log(message)
     const predictedIntent = classifier.classify(message);
     res.json({intent: predictedIntent});
 });

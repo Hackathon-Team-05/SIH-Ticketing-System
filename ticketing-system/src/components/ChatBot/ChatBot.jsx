@@ -11,6 +11,7 @@ import {notValidPrompts, ticketPrompt, ticketStructurePrompt, welcomeMsgs} from 
 import axios from "axios";
 import nlp from 'compromise';
 import SpeakerButton from "./SpeakerButton.jsx";
+import {GENERAL_INQUIRY, GREETINGS, MUSEUM_TICKET_BOOK_QUERY} from "./query_constants";
 
 
 const Chatbot = () => {
@@ -102,7 +103,20 @@ const Chatbot = () => {
         const response = await fetch('http://localhost:3000/classify', options);
         const data = await response.json();
         console.log(data)
-        return true
+        if (data.intent === GENERAL_INQUIRY) {
+
+            console.log("This is a general inquiry")
+            return true
+        } else if (data.intent === GREETINGS) {
+            console.log("This is a greeting")
+            return false
+
+
+        } else if (data.intent === MUSEUM_TICKET_BOOK_QUERY) {
+            console.log("This is a book ticket command")
+            return true
+        }
+        return false
     }
 
     const handleSendMessage = async () => {
