@@ -89,7 +89,7 @@
     margin: 5px;
     max-width: 80%;
     word-wrap: break-word;
-    display: flex;
+    display: flex;gap: 20px;
     align-items: center;
     justify-content: center;
     font-size: 14px;
