@@ -71,11 +71,17 @@ const Chatbot = () => {
 
     const speakMessage = (message) => {
         if ('speechSynthesis' in window) {
-            const utterance = new SpeechSynthesisUtterance(message);
-            utterance.lang = 'en-US';
-            window.speechSynthesis.speak(utterance);
+            try {
+                const utterance = new SpeechSynthesisUtterance(message);
+                utterance.lang = 'en-US';
+                window.speechSynthesis.speak(utterance);
+            } catch (e) {
+                console.log('Text-to-speech is not supported in this browser.');
+
+            }
+
         } else {
-            console.warn('Text-to-speech is not supported in this browser.');
+            console.log('Text-to-speech is not supported in this browser.');
         }
     };
     const formatMessage = (message) => {
