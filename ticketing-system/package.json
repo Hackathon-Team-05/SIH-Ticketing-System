@@ -23,6 +23,7 @@
     "path-browserify": "^1.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-phone-input-2": "^2.15.1",
     "react-scripts": "5.0.1",
     "react-spinners": "^0.14.1",
     "stream-browserify": "^3.0.0",
