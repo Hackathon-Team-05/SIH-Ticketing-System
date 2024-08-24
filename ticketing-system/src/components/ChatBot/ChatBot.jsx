@@ -267,7 +267,6 @@ const Chatbot = () => {
                         <div className={'ticket-title-div'}>
                             <img src="/assets/ChatBot/ncsm.png" width={100} height={100} alt="Logo 1"/>
                             <h3><p>Ticket Aarakshan Mitra</p>टिकट आरक्षण मित्र</h3>
-
                             <img src="/assets/ChatBot/logo-ministry.png" width={100} height={100} alt="Logo 2"/>
                         </div>
                         <div className={'shortcuts'}>
@@ -289,21 +288,13 @@ const Chatbot = () => {
                                                     type="primary"
                                                     shape="circle"
                                                     icon={<SpeakerButton
-
-                                                        style={{cursor: 'pointer', marginLeft: '8px'}}
-                                                    />}
-                                                    style={{
-                                                        backgroundColor: '#ffffff',
-                                                        alignSelf: 'flex-end'
-                                                    }}
+                                                        style={{cursor: 'pointer', marginLeft: '8px'}}/>}
+                                                    style={{backgroundColor: '#ffffff', alignSelf: 'flex-end'}}
                                             />
-
                                         )}
                                     </div>
-
                                 ))}
                             </div>
-
                             <div className={"chatbot-footer"}>
                                 <div className="msgBtnBox">
                                     <input
@@ -319,10 +310,7 @@ const Chatbot = () => {
                                                 type="primary"
                                                 shape="circle"
                                                 icon={<SendButton style={{color: 'black'}}/>}
-                                                style={{
-                                                    backgroundColor: '#ffffff',
-                                                    borderColor: '#007bff'
-                                                }}
+                                                style={{backgroundColor: '#ffffff', borderColor: '#007bff'}}
                                         />
                                     )}
                                     {isLoading && (<RingLoader size={32} color={"#8b00f6"}/>)}
@@ -331,19 +319,18 @@ const Chatbot = () => {
                                         type="primary"
                                         shape="circle"
                                         icon={<MicrophoneButton style={{color: 'black'}}/>}
-                                        style={{
-                                            backgroundColor: '#ffffff',
-                                            borderColor: '#007bff'
-                                        }}
+                                        style={{backgroundColor: '#ffffff', borderColor: '#007bff'}}
                                 />
-
-                                <AlertDialog isOpen={isOpen} onClose={() => setIsOpen(false)}/>
                             </div>
+
                         </div>
                     </div>
                 </div>
             </div>
+            <AlertDialog isOpen={isOpen} onClose={() => setIsOpen(false)}/>
+
         </div>
+
     );
 };
 

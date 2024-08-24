@@ -5,23 +5,44 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Slide from '@mui/material/Slide';
 import MicrophoneButton from "./MicrophoneButton.jsx";
+
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const AlertDialog = ({isOpen, onClose}) => {
     return (
         <Dialog
             open={isOpen}
             onClose={onClose}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
+            TransitionComponent={Transition}
+            keepMounted
+            sx={{
+                '& .MuiDialog-paper': {
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    margin: 0,
+                    maxHeight: '50%',
+                    borderTopLeftRadius: '16px',
+                    borderTopRightRadius: '16px',
+                },
+            }}
         >
             <DialogTitle id="alert-dialog-title">{"Listening..."}</DialogTitle>
-            <DialogContent style={{
-                padding: '0 10px', display: 'flex', flexDirection: 'column'
-                , justifyContent: 'center', alignItems: 'center'
-
-
-            }}>
+            <DialogContent
+                style={{
+                    padding: '0 10px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+            >
                 <MicrophoneButton style={{color: 'black'}}/>
                 <DialogContentText id="alert-dialog-description">
                     Please speak your message. The speech recognition process is active.

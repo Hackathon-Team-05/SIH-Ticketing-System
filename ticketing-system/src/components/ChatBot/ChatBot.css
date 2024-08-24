@@ -101,7 +101,7 @@
 }
 
 .message.bot {
-    color: darkblue;
+    color: darkblue;font-weight: 600;
     background-color: #f2f5f7;
     align-self: flex-start;
     text-align: left;
