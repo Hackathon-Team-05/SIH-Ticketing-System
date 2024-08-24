@@ -13,7 +13,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const AlertDialog = ({isOpen, onClose}) => {
+const AlertDialog = ({isOpen, onClose, dialogTitle, dialogContent}) => {
     return (
         <Dialog
             open={isOpen}
@@ -33,7 +33,7 @@ const AlertDialog = ({isOpen, onClose}) => {
                 },
             }}
         >
-            <DialogTitle id="alert-dialog-title">{"Listening..."}</DialogTitle>
+            <DialogTitle id="alert-dialog-title">{dialogTitle}</DialogTitle>
             <DialogContent
                 style={{
                     padding: '0 10px',
@@ -45,7 +45,7 @@ const AlertDialog = ({isOpen, onClose}) => {
             >
                 <MicrophoneButton style={{color: 'black'}}/>
                 <DialogContentText id="alert-dialog-description">
-                    Please speak your message. The speech recognition process is active.
+                    {dialogContent}
                 </DialogContentText>
             </DialogContent>
             <DialogActions>

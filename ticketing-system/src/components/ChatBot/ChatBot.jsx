@@ -327,7 +327,9 @@ const Chatbot = () => {
                     </div>
                 </div>
             </div>
-            <AlertDialog isOpen={isOpen} onClose={() => setIsOpen(false)}/>
+            <AlertDialog isOpen={isOpen} onClose={() => setIsOpen(false)}
+                         dialogContent={"Please speak your message. The speech recognition process is active."}
+                         dialogTitle={"Listening..."}/>
 
         </div>
 

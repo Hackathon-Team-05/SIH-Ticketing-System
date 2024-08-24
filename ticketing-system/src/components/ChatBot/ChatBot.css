@@ -1,6 +1,7 @@
 .message-container::-webkit-scrollbar {
     display: none;
 }
+
 .main-container {
     display: flex;
     justify-content: center;
@@ -88,7 +89,9 @@
     margin: 5px;
     max-width: 80%;
     word-wrap: break-word;
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 14px;
 }
 
@@ -101,11 +104,12 @@
 }
 
 .message.bot {
-    color: darkblue;font-weight: 600;
+    color: darkblue;
+    font-weight: 600;
     background-color: #f2f5f7;
     align-self: flex-start;
     text-align: left;
-    border: 1px solid darkblue;
+
 }
 
 @keyframes popUp {
@@ -124,14 +128,14 @@
 }
 
 .msgBtnBox {
-    padding: 7px;
+    padding: 5px;
     display: flex;
     flex: 1;
     gap: 5px;
     background-color: white;
-    border: black 2px solid;
+    border: #2f008d 2px solid;
     border-radius: 20px;
-    align-items: flex-end;
+    align-items: center;
 }
 
 .message-input {
@@ -173,6 +177,8 @@
     width: max-content;
     height: 30px;
     border-radius: 10px;
-    border: 2px solid #9013fe;color: white;font-weight: 900;
+    border: 2px solid #9013fe;
+    color: white;
+    font-weight: 900;
     background: linear-gradient(to right, #4a90e2, #9013fe);
 }
