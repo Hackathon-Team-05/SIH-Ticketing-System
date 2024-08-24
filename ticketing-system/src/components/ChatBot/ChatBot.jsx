@@ -92,11 +92,11 @@ const Chatbot = () => {
 
     async function isQueryQuestion(input) {
         const options = {
-            method: 'POST', // Specify the HTTP method
+            method: 'POST',
             headers: {
-                'Content-Type': 'application/json', // Set the content type to JSON
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify({message:input}) // Convert the JavaScript object to a JSON string
+            body: JSON.stringify({message: input})
         };
 
         const response = await fetch('http://localhost:3000/classify', options);
