@@ -37,6 +37,8 @@ const Chatbot = () => {
     const [handleSecondQuestion, setHandleSecondQuestion] = useState(false);
     const [handleThirdQuestion, setHandleThirdQuestion] = useState(false);
     const [handleForthQuestion, setHandleForthQuestion] = useState(false);
+    const [handleFifthQuestion, setHandleFifthQuestion] = useState(false);
+    const [handleSixthQuestion, setHandleSixthQuestion] = useState(false);
 
     let bookingIndex = 0;
 
@@ -194,6 +196,13 @@ const Chatbot = () => {
         return true
     }
 
+    function extractNames(message) {
+        const namePattern = /\b[A-Z][a-z]*\s[A-Z][a-z]*\b/g;
+
+        const matches = message.match(namePattern);
+
+        return matches ? matches : [];
+    }
 
     const handleSendMessage = async () => {
         if (isBookingProcess === false) {
@@ -267,7 +276,7 @@ const Chatbot = () => {
                     axios.post(apiUrl, payload, {headers: headers})
                         .then(response => {
                             console.log(response.data);
-                            setConversation([...newConversation, {
+                            setConversation(prev => [...prev, {
                                 sender: 'bot',
                                 text: response.data[0].generated_text
                             }]);
@@ -318,6 +327,8 @@ const Chatbot = () => {
                         setHandleThirdQuestion(false)
                         setHandleForthQuestion(false)
                         setHandleSecondQuestion(true)
+                        setHandleFifthQuestion(false)
+                        setHandleSixthQuestion(false)
 
                     }
 
@@ -348,7 +359,8 @@ const Chatbot = () => {
                     setHandleThirdQuestion(true)
                     setHandleForthQuestion(false)
                     setHandleSecondQuestion(false)
-
+                    setHandleFifthQuestion(false)
+                    setHandleSixthQuestion(false)
 
                 } else {
                     setConversation(prev => [...prev, {
@@ -359,6 +371,7 @@ const Chatbot = () => {
 
 
             } else if (handleThirdQuestion) {
+                setConversation(prev => [...prev, {sender: 'user', text: input}])
 
                 const json = parseTicketInfo(input)
 
@@ -368,16 +381,70 @@ const Chatbot = () => {
                 const foreigner = Number(json.foreigners)
                 const total = adult + child + foreigner
                 const formattedMessage = `You’ve selected ${total} tickets:${adult} adults, ${child} children, and ${foreigner} foreigners.
+                Shall i proceed further?
+                
 `
                 setConversation(prev => [...prev, {sender: 'bot', text: formattedMessage}])
                 setInput('')
+                setHandleFirstQuestion(false)
+                setHandleThirdQuestion(false)
+                setHandleForthQuestion(true)
+                setHandleSecondQuestion(false)
+                setHandleFifthQuestion(false)
+                setHandleSixthQuestion(false)
+
+            } else if (handleForthQuestion) {
+                const response = await fetch(
+                    "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english",
+                    {
+                        headers: {
+                            Authorization: "Bearer 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",
+                            "Content-Type": "application/json",
+                        },
+                        method: "POST",
+                        body: JSON.stringify(input),
+                    }
+                );
+                const result = await response.json();
+                let positiveScore = null;
+                let negativeScore = null;
+
+                result.forEach(innerArray => {
+                    innerArray.forEach(item => {
+                        if (item.label === "POSITIVE") {
+                            positiveScore = item.score;
+                        } else if (item.label === "NEGATIVE") {
+                            negativeScore = item.score;
+                        }
+                    });
+                });
+                console.log("p:" + positiveScore)
+                console.log("n:" + negativeScore)
+
+                if (positiveScore >= negativeScore) {
+
+                    setHandleFirstQuestion(false)
+                    setHandleThirdQuestion(false)
+                    setHandleForthQuestion(false)
+                    setHandleSecondQuestion(false)
+                    setHandleFifthQuestion(true)
+                    setHandleSixthQuestion(false)
+                    console.log(extractNames(input))
+                    setConversation(prev => [...prev, {sender: 'bot', text: bookingQuestions[++bookingIndex]}])
+                    setInput('')
+                } else {
+                    setInput('')
                     setHandleFirstQuestion(false)
                     setHandleThirdQuestion(false)
                     setHandleForthQuestion(true)
                     setHandleSecondQuestion(false)
+                    setHandleFifthQuestion(false)
+                    setHandleSixthQuestion(false)
+                    setConversation(prev => [...prev, {sender: 'bot', text: "Okay.Try again!"}])
+                }
 
 
-            } else if (handleForthQuestion) {
+            } else if (handleFirstQuestion) {
 
             }
 

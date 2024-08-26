@@ -58,7 +58,7 @@ export const bookingProcessStart = [
 export const bookingQuestions = [
     "Provide your mobile number for authentication.",
     "OTP sent to the provided mobile number. Submit the Otp to continue.",
-    "How many of these are for adults, children, and foreigners? Example input: X children, X adult, X foreigners",
+    "How many of these are for adults, children, and foreigners? \nExample -> X child, X adult, X foreigners",
 
     "Please provide the names for each adult ticket.",
     "Please provide the names for each child ticket.",
