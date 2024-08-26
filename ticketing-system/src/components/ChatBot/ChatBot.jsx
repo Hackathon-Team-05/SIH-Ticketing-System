@@ -5,14 +5,20 @@ import {Button} from "antd";
 import MicrophoneButton from "./MicrophoneButton.jsx";
 import SendButton from "./SendButton.jsx";
 import {startSpeechRecognition} from './SpeechRecognition';
-import AlertDialog from "./AlertDialog.jsx";
+
 import {RingLoader} from 'react-spinners';
-import {notValidPrompts, ticketPrompt, ticketStructurePrompt, welcomeMsgs} from './text_data.js';
+import {
+    bookingProcessStart,
+    bookingQuestions,
+    notValidPrompts,
+    ticketPrompt,
+    ticketStructurePrompt,
+    welcomeMsgs
+} from './text_data.js';
 import axios from "axios";
 import nlp from 'compromise';
 import SpeakerButton from "./SpeakerButton.jsx";
 import {GENERAL_INQUIRY, GREETINGS, MUSEUM_TICKET_BOOK_QUERY} from "./query_constants";
-import ArrowRightIcon from "./ArrowRightIcon";
 
 
 const Chatbot = () => {
@@ -25,10 +31,14 @@ const Chatbot = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [hintText, setHintText] = useState("Type your message here...");
     const [enterTicketNumber, setEnterTicketNumber] = useState(false);
-    const [dialogTitle, setDialogTitle] = useState("Ticket Booking");
-    const [dialogContent, setDialogContent] = useState("Verify your number to proceed further.");
-    const [hasInput, setHasInput] = useState(false);
+    const [isBookingProcess, setIsBookingProcess] = useState(false);
+    const [numberInput, setIsANumberInput] = useState(false);
+    const [handleFirstQuestion, setHandleFirstQuestion] = useState(true);
+    const [handleSecondQuestion, setHandleSecondQuestion] = useState(false);
+    const [handleThirdQuestion, setHandleThirdQuestion] = useState(false);
+    const [handleForthQuestion, setHandleForthQuestion] = useState(false);
 
+    let bookingIndex = 0;
 
     // useEffect(() => {
     //     const fetchConversation = async () => {
@@ -124,103 +134,254 @@ const Chatbot = () => {
 
         } else if (data.intent === MUSEUM_TICKET_BOOK_QUERY) {
             console.log("This is a book ticket command")
-            setDialogTitle("Ticket Booking")
-            setDialogContent("Verify your mobile number to proceed further.")
 
-            setIsOpen(prev => !prev)
-            setHasInput(true)
+            setIsBookingProcess(true)
+
+
             return true
         }
         return false
     }
 
-    const handleSendMessage = async () => {
-        setIsLoading(true);
+    function parseTicketInfo(input) {
 
-        if (enterTicketNumber) {
-            if (checkValidTicketStructure(enterTicketNumber)) {
-                const notValidTicketIdPrompt = notValidPrompts;
+        input = input.toLowerCase().trim();
 
-                // backend call
-            } else {
-                const ticketStructurePrompts = ticketStructurePrompt;
-                const randomIndex = Math.floor(Math.random() * ticketStructurePrompts.length);
-                const text = ticketStructurePrompts[randomIndex];
-                setConversation([...conversation, {sender: 'bot', text: text}]);
-            }
-            setIsLoading(false);
-            return;
+
+        const patterns = {
+            adults: /\b(\d+|one|two|three|four|five|six|seven|eight|nine|ten)\s*(?:adult|adults|adult tickets)\b/,
+            children: /\b(\d+|one|two|three|four|five|six|seven|eight|nine|ten)\s*(?:child|childs|children|child tickets)\b/,
+            foreigners: /\b(\d+|one|two|three|four|five|six|seven|eight|nine|ten)\s*(?:foreigner|foreigners|foreigner tickets)\b/
+        };
+
+
+        const numberWords = {
+            one: 1, two: 2, three: 3, four: 4, five: 5,
+            six: 6, seven: 7, eight: 8, nine: 9, ten: 10
+        };
+
+
+        const convertWordToNumber = (word) => numberWords[word] || parseInt(word, 10);
+
+
+        const extractNumbers = (pattern) => {
+            const match = input.match(pattern);
+            return match ? convertWordToNumber(match[1]) : 0;
+        };
+
+        const adults = extractNumbers(patterns.adults);
+        const children = extractNumbers(patterns.children);
+        const foreigners = extractNumbers(patterns.foreigners);
+
+
+        if (adults === 0 && children === 0 && foreigners === 0) {
+            return "Could not extract ticket numbers. Please provide the number of tickets for adults, children, and senior citizens.";
         }
 
-        if (input.trim() === '') return;
 
-        const newConversation = [...conversation, {sender: 'user', text: input}];
-        setConversation(newConversation);
+        return {
+            adults,
+            children,
+            foreigners
+        };
+    }
 
-        if (await isQueryQuestion(input)) {
-            try {
-                setInput('')
-                const result = await axios.post('http://localhost:5000/chat', {"message": input});
-                setConversation([...newConversation, {sender: 'bot', text: result.data.response}]);
+    function handleSendOtp(mobileNumber) {
+        return true
+    }
 
-                setIsLoading(false)
+    function handleCheckOtp(otp) {
+        return true
+    }
 
 
-            } catch (error) {
-                console.error('Error:', error);
-                setIsLoading(false)
+    const handleSendMessage = async () => {
+        if (isBookingProcess === false) {
+            setIsLoading(true);
 
+            if (enterTicketNumber) {
+                if (checkValidTicketStructure(enterTicketNumber)) {
+                    const notValidTicketIdPrompt = notValidPrompts;
+
+                    // backend call
+                } else {
+                    const ticketStructurePrompts = ticketStructurePrompt;
+                    const randomIndex = Math.floor(Math.random() * ticketStructurePrompts.length);
+                    const text = ticketStructurePrompts[randomIndex];
+                    setConversation(prev => [...prev, {sender: 'bot', text: text}]);
+                }
+                setIsLoading(false);
+                return;
             }
+
+            if (input.trim() === '') return;
+
+            const newConversation = prev => [...prev, {sender: 'user', text: input}];
+            setConversation(newConversation);
+
+            if (await isQueryQuestion(input)) {
+                try {
+                    const bookingProcessStartStatement = bookingProcessStart
+                    const randomIndex = Math.floor(Math.random() * bookingProcessStartStatement.length);
+                    const sentence = bookingProcessStartStatement[randomIndex];
+                    setInput('')
+                    const result = await axios.post('http://localhost:5000/chat', {"message": input});
+                    setConversation(prev => [...prev, {sender: 'bot', text: result.data.response}, {
+                        sender: 'bot',
+                        text: sentence
+                    }, {sender: 'bot', text: bookingQuestions[bookingIndex]}]);
+
+                    // setIsANumberInput(true)
+                    setIsLoading(false)
+
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    setIsLoading(false)
+
+                }
+            } else {
+                try {
+
+
+                    const apiUrl = "https://api-inference.huggingface.co/models/google/flan-t5-large";
+                    const headers = {
+                        "Authorization": "Bearer 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"
+                    };
+
+                    const conversationHistory = [
+                        "User:Keep in mind that you are a e-ticketing chat bot for National Museum tickets of India. " +
+                        "Your name is Ticket Aarakshan Mitra. You help people to book their national museum tickets.",
+                        "Assistant: Sure, I’d be happy to help!",
+
+                    ];
+
+
+                    const inputText = [...conversationHistory, `User: ${formatMessage(input)}\nAssistant:`].join("\n");
+
+                    const payload = {
+                        inputs: inputText
+                    };
+
+
+                    axios.post(apiUrl, payload, {headers: headers})
+                        .then(response => {
+                            console.log(response.data);
+                            setConversation([...newConversation, {
+                                sender: 'bot',
+                                text: response.data[0].generated_text
+                            }]);
+                            setIsLoading(false);
+
+                        })
+                        .catch(error => {
+                            console.error('Error making request:', error);
+                            setConversation(prev => [...prev, {sender: 'bot', text: error}]);
+                            setIsLoading(false);
+
+                        });
+
+                    setInput('');
+
+                    setIsLoading(false);
+                    console.log(inputText);
+
+
+                } catch (error) {
+                    console.error('Error communicating with the API:', error);
+                    setIsLoading(false);
+
+                    setConversation(prev => [...prev, {
+                        sender: 'bot',
+                        text: 'Sorry, I encountered an error. Please refresh the page.'
+                    }]);
+                }
+            }
+
         } else {
-            try {
+            setIsLoading(false);
+
+            if (handleFirstQuestion) {
+                setConversation(prev => [...prev, {
+                    sender: 'user',
+                    text: input
+                }])
+                if (input.trim().length === 10) {
+                    if (handleSendOtp(input)) {
+                        bookingIndex += 1
+                        setConversation(prev => [...prev, {
+                            sender: 'bot',
+                            text: bookingQuestions[bookingIndex]
+                        }])
+                        setInput('')
+                        setHandleFirstQuestion(false)
+                        setHandleThirdQuestion(false)
+                        setHandleForthQuestion(false)
+                        setHandleSecondQuestion(true)
+
+                    }
+
+                } else {
+                    setConversation(prev => [...prev, {
+                        sender: 'bot',
+                        text: 'This is not a valid phone number. Please message again.'
+                    }])
+                }
 
 
-                const apiUrl = "https://api-inference.huggingface.co/models/google/flan-t5-large";
-                const headers = {
-                    "Authorization": "Bearer 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"
-                };
+            } else if (handleSecondQuestion) {
+                setConversation(prev => [...prev, {
+                    sender: 'user',
+                    text: input
+                }])
+                if (handleCheckOtp(input)) {
 
-                const conversationHistory = [
-                    "User:Keep in mind that you are a e-ticketing chat bot for National Museum tickets of India. " +
-                    "Your name is Ticket Aarakshan Mitra. You help people to book their national museum tickets.",
-                    "Assistant: Sure, I’d be happy to help!",
-
-                ];
-
-
-                const inputText = [...conversationHistory, `User: ${formatMessage(input)}\nAssistant:`].join("\n");
-
-                const payload = {
-                    inputs: inputText
-                };
-
-
-                axios.post(apiUrl, payload, {headers: headers})
-                    .then(response => {
-                        console.log(response.data);
-                        setConversation([...newConversation, {sender: 'bot', text: response.data[0].generated_text}]);
-                        setIsLoading(false);
-
-                    })
-                    .catch(error => {
-                        console.error('Error making request:', error);
-                        setConversation([...newConversation, {sender: 'bot', text: error}]);
-                        setIsLoading(false);
-
-                    });
-
-                setInput('');
-
-                setIsLoading(false);
-                console.log(inputText);
+                    setConversation(prev => [...prev, {
+                        sender: 'bot',
+                        text: 'OTP verified!'
+                    }, {
+                        sender: 'bot',
+                        text: bookingQuestions[++bookingIndex]
+                    }])
+                    setInput('')
+                    setHandleFirstQuestion(false)
+                    setHandleThirdQuestion(true)
+                    setHandleForthQuestion(false)
+                    setHandleSecondQuestion(false)
 
 
-            } catch (error) {
-                console.error('Error communicating with the API:', error);
-                setIsLoading(false);
+                } else {
+                    setConversation(prev => [...prev, {
+                        sender: 'bot',
+                        text: 'OTP invalid!.'
+                    }])
+                }
 
-                setConversation([...newConversation, {sender: 'bot', text: 'Sorry, I encountered an error.'}]);
+
+            } else if (handleThirdQuestion) {
+
+                const json = parseTicketInfo(input)
+
+                console.log(json)
+                const adult = Number(json.adults)
+                const child = Number(json.children)
+                const foreigner = Number(json.foreigners)
+                const total = adult + child + foreigner
+                const formattedMessage = `You’ve selected ${total} tickets:${adult} adults, ${child} children, and ${foreigner} foreigners.
+`
+                setConversation(prev => [...prev, {sender: 'bot', text: formattedMessage}])
+                setInput('')
+                    setHandleFirstQuestion(false)
+                    setHandleThirdQuestion(false)
+                    setHandleForthQuestion(true)
+                    setHandleSecondQuestion(false)
+
+
+            } else if (handleForthQuestion) {
+
             }
+
+
         }
 
 
@@ -320,8 +481,9 @@ const Chatbot = () => {
                                         className="message-input"
                                         id="message-input"
                                         placeholder={hintText}
-                                        type="text"
+                                        type={numberInput ? "number" : "text"}
                                         value={input}
+                                        min={0}
                                         onChange={handleInputChange}
                                     />
                                     {!isLoading && (
@@ -347,9 +509,7 @@ const Chatbot = () => {
                     </div>
                 </div>
             </div>
-            <AlertDialog hasInput={hasInput} isOpen={isOpen} onClose={() => setIsOpen(false)}
-                         dialogContent={dialogContent}
-                         dialogTitle={dialogTitle}/>
+
 
         </div>
 

@@ -43,12 +43,26 @@ export const welcomeMsgs = [
     "Hello and welcome! Let me assist you in securing your tickets for the Museums of India.",
     "Welcome aboard! I'm here to make your museum visit in India easy with seamless e-ticketing support."
 ];
-export const trainingData = [
-    {text: "I want to book a museum ticket", intent: "Museum Ticket Booking"},
-    {text: "Can you help me with a ticket?", intent: "Museum Ticket Booking"},
-    {text: "Hello", intent: "Greetings"},
-    {text: "Hi there!", intent: "Greetings"},
-    {text: "Give me the number of museums i can book ticket for?", intent: "General Inquiry"},
 
-    {text: "Tell me about the museum", intent: "General Inquiry"}
+export const bookingProcessStart = [
+    "Let's begin the booking process.",
+    "Let's initiate the booking.",
+    "Let's get the booking started.",
+    "Time to start booking.",
+    "Let's commence the booking process.",
+    "Let's kick off the booking process.",
+    "Let's proceed with booking.",
+    "Let's start your booking now.",
+    "Let's begin making your reservation."
 ];
+export const bookingQuestions = [
+    "Provide your mobile number for authentication.",
+    "OTP sent to the provided mobile number. Submit the Otp to continue.",
+    "How many of these are for adults, children, and foreigners? Example input: X children, X adult, X foreigners",
+
+    "Please provide the names for each adult ticket.",
+    "Please provide the names for each child ticket.",
+    "Please provide the names for each senior citizen ticket.",
+
+
+]
