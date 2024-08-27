@@ -87,10 +87,7 @@ app.get('/api/fetch_price/:museumId', (req, res) => {
         return res.status(400).send({error: 'museum_id is required'});
     }
 
-    const query = `
-        SELECT adult_price, child_price, foreigner_price
-        FROM museums
-        WHERE id = ?;`;
+    const query = `SELECT * FROM museums WHERE id = ?;`;
 
     db.get(query, [museumId], (err, row) => {
         if (err) {

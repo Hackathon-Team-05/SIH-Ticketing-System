@@ -638,7 +638,7 @@ const Chatbot = () => {
 
                 const museumId = input.trim()
                 const result = await axios.get(`http://localhost:3000/api/fetch_price/${museumId}`)
-
+                console.log(result.data)
                 setConversation(prev => [...prev, {sender: 'bot', text: result.data.response}])
             } else if (!fetchMuseumId && !handleEighthQuestion && !handleZerothQuestion &&
                 !handleFirstQuestion && !handleSecondQuestion && !handleThirdQuestion
