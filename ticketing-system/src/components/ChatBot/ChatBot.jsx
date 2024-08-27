@@ -415,7 +415,7 @@ const Chatbot = () => {
 
 
             } else if (handleThirdQuestion) {
-                bookingIndex = bookingIndex + 1
+
                 setConversation(prev => [...prev, {sender: 'user', text: input}])
 
                 const json = parseTicketInfo(input)
