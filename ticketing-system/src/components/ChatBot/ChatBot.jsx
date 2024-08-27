@@ -199,7 +199,7 @@ const Chatbot = () => {
     }
 
     function extractNames(message) {
-        const namePattern = /\b[A-Z][a-z]*\s[A-Z][a-z]*\b/g;
+        const namePattern = /([A-Z][A-Z\s]+)(?:,\s?([A-Z][A-Z\s]+))?/
 
         const matches = message.match(namePattern);
 
@@ -501,7 +501,7 @@ const Chatbot = () => {
 
                 } else if (handleFifthQuestion) {
 
-                    const names = extractNames(input)
+                    const names = extractNames(input.toUpperCase())
                     console.log(names)
 
                 }
