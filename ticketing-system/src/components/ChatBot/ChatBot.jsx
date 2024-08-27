@@ -691,7 +691,7 @@ const Chatbot = () => {
     function handleInquiryFinal() {
         let statement1 =
             "Please verify your details to continue to the payment." +
-            `You have booked ${totalTickets} tickets. In which ${noOfAdults} adult tickets, ${noOfChilds} children tickets, ${noOfForeigners} foreigner tickets are there.`
+            `You are an ${isOrganisation ? "organisation" : "individual"}. You have booked ${totalTickets} tickets. In which ${noOfAdults} adult tickets, ${noOfChilds} children tickets, ${noOfForeigners} foreigner tickets are there.`
 
         setConversation(prev => [...prev, {sender: 'bot', text: statement1}])
         let adultNameString = ""
