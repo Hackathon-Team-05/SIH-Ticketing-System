@@ -755,6 +755,7 @@ const Chatbot = () => {
         ${adultString} ${adultNameString}\n
         ${childString} ${childNameString}\n
         ${foreignerString} ${foreignerNameString}`
+        setConversation(prev => [...prev, {sender: 'bot', text: `Your mobile number is ${phoneNumber}.`}])
         setConversation(prev => [...prev, {sender: 'bot', text: statement2}, {
             sender: "bot",
             text: 'Are the above details correct?'
