@@ -47,6 +47,7 @@ const Chatbot = () => {
     const [handleFifthQuestion, setHandleFifthQuestion] = useState(false);
     const [handleSixthQuestion, setHandleSixthQuestion] = useState(false);
     const [handleSeventhQuestion, setHandleSeventhQuestion] = useState(false);
+
     const [handleEighthQuestion, setHandleEighthQuestion] = useState(false);
     const [isOrganisation, setIsOrganisation] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState('');
@@ -327,6 +328,15 @@ const Chatbot = () => {
 
         } else {
             setIsLoading(false);
+            console.log("zeroth" + handleZerothQuestion)
+            console.log("first" + handleFirstQuestion)
+            console.log("second" + handleSecondQuestion)
+            console.log("third" + handleThirdQuestion)
+            console.log("forth" + handleForthQuestion)
+            console.log("fifth" + handleFifthQuestion)
+            console.log("sixth" + handleSixthQuestion)
+            console.log("seventh" + handleSeventhQuestion)
+            console.log("eighth" + handleEighthQuestion)
             setConversation(prev => [...prev, {
                 sender: 'user',
                 text: input
@@ -664,12 +674,14 @@ const Chatbot = () => {
                     setForeignerNames(finalNamesForeigners)
                     console.log(finalNamesForeigners)
                     setInput('')
-                    setHandleEighthQuestion(true)
 
+                    setHandleEighthQuestion(true)
                     setHandleFirstQuestion(false)
                     setHandleThirdQuestion(false)
                     setHandleForthQuestion(false)
                     setHandleSecondQuestion(false)
+                    setHandleSeventhQuestion(false)
+
                     setHandleFifthQuestion(false)
                     setHandleSixthQuestion(false)
 
@@ -683,6 +695,7 @@ const Chatbot = () => {
                     setInput('')
 
                     setHandleEighthQuestion(true)
+                    setHandleSeventhQuestion(false)
 
                     setHandleFirstQuestion(false)
                     setHandleThirdQuestion(false)
@@ -706,7 +719,13 @@ const Chatbot = () => {
             } else if (handleEighthQuestion) {
 
                 const city = input.trim().toLowerCase()
-            } else if (!handleZerothQuestion &&
+                const statement = `List the museums which are situated in the city ${city}`
+                const result = await axios.post('http://localhost:5000/chat', {"message": statement});
+                setConversation(prev => [...prev, {sender: 'bot', text: result.data}])
+
+                console.log(result.data.response)
+
+            } else if (!handleEighthQuestion && !handleZerothQuestion &&
                 !handleFirstQuestion && !handleSecondQuestion && !handleThirdQuestion
                 && !handleForthQuestion && !handleFifthQuestion && !handleSixthQuestion && !handleSeventhQuestion) {
 
