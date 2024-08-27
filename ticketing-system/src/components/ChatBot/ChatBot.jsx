@@ -20,6 +20,7 @@ import nlp from 'compromise';
 import SpeakerButton from "./SpeakerButton.jsx";
 import {GENERAL_INQUIRY, GREETINGS, MUSEUM_TICKET_BOOK_QUERY} from "./query_constants";
 
+let bookingIndex = 0;
 
 const Chatbot = () => {
     const [input, setInput] = useState('');
@@ -40,7 +41,6 @@ const Chatbot = () => {
     const [handleFifthQuestion, setHandleFifthQuestion] = useState(false);
     const [handleSixthQuestion, setHandleSixthQuestion] = useState(false);
 
-    let bookingIndex = 0;
 
     // useEffect(() => {
     //     const fetchConversation = async () => {
@@ -318,10 +318,7 @@ const Chatbot = () => {
                 if (input.trim().length === 10) {
                     if (handleSendOtp(input)) {
                         bookingIndex += 1
-                        setConversation(prev => [...prev, {
-                            sender: 'bot',
-                            text: bookingQuestions[bookingIndex]
-                        }])
+
                         setInput('')
                         setHandleFirstQuestion(false)
                         setHandleThirdQuestion(false)
@@ -329,7 +326,10 @@ const Chatbot = () => {
                         setHandleSecondQuestion(true)
                         setHandleFifthQuestion(false)
                         setHandleSixthQuestion(false)
-
+                        setConversation(prev => [...prev, {
+                            sender: 'bot',
+                            text: bookingQuestions[bookingIndex]
+                        }])
                     }
 
                 } else {
@@ -346,14 +346,9 @@ const Chatbot = () => {
                     text: input
                 }])
                 if (handleCheckOtp(input)) {
+                    bookingIndex = bookingIndex + 1
 
-                    setConversation(prev => [...prev, {
-                        sender: 'bot',
-                        text: 'OTP verified!'
-                    }, {
-                        sender: 'bot',
-                        text: bookingQuestions[++bookingIndex]
-                    }])
+
                     setInput('')
                     setHandleFirstQuestion(false)
                     setHandleThirdQuestion(true)
@@ -361,7 +356,13 @@ const Chatbot = () => {
                     setHandleSecondQuestion(false)
                     setHandleFifthQuestion(false)
                     setHandleSixthQuestion(false)
-
+                    setConversation(prev => [...prev, {
+                        sender: 'bot',
+                        text: 'OTP verified!'
+                    }, {
+                        sender: 'bot',
+                        text: bookingQuestions[bookingIndex]
+                    }])
                 } else {
                     setConversation(prev => [...prev, {
                         sender: 'bot',
