@@ -42,6 +42,7 @@ const Chatbot = () => {
     const [handleForthQuestion, setHandleForthQuestion] = useState(false);
     const [handleFifthQuestion, setHandleFifthQuestion] = useState(false);
     const [handleSixthQuestion, setHandleSixthQuestion] = useState(false);
+    const [handleSeventhQuestion, setHandleSeventhQuestion] = useState(false);
     const [isOrganisation, setIsOrganisation] = useState(false);
 
     // useEffect(() => {
@@ -327,6 +328,7 @@ const Chatbot = () => {
                         setHandleSecondQuestion(false)
                         setHandleFifthQuestion(false)
                         setHandleSixthQuestion(false)
+                        setHandleSeventhQuestion(false)
                         setHandleZerothQuestion(false)
                         setConversation(prev => [...prev, {
                             sender: 'bot',
@@ -350,6 +352,8 @@ const Chatbot = () => {
                         setHandleForthQuestion(false)
                         setHandleSecondQuestion(false)
                         setHandleFifthQuestion(false)
+                        setHandleSeventhQuestion(false)
+
                         setHandleSixthQuestion(false)
                         setHandleZerothQuestion(false)
 
@@ -371,6 +375,8 @@ const Chatbot = () => {
                             setHandleFirstQuestion(false)
                             setHandleThirdQuestion(false)
                             setHandleForthQuestion(false)
+                            setHandleSeventhQuestion(false)
+
                             setHandleSecondQuestion(true)
                             setHandleFifthQuestion(false)
                             setHandleSixthQuestion(false)
@@ -397,6 +403,8 @@ const Chatbot = () => {
                         setInput('')
                         setHandleFirstQuestion(false)
                         setHandleThirdQuestion(true)
+                        setHandleSeventhQuestion(false)
+
                         setHandleForthQuestion(false)
                         setHandleSecondQuestion(false)
                         setHandleFifthQuestion(false)
@@ -434,6 +442,8 @@ const Chatbot = () => {
                     setInput('')
                     setHandleFirstQuestion(false)
                     setHandleThirdQuestion(false)
+                    setHandleSeventhQuestion(false)
+
                     setHandleForthQuestion(true)
                     setHandleSecondQuestion(false)
                     setHandleFifthQuestion(false)
@@ -473,6 +483,8 @@ const Chatbot = () => {
 
                         setHandleFirstQuestion(false)
                         setHandleThirdQuestion(false)
+                        setHandleSeventhQuestion(false)
+
                         setHandleForthQuestion(false)
                         setHandleSecondQuestion(false)
                         setHandleFifthQuestion(true)
@@ -485,6 +497,8 @@ const Chatbot = () => {
                         setHandleFirstQuestion(false)
                         setHandleThirdQuestion(false)
                         setHandleForthQuestion(true)
+                        setHandleSeventhQuestion(false)
+
                         setHandleSecondQuestion(false)
                         setHandleFifthQuestion(false)
                         setHandleSixthQuestion(false)
@@ -493,6 +507,49 @@ const Chatbot = () => {
 
 
                 } else if (handleFifthQuestion) {
+                    bookingIndex = bookingIndex + 1
+                    const finalNames = []
+                    const names = extractNames(input.toUpperCase())
+                    for (let i = 1; i < names.length; i++) {
+                        finalNames.push(names[i].trim())
+                    }
+                    console.log(finalNames)
+                    setHandleFirstQuestion(false)
+                    setHandleThirdQuestion(false)
+                    setHandleSeventhQuestion(false)
+
+                    setHandleForthQuestion(false)
+                    setHandleSecondQuestion(false)
+                    setHandleFifthQuestion(false)
+                    setHandleSixthQuestion(true)
+
+                    setConversation(prevState => [...prevState, {
+                        sender: 'bot',
+                        text: bookingQuestions[bookingIndex]
+                    }])
+
+                } else if (handleSixthQuestion) {
+                    bookingIndex = bookingIndex + 1
+                    const finalNames = []
+                    const names = extractNames(input.toUpperCase())
+                    for (let i = 1; i < names.length; i++) {
+                        finalNames.push(names[i].trim())
+                    }
+                    console.log(finalNames)
+                    setHandleFirstQuestion(false)
+                    setHandleThirdQuestion(false)
+                    setHandleForthQuestion(false)
+                    setHandleSecondQuestion(false)
+                    setHandleFifthQuestion(false)
+                    setHandleSeventhQuestion(true)
+
+                    setHandleSixthQuestion(false)
+
+                    setConversation(prevState => [...prevState, {
+                        sender: 'bot',
+                        text: bookingQuestions[bookingIndex]
+                    }])
+                } else if (handleSeventhQuestion) {
                     bookingIndex = bookingIndex + 1
                     const finalNames = []
                     const names = extractNames(input.toUpperCase())
@@ -511,9 +568,6 @@ const Chatbot = () => {
                         sender: 'bot',
                         text: bookingQuestions[bookingIndex]
                     }])
-
-                }else if (handleSixthQuestion){
-
                 }
 
 
