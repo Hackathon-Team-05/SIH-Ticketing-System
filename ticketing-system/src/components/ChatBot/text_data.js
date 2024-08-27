@@ -67,3 +67,18 @@ export const bookingQuestions = [
 
 
 ]
+// {
+//     "id": 1,
+//     "name": "Odisha State Museum (OSM)",
+//     "city_id": 1,
+//     "city_name": "Bhubaneswar",
+//     "state_code": "OD",
+//     "country_code": "IN",
+//     "opening_time": "10:00:00",
+//     "closing_time": "17:30:00",
+//     "adult_price": 20,
+//     "child_price": 10,
+//     "foreigner_price": null,
+//     "latitude": 20.256837,
+//     "longitude": 85.841158
+// }

@@ -37,6 +37,8 @@ const Chatbot = () => {
 
     const [hasMuseum, setHasMuseum] = useState(false);
     const [fetchMuseumId, setFetchMuseumId] = useState(false);
+    const [paymentCheckout, setAskedForPaymentCheckout] = useState(false);
+
     const [museumName, SetMuseumName] = useState('');
 
 
@@ -52,7 +54,7 @@ const Chatbot = () => {
     const [handleEighthQuestion, setHandleEighthQuestion] = useState(false);
     const [isOrganisation, setIsOrganisation] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState('');
-    const [noOfChilds, setNoOfChilds] = useState(0);
+    const [noOfChildren, setNoOfChildren] = useState(0);
     const [noOfAdults, setNoOfAdults] = useState(0);
     const [noOfForeigners, setNoOfForeigners] = useState(0);
     const [adultNames, setAdultNames] = useState([]);
@@ -434,7 +436,7 @@ const Chatbot = () => {
                 const formattedMessage = `You’ve selected ${total} tickets:${adult} adults, ${child} children, and ${foreigner} foreigners.
                 Shall i proceed further?`
 
-                setNoOfChilds(child)
+                setNoOfChildren(child)
                 setNoOfAdults(adult)
                 setNoOfForeigners(foreigner)
                 setTotal(total)
@@ -549,7 +551,7 @@ const Chatbot = () => {
                         console.log(e)
                     }
                 }
-                if (finalNamesChild.length === noOfChilds) {
+                if (finalNamesChild.length === noOfChildren) {
                     setChildNames(finalNamesChild)
                     console.log(finalNamesChild)
                     setInput('')
@@ -573,7 +575,7 @@ const Chatbot = () => {
                 } else {
                     setConversation(prevState => [...prevState, {
                         sender: 'bot',
-                        text: `You have two give ${noOfChilds} names. But you have given ${finalNamesChild.length} names. Please try again.`
+                        text: `You have two give ${noOfChildren} names. But you have given ${finalNamesChild.length} names. Please try again.`
                     }])
                 }
 
@@ -639,8 +641,112 @@ const Chatbot = () => {
                 const museumId = input.trim()
                 const result = await axios.get(`http://localhost:3000/api/fetch_price/${museumId}`)
                 console.log(result.data)
-                setConversation(prev => [...prev, {sender: 'bot', text: result.data.response}])
-            } else if (!fetchMuseumId && !handleEighthQuestion && !handleZerothQuestion &&
+                let adultPrice = null
+                let childPrice = null
+                let foreignerPrice = null
+                if (result.data.adult_price != null) {
+                    adultPrice = result.data.adult_price
+                }
+                if (result.data.child_price != null) {
+                    childPrice = result.data.child_price
+                }
+                if (result.data.foreigner_price != null) {
+                    foreignerPrice = result.data.foreigner_price
+                }
+
+                const totalAdultPrice = Number(adultPrice) * Number(noOfAdults)
+                const totalChildPrice = Number(childPrice) * Number(noOfChildren)
+                const totalForeignerPrice = Number(foreignerPrice) * Number(noOfForeigners)
+                let totalMoney = totalAdultPrice + totalChildPrice + totalForeignerPrice
+
+                if (isOrganisation) {
+                    totalMoney = totalMoney - ((5 / 100) * totalMoney)
+                }
+
+                setConversation(prev => [...prev, {
+                    sender: 'bot', text: `
+                Here are the details for the pricing of the tickets for ${result.data.name}:
+                    (1). Adult: ${adultPrice != null ? adultPrice : "Not specified."}
+                    (2). Child: ${childPrice != null ? childPrice : "Not specified."}
+                    (3). Foreigner: ${foreignerPrice != null ? foreignerPrice : "Not specified."}
+                `
+                }])
+
+                setConversation(prev => [...prev, {
+                    sender: 'bot', text: `
+                Your total bill amount is ${totalMoney}.
+                Number of adult tickets is ${noOfAdults} which adds up to ${totalAdultPrice}.
+                Number of child tickets is ${noOfChildren} which adds up to ${totalChildPrice}.
+                Number of foreigner tickets is ${noOfForeigners} which adds up to ${totalForeignerPrice}.
+
+                `
+                }])
+                if (totalMoney === 0) {
+
+                    setConversation(prev => [...prev, {
+                        sender: 'bot', text: `Free Free Free !!! You do not need to get a ticket for ${result.data.name}
+                    There is a free entry. Booking process closed.
+                    
+                    `
+                    }])
+                    setIsBookingProcess(false)
+                } else {
+                    setConversation(prev => [...prev, {
+                        sender: 'bot', text: `
+                
+                ${isOrganisation ? "Additional 5% discount is added for your organisation." : ""}
+                
+                Proceed to payments?
+                
+                
+                `
+                    }])
+                    setAskedForPaymentCheckout(true)
+                }
+
+            } else if (paymentCheckout) {
+
+                const answerForCheckout = input.trim()
+                const response = await fetch(
+                    "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english",
+                    {
+                        headers: {
+                            Authorization: "Bearer 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",
+                            "Content-Type": "application/json",
+                        },
+                        method: "POST",
+                        body: JSON.stringify(answerForCheckout),
+                    }
+                );
+                const result = await response.json();
+                let positiveScore = null;
+                let negativeScore = null;
+
+                result.forEach(innerArray => {
+                    innerArray.forEach(item => {
+                        if (item.label === "POSITIVE") {
+                            positiveScore = item.score;
+                        } else if (item.label === "NEGATIVE") {
+                            negativeScore = item.score;
+                        }
+                    });
+                });
+                console.log("p:" + positiveScore)
+                console.log("n:" + negativeScore)
+                if (positiveScore >= negativeScore) {
+
+                    setAskedForPaymentCheckout(false)
+
+                    setConversation(prev => [...prev, {sender: 'bot', text: 'Redirecting to the payments page...'}])
+                    setInput('')
+                } else {
+
+
+                    setConversation(prev => [...prev, {sender: 'bot', text: "Okay. Cancelled the booking process."}])
+                    setIsBookingProcess(false)
+                }
+
+            } else if (!paymentCheckout && !fetchMuseumId && !handleEighthQuestion && !handleZerothQuestion &&
                 !handleFirstQuestion && !handleSecondQuestion && !handleThirdQuestion
                 && !handleForthQuestion && !handleFifthQuestion && !handleSixthQuestion && !handleSeventhQuestion) {
 
@@ -659,7 +765,7 @@ const Chatbot = () => {
     function handleInquiryFinal() {
         let statement1 =
             "Please verify your details to continue to the payment." +
-            `You are an ${isOrganisation ? "organisation" : "individual"}. You have booked ${totalTickets} tickets. In which ${noOfAdults} adult tickets, ${noOfChilds} children tickets, ${noOfForeigners} foreigner tickets are there.`
+            `You are an ${isOrganisation ? "organisation" : "individual"}. You have booked ${totalTickets} tickets. In which ${noOfAdults} adult tickets, ${noOfChildren} children tickets, ${noOfForeigners} foreigner tickets are there.`
 
         setConversation(prev => [...prev, {sender: 'bot', text: statement1}])
         let adultNameString = ""
@@ -690,7 +796,7 @@ const Chatbot = () => {
             adultPlural = true
         }
         let childPlural = false
-        if (noOfChilds > 1) {
+        if (noOfChildren > 1) {
             childPlural = true
         }
         let foreignerPlural = false
