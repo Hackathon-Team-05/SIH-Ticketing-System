@@ -311,6 +311,10 @@ const Chatbot = () => {
 
             } else {
                 setIsLoading(false);
+                setConversation(prev => [...prev, {
+                    sender: 'user',
+                    text: input
+                }])
                 if (handleZerothQuestion) {
                     if (input.trim().toLowerCase() === "individual") {
                         bookingIndex = bookingIndex + 1
@@ -325,9 +329,6 @@ const Chatbot = () => {
                         setHandleSixthQuestion(false)
                         setHandleZerothQuestion(false)
                         setConversation(prev => [...prev, {
-                            sender: 'user',
-                            text: input
-                        }, {
                             sender: 'bot',
                             text: bookingQuestions[bookingIndex]
                         }]);
@@ -361,10 +362,7 @@ const Chatbot = () => {
 
 
                 } else if (handleFirstQuestion) {
-                    setConversation(prev => [...prev, {
-                        sender: 'user',
-                        text: input
-                    }])
+
                     if (input.trim().length === 10) {
                         if (handleSendOtp(input)) {
                             bookingIndex += 1
@@ -391,10 +389,7 @@ const Chatbot = () => {
 
 
                 } else if (handleSecondQuestion) {
-                    setConversation(prev => [...prev, {
-                        sender: 'user',
-                        text: input
-                    }])
+
                     if (handleCheckOtp(input)) {
                         bookingIndex = bookingIndex + 1
 
@@ -423,7 +418,6 @@ const Chatbot = () => {
 
                 } else if (handleThirdQuestion) {
 
-                    setConversation(prev => [...prev, {sender: 'user', text: input}])
 
                     const json = parseTicketInfo(input)
 
@@ -446,7 +440,6 @@ const Chatbot = () => {
                     setHandleSixthQuestion(false)
 
                 } else if (handleForthQuestion) {
-                    setConversation(prev => [...prev, {sender: 'user', text: input}])
 
                     const response = await fetch(
                         "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english",
@@ -500,9 +493,26 @@ const Chatbot = () => {
 
 
                 } else if (handleFifthQuestion) {
-
+                    bookingIndex = bookingIndex + 1
+                    const finalNames = []
                     const names = extractNames(input.toUpperCase())
-                    console.log(names)
+                    for (let i = 1; i < names.length; i++) {
+                        finalNames.push(names[i].trim())
+                    }
+                    console.log(finalNames)
+                    setHandleFirstQuestion(false)
+                    setHandleThirdQuestion(false)
+                    setHandleForthQuestion(false)
+                    setHandleSecondQuestion(false)
+                    setHandleFifthQuestion(false)
+                    setHandleSixthQuestion(true)
+
+                    setConversation(prevState => [...prevState, {
+                        sender: 'bot',
+                        text: bookingQuestions[bookingIndex]
+                    }])
+
+                }else if (handleSixthQuestion){
 
                 }
 

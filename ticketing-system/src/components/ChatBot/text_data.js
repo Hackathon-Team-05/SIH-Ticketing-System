@@ -62,7 +62,7 @@ export const bookingQuestions = [
     "How many of these are for adults, children, and foreigners? \nExample -> X child, X adult, X foreigners",
     "Please provide the first name with last name for each adult ticket. Example -> satwik kar,other names,etc",
     "Please provide the names for each child ticket.",
-    "Please provide the names for each senior citizen ticket."
+    "Please provide the names for each foreigner ticket."
 
 
 ]
