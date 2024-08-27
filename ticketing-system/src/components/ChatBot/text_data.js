@@ -61,8 +61,8 @@ export const bookingQuestions = [
     "OTP sent to the provided mobile number. Submit the Otp to continue.",
     "How many of these are for adults, children, and foreigners? \nExample -> X child, X adult, X foreigners",
     "Please provide the first name with last name for each adult ticket. Example -> satwik kar,other names,etc",
-    "Please provide the names for each child ticket.",
-    "Please provide the names for each foreigner ticket."
+    "Please provide the first name with last name for each child ticket.",
+    "Please provide the first name with last name for each foreigner ticket."
 
 
 ]

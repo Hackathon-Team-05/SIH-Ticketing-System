@@ -44,6 +44,15 @@ const Chatbot = () => {
     const [handleSixthQuestion, setHandleSixthQuestion] = useState(false);
     const [handleSeventhQuestion, setHandleSeventhQuestion] = useState(false);
     const [isOrganisation, setIsOrganisation] = useState(false);
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [noOfChilds, setNoOfChilds] = useState(0);
+    const [noOfAdults, setNoOfAdults] = useState(0);
+    const [noOfForeigners, setNoOfForeigners] = useState(0);
+    const [adultNames, setAdultNames] = useState([]);
+    const [childNames, setChildNames] = useState([]);
+    const [foreignerNames, setForeignerNames] = useState([]);
+    const [totalTickets, setTotal] = useState(0);
+
 
     // useEffect(() => {
     //     const fetchConversation = async () => {
@@ -208,386 +217,463 @@ const Chatbot = () => {
     }
 
     const handleSendMessage = async () => {
-            if (isBookingProcess === false) {
-                setIsLoading(true);
+        if (isBookingProcess === false) {
+            setIsLoading(true);
 
-                if (enterTicketNumber) {
-                    if (checkValidTicketStructure(enterTicketNumber)) {
-                        const notValidTicketIdPrompt = notValidPrompts;
+            if (enterTicketNumber) {
+                if (checkValidTicketStructure(enterTicketNumber)) {
+                    const notValidTicketIdPrompt = notValidPrompts;
 
-                        // backend call
-                    } else {
-                        const ticketStructurePrompts = ticketStructurePrompt;
-                        const randomIndex = Math.floor(Math.random() * ticketStructurePrompts.length);
-                        const text = ticketStructurePrompts[randomIndex];
-                        setConversation(prev => [...prev, {sender: 'bot', text: text}]);
-                    }
-                    setIsLoading(false);
-                    return;
-                }
-
-                if (input.trim() === '') return;
-
-                const newConversation = prev => [...prev, {sender: 'user', text: input}];
-                setConversation(newConversation);
-
-                if (await isQueryQuestion(input)) {
-                    try {
-                        const bookingProcessStartStatement = bookingProcessStart
-                        const randomIndex = Math.floor(Math.random() * bookingProcessStartStatement.length);
-                        const sentence = bookingProcessStartStatement[randomIndex];
-                        setInput('')
-                        const result = await axios.post('http://localhost:5000/chat', {"message": input});
-                        setConversation(prev => [...prev, {sender: 'bot', text: result.data.response}, {
-                            sender: 'bot',
-                            text: sentence
-                        }, {sender: 'bot', text: bookingQuestions[bookingIndex]}]);
-
-                        // setIsANumberInput(true)
-                        setIsLoading(false)
-
-
-                    } catch (error) {
-                        console.error('Error:', error);
-                        setIsLoading(false)
-
-                    }
+                    // backend call
                 } else {
-                    try {
-
-
-                        const apiUrl = "https://api-inference.huggingface.co/models/google/flan-t5-large";
-                        const headers = {
-                            "Authorization": "Bearer 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"
-                        };
-
-                        const conversationHistory = [
-                            "User:Keep in mind that you are a e-ticketing chat bot for National Museum tickets of India. " +
-                            "Your name is Ticket Aarakshan Mitra. You help people to book their national museum tickets.",
-                            "Assistant: Sure, I’d be happy to help!",
-
-                        ];
-
-
-                        const inputText = [...conversationHistory, `User: ${formatMessage(input)}\nAssistant:`].join("\n");
-
-                        const payload = {
-                            inputs: inputText
-                        };
-
-
-                        axios.post(apiUrl, payload, {headers: headers})
-                            .then(response => {
-                                console.log(response.data);
-                                setConversation(prev => [...prev, {
-                                    sender: 'bot',
-                                    text: response.data[0].generated_text
-                                }]);
-                                setIsLoading(false);
-
-                            })
-                            .catch(error => {
-                                console.error('Error making request:', error);
-                                setConversation(prev => [...prev, {sender: 'bot', text: error}]);
-                                setIsLoading(false);
-
-                            });
-
-                        setInput('');
-
-                        setIsLoading(false);
-                        console.log(inputText);
-
-
-                    } catch (error) {
-                        console.error('Error communicating with the API:', error);
-                        setIsLoading(false);
-
-                        setConversation(prev => [...prev, {
-                            sender: 'bot',
-                            text: 'Sorry, I encountered an error. Please refresh the page.'
-                        }]);
-                    }
+                    const ticketStructurePrompts = ticketStructurePrompt;
+                    const randomIndex = Math.floor(Math.random() * ticketStructurePrompts.length);
+                    const text = ticketStructurePrompts[randomIndex];
+                    setConversation(prev => [...prev, {sender: 'bot', text: text}]);
                 }
-
-            } else {
                 setIsLoading(false);
-                setConversation(prev => [...prev, {
-                    sender: 'user',
-                    text: input
-                }])
-                if (handleZerothQuestion) {
-                    if (input.trim().toLowerCase() === "individual") {
-                        bookingIndex = bookingIndex + 1
+                return;
+            }
 
-                        setIsOrganisation(false)
-                        setInput('')
-                        setHandleFirstQuestion(true)
-                        setHandleThirdQuestion(false)
-                        setHandleForthQuestion(false)
-                        setHandleSecondQuestion(false)
-                        setHandleFifthQuestion(false)
-                        setHandleSixthQuestion(false)
-                        setHandleSeventhQuestion(false)
-                        setHandleZerothQuestion(false)
-                        setConversation(prev => [...prev, {
-                            sender: 'bot',
-                            text: bookingQuestions[bookingIndex]
-                        }]);
-                    } else if (input.trim().toLowerCase() === "organisation") {
-                        bookingIndex = bookingIndex + 1
+            if (input.trim() === '') return;
 
-                        setIsOrganisation(true)
+            const newConversation = prev => [...prev, {sender: 'user', text: input}];
+            setConversation(newConversation);
 
-                        setConversation(prev => [...prev, {
-                            sender: 'bot',
-                            text: "Congo, you are eligible for a discount of 5%."
-                        }, {
-                            sender: 'bot',
-                            text: bookingQuestions[bookingIndex]
-                        }]);
-                        setInput('')
-                        setHandleFirstQuestion(true)
-                        setHandleThirdQuestion(false)
-                        setHandleForthQuestion(false)
-                        setHandleSecondQuestion(false)
-                        setHandleFifthQuestion(false)
-                        setHandleSeventhQuestion(false)
+            if (await isQueryQuestion(input)) {
+                try {
+                    const bookingProcessStartStatement = bookingProcessStart
+                    const randomIndex = Math.floor(Math.random() * bookingProcessStartStatement.length);
+                    const sentence = bookingProcessStartStatement[randomIndex];
+                    setInput('')
+                    const result = await axios.post('http://localhost:5000/chat', {"message": input});
+                    setConversation(prev => [...prev, {sender: 'bot', text: result.data.response}, {
+                        sender: 'bot',
+                        text: sentence
+                    }, {sender: 'bot', text: bookingQuestions[bookingIndex]}]);
 
-                        setHandleSixthQuestion(false)
-                        setHandleZerothQuestion(false)
-
-                    } else {
-                        setConversation(prev => [...prev, {
-                            sender: 'bot',
-                            text: "I cannot understand. Please try again."
-                        }]);
-                    }
+                    // setIsANumberInput(true)
+                    setIsLoading(false)
 
 
-                } else if (handleFirstQuestion) {
+                } catch (error) {
+                    console.error('Error:', error);
+                    setIsLoading(false)
 
-                    if (input.trim().length === 10) {
-                        if (handleSendOtp(input)) {
-                            bookingIndex += 1
+                }
+            } else {
+                try {
 
-                            setInput('')
-                            setHandleFirstQuestion(false)
-                            setHandleThirdQuestion(false)
-                            setHandleForthQuestion(false)
-                            setHandleSeventhQuestion(false)
 
-                            setHandleSecondQuestion(true)
-                            setHandleFifthQuestion(false)
-                            setHandleSixthQuestion(false)
+                    const apiUrl = "https://api-inference.huggingface.co/models/google/flan-t5-large";
+                    const headers = {
+                        "Authorization": "Bearer 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"
+                    };
+
+                    const conversationHistory = [
+                        "User:Keep in mind that you are a e-ticketing chat bot for National Museum tickets of India. " +
+                        "Your name is Ticket Aarakshan Mitra. You help people to book their national museum tickets.",
+                        "Assistant: Sure, I’d be happy to help!",
+
+                    ];
+
+
+                    const inputText = [...conversationHistory, `User: ${formatMessage(input)}\nAssistant:`].join("\n");
+
+                    const payload = {
+                        inputs: inputText
+                    };
+
+
+                    axios.post(apiUrl, payload, {headers: headers})
+                        .then(response => {
+                            console.log(response.data);
                             setConversation(prev => [...prev, {
                                 sender: 'bot',
-                                text: bookingQuestions[bookingIndex]
-                            }])
-                        }
+                                text: response.data[0].generated_text
+                            }]);
+                            setIsLoading(false);
 
-                    } else {
-                        setConversation(prev => [...prev, {
-                            sender: 'bot',
-                            text: 'This is not a valid phone number. Please message again.'
-                        }])
-                    }
+                        })
+                        .catch(error => {
+                            console.error('Error making request:', error);
+                            setConversation(prev => [...prev, {sender: 'bot', text: error}]);
+                            setIsLoading(false);
+
+                        });
+
+                    setInput('');
+
+                    setIsLoading(false);
+                    console.log(inputText);
 
 
-                } else if (handleSecondQuestion) {
+                } catch (error) {
+                    console.error('Error communicating with the API:', error);
+                    setIsLoading(false);
 
-                    if (handleCheckOtp(input)) {
-                        bookingIndex = bookingIndex + 1
+                    setConversation(prev => [...prev, {
+                        sender: 'bot',
+                        text: 'Sorry, I encountered an error. Please refresh the page.'
+                    }]);
+                }
+            }
 
+        } else {
+            setIsLoading(false);
+            setConversation(prev => [...prev, {
+                sender: 'user',
+                text: input
+            }])
+            if (handleZerothQuestion) {
+                if (input.trim().toLowerCase() === "individual") {
+                    bookingIndex = bookingIndex + 1
+
+                    setIsOrganisation(false)
+                    setInput('')
+                    setHandleFirstQuestion(true)
+                    setHandleThirdQuestion(false)
+                    setHandleForthQuestion(false)
+                    setHandleSecondQuestion(false)
+                    setHandleFifthQuestion(false)
+                    setHandleSixthQuestion(false)
+                    setHandleSeventhQuestion(false)
+                    setHandleZerothQuestion(false)
+                    setConversation(prev => [...prev, {
+                        sender: 'bot',
+                        text: bookingQuestions[bookingIndex]
+                    }]);
+                } else if (input.trim().toLowerCase() === "organisation") {
+                    bookingIndex = bookingIndex + 1
+
+                    setIsOrganisation(true)
+
+                    setConversation(prev => [...prev, {
+                        sender: 'bot',
+                        text: "Congo, you are eligible for a discount of 5%."
+                    }, {
+                        sender: 'bot',
+                        text: bookingQuestions[bookingIndex]
+                    }]);
+                    setInput('')
+                    setHandleFirstQuestion(true)
+                    setHandleThirdQuestion(false)
+                    setHandleForthQuestion(false)
+                    setHandleSecondQuestion(false)
+                    setHandleFifthQuestion(false)
+                    setHandleSeventhQuestion(false)
+
+                    setHandleSixthQuestion(false)
+                    setHandleZerothQuestion(false)
+
+                } else {
+                    setConversation(prev => [...prev, {
+                        sender: 'bot',
+                        text: "I cannot understand. Please try again."
+                    }]);
+                }
+
+
+            } else if (handleFirstQuestion) {
+
+                if (input.trim().length === 10) {
+                    if (handleSendOtp(input)) {
+                        setPhoneNumber(input)
+                        bookingIndex += 1
 
                         setInput('')
                         setHandleFirstQuestion(false)
-                        setHandleThirdQuestion(true)
+                        setHandleThirdQuestion(false)
+                        setHandleForthQuestion(false)
                         setHandleSeventhQuestion(false)
 
-                        setHandleForthQuestion(false)
-                        setHandleSecondQuestion(false)
+                        setHandleSecondQuestion(true)
                         setHandleFifthQuestion(false)
                         setHandleSixthQuestion(false)
                         setConversation(prev => [...prev, {
-                            sender: 'bot',
-                            text: 'OTP verified!'
-                        }, {
                             sender: 'bot',
                             text: bookingQuestions[bookingIndex]
                         }])
-                    } else {
-                        setConversation(prev => [...prev, {
-                            sender: 'bot',
-                            text: 'OTP invalid!.'
-                        }])
                     }
 
-
-                } else if (handleThirdQuestion) {
-
-
-                    const json = parseTicketInfo(input)
-
-                    console.log(json)
-                    const adult = Number(json.adults)
-                    const child = Number(json.children)
-                    const foreigner = Number(json.foreigners)
-                    const total = adult + child + foreigner
-                    const formattedMessage = `You’ve selected ${total} tickets:${adult} adults, ${child} children, and ${foreigner} foreigners.
-                Shall i proceed further?
-                
-`
-                    setConversation(prev => [...prev, {sender: 'bot', text: formattedMessage}])
-                    setInput('')
-                    setHandleFirstQuestion(false)
-                    setHandleThirdQuestion(false)
-                    setHandleSeventhQuestion(false)
-
-                    setHandleForthQuestion(true)
-                    setHandleSecondQuestion(false)
-                    setHandleFifthQuestion(false)
-                    setHandleSixthQuestion(false)
-
-                } else if (handleForthQuestion) {
-
-                    const response = await fetch(
-                        "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english",
-                        {
-                            headers: {
-                                Authorization: "Bearer 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",
-                                "Content-Type": "application/json",
-                            },
-                            method: "POST",
-                            body: JSON.stringify(input),
-                        }
-                    );
-                    const result = await response.json();
-                    let positiveScore = null;
-                    let negativeScore = null;
-
-                    result.forEach(innerArray => {
-                        innerArray.forEach(item => {
-                            if (item.label === "POSITIVE") {
-                                positiveScore = item.score;
-                            } else if (item.label === "NEGATIVE") {
-                                negativeScore = item.score;
-                            }
-                        });
-                    });
-                    console.log("p:" + positiveScore)
-                    console.log("n:" + negativeScore)
-
-                    if (positiveScore >= negativeScore) {
-                        bookingIndex = bookingIndex + 1
-
-                        setHandleFirstQuestion(false)
-                        setHandleThirdQuestion(false)
-                        setHandleSeventhQuestion(false)
-
-                        setHandleForthQuestion(false)
-                        setHandleSecondQuestion(false)
-                        setHandleFifthQuestion(true)
-                        setHandleSixthQuestion(false)
-                        console.log(extractNames(input))
-                        setConversation(prev => [...prev, {sender: 'bot', text: bookingQuestions[bookingIndex]}])
-                        setInput('')
-                    } else {
-                        setInput('')
-                        setHandleFirstQuestion(false)
-                        setHandleThirdQuestion(false)
-                        setHandleForthQuestion(true)
-                        setHandleSeventhQuestion(false)
-
-                        setHandleSecondQuestion(false)
-                        setHandleFifthQuestion(false)
-                        setHandleSixthQuestion(false)
-                        setConversation(prev => [...prev, {sender: 'bot', text: "Okay.Try again!"}])
-                    }
-
-
-                } else if (handleFifthQuestion) {
-                    bookingIndex = bookingIndex + 1
-                    const finalNames = []
-                    const names = extractNames(input.toUpperCase())
-                    for (let i = 1; i < names.length; i++) {
-                        try {
-                            finalNames.push(names[i].trim())
-                        } catch (e) {
-                            console.log(e)
-                        }
-
-                    }
-                    console.log(finalNames)
-                    setInput('')
-
-                    setHandleFirstQuestion(false)
-                    setHandleThirdQuestion(false)
-                    setHandleSeventhQuestion(false)
-
-                    setHandleForthQuestion(false)
-                    setHandleSecondQuestion(false)
-                    setHandleFifthQuestion(false)
-                    setHandleSixthQuestion(true)
-
-                    setConversation(prevState => [...prevState, {
+                } else {
+                    setConversation(prev => [...prev, {
                         sender: 'bot',
-                        text: bookingQuestions[bookingIndex]
-                    }])
-
-                } else if (handleSixthQuestion) {
-                    bookingIndex = bookingIndex + 1
-                    const finalNames = []
-                    const names = extractNames(input.toUpperCase())
-                    for (let i = 1; i < names.length; i++) {
-                        finalNames.push(names[i].trim())
-                    }
-                    console.log(finalNames)
-                    setInput('')
-
-                    setHandleFirstQuestion(false)
-                    setHandleThirdQuestion(false)
-                    setHandleForthQuestion(false)
-                    setHandleSecondQuestion(false)
-                    setHandleFifthQuestion(false)
-                    setHandleSeventhQuestion(true)
-
-                    setHandleSixthQuestion(false)
-
-                    setConversation(prevState => [...prevState, {
-                        sender: 'bot',
-                        text: bookingQuestions[bookingIndex]
-                    }])
-                } else if (handleSeventhQuestion) {
-                    bookingIndex = bookingIndex + 1
-                    const finalNames = []
-                    const names = extractNames(input.toUpperCase())
-                    for (let i = 1; i < names.length; i++) {
-                        finalNames.push(names[i].trim())
-                    }
-                    console.log(finalNames)
-                    setInput('')
-
-                    setHandleFirstQuestion(false)
-                    setHandleThirdQuestion(false)
-                    setHandleForthQuestion(false)
-                    setHandleSecondQuestion(false)
-                    setHandleFifthQuestion(false)
-                    setHandleSixthQuestion(false)
-
-                    setConversation(prevState => [...prevState, {
-                        sender: 'bot',
-                        text: bookingQuestions[bookingIndex]
+                        text: 'This is not a valid phone number. Please message again.'
                     }])
                 }
 
 
+            } else if (handleSecondQuestion) {
+
+                if (handleCheckOtp(input)) {
+                    bookingIndex = bookingIndex + 1
+
+
+                    setInput('')
+                    setHandleFirstQuestion(false)
+                    setHandleThirdQuestion(true)
+                    setHandleSeventhQuestion(false)
+
+                    setHandleForthQuestion(false)
+                    setHandleSecondQuestion(false)
+                    setHandleFifthQuestion(false)
+                    setHandleSixthQuestion(false)
+                    setConversation(prev => [...prev, {
+                        sender: 'bot',
+                        text: 'OTP verified!'
+                    }, {
+                        sender: 'bot',
+                        text: bookingQuestions[bookingIndex]
+                    }])
+                } else {
+                    setConversation(prev => [...prev, {
+                        sender: 'bot',
+                        text: 'OTP invalid!.'
+                    }])
+                }
+
+
+            } else if (handleThirdQuestion) {
+
+
+                const json = parseTicketInfo(input)
+
+                console.log(json)
+                const adult = Number(json.adults)
+                const child = Number(json.children)
+                const foreigner = Number(json.foreigners)
+                const total = adult + child + foreigner
+                const formattedMessage = `You’ve selected ${total} tickets:${adult} adults, ${child} children, and ${foreigner} foreigners.
+                Shall i proceed further?`
+
+                setNoOfChilds(child)
+                setNoOfAdults(adult)
+                setNoOfForeigners(foreigner)
+                setTotal(total)
+                setConversation(prev => [...prev, {sender: 'bot', text: formattedMessage}])
+                setInput('')
+                setHandleFirstQuestion(false)
+                setHandleThirdQuestion(false)
+                setHandleSeventhQuestion(false)
+
+                setHandleForthQuestion(true)
+                setHandleSecondQuestion(false)
+                setHandleFifthQuestion(false)
+                setHandleSixthQuestion(false)
+
+            } else if (handleForthQuestion) {
+
+                const response = await fetch(
+                    "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english",
+                    {
+                        headers: {
+                            Authorization: "Bearer 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",
+                            "Content-Type": "application/json",
+                        },
+                        method: "POST",
+                        body: JSON.stringify(input),
+                    }
+                );
+                const result = await response.json();
+                let positiveScore = null;
+                let negativeScore = null;
+
+                result.forEach(innerArray => {
+                    innerArray.forEach(item => {
+                        if (item.label === "POSITIVE") {
+                            positiveScore = item.score;
+                        } else if (item.label === "NEGATIVE") {
+                            negativeScore = item.score;
+                        }
+                    });
+                });
+                console.log("p:" + positiveScore)
+                console.log("n:" + negativeScore)
+
+                if (positiveScore >= negativeScore) {
+
+                    bookingIndex = bookingIndex + 1
+
+                    setHandleFirstQuestion(false)
+                    setHandleThirdQuestion(false)
+                    setHandleSeventhQuestion(false)
+
+                    setHandleForthQuestion(false)
+                    setHandleSecondQuestion(false)
+                    setHandleFifthQuestion(true)
+                    setHandleSixthQuestion(false)
+                    setConversation(prev => [...prev, {sender: 'bot', text: bookingQuestions[bookingIndex]}])
+                    setInput('')
+                } else {
+                    setInput('')
+                    setHandleFirstQuestion(false)
+                    setHandleThirdQuestion(false)
+                    setHandleForthQuestion(true)
+                    setHandleSeventhQuestion(false)
+
+                    setHandleSecondQuestion(false)
+                    setHandleFifthQuestion(false)
+                    setHandleSixthQuestion(false)
+                    setConversation(prev => [...prev, {sender: 'bot', text: "Okay.Try again!"}])
+                }
+
+
+            } else if (handleFifthQuestion) {
+                bookingIndex = bookingIndex + 1
+                const finalNamesAdult = []
+                const names = extractNames(input.toUpperCase())
+                for (let i = 1; i < names.length; i++) {
+                    try {
+                        finalNamesAdult.push(names[i].trim())
+                    } catch (e) {
+                        console.log(e)
+                    }
+
+                }
+                setAdultNames(finalNamesAdult)
+                console.log(finalNamesAdult)
+                setInput('')
+
+                setHandleFirstQuestion(false)
+                setHandleThirdQuestion(false)
+                setHandleSeventhQuestion(false)
+
+                setHandleForthQuestion(false)
+                setHandleSecondQuestion(false)
+                setHandleFifthQuestion(false)
+                setHandleSixthQuestion(true)
+
+                setConversation(prevState => [...prevState, {
+                    sender: 'bot',
+                    text: bookingQuestions[bookingIndex]
+                }])
+
+            } else if (handleSixthQuestion) {
+                bookingIndex = bookingIndex + 1
+                const finalNamesChild = []
+                const names = extractNames(input.toUpperCase())
+                for (let i = 1; i < names.length; i++) {
+                    try {
+                        finalNamesChild.push(names[i].trim())
+                    } catch (e) {
+                        console.log(e)
+                    }
+                }
+                setChildNames(finalNamesChild)
+                console.log(finalNamesChild)
+                setInput('')
+
+                setHandleFirstQuestion(false)
+                setHandleThirdQuestion(false)
+                setHandleForthQuestion(false)
+                setHandleSecondQuestion(false)
+                setHandleFifthQuestion(false)
+                setHandleSeventhQuestion(true)
+
+                setHandleSixthQuestion(false)
+
+                setConversation(prevState => [...prevState, {
+                    sender: 'bot',
+                    text: bookingQuestions[bookingIndex]
+                }])
+            } else if (handleSeventhQuestion) {
+                bookingIndex = bookingIndex + 1
+                const finalNamesForeigners = []
+                const names = extractNames(input.toUpperCase())
+                for (let i = 1; i < names.length; i++) {
+                    try {
+                        finalNamesForeigners.push(names[i].trim())
+                    } catch (e) {
+                        console.log(e)
+                    }
+                }
+                setForeignerNames(finalNamesForeigners)
+                console.log(finalNamesForeigners)
+                setInput('')
+
+                setHandleFirstQuestion(false)
+                setHandleThirdQuestion(false)
+                setHandleForthQuestion(false)
+                setHandleSecondQuestion(false)
+                setHandleFifthQuestion(false)
+                setHandleSixthQuestion(false)
+
+                setConversation(prevState => [...prevState, {
+                    sender: 'bot',
+                    text: bookingQuestions[bookingIndex]
+                }])
+                handleInquiryFinal()
             }
 
 
         }
 
-    ;
+
+    }
+
+    function handleInquiryFinal() {
+        let statement1 =
+            "Please verify your details to continue to the payment." +
+            `You have booked ${totalTickets} tickets. In which ${noOfAdults} adult tickets, ${noOfChilds} children tickets, ${noOfForeigners} foreigner tickets are there.`
+
+        setConversation(prev => [...prev, {sender: 'bot', text: statement1}])
+        let adultNameString = ""
+        adultNames.forEach(adult => {
+            adultNameString += adult
+        })
+        let childNameString = ""
+        childNames.forEach(child => {
+            childNameString += child
+        })
+        let foreignerNameString = ""
+        foreignerNames.forEach(foreigner => {
+            foreignerNameString += foreigner
+        })
+        let adultPlural = false
+        if (noOfAdults > 1) {
+            adultPlural = true
+        }
+        let childPlural = false
+        if (noOfChilds > 1) {
+            childPlural = true
+        }
+        let foreignerPlural = false
+        if (noOfForeigners > 1) {
+            foreignerPlural = true
+        }
+        let adultString = ""
+        let childString = ""
+        let foreignerString = ""
+        if (adultPlural === false) {
+            adultString = "Adult is "
+        } else {
+            adultString = "Adults are "
+
+        }
+        if (childPlural === false) {
+            childString = "Child is "
+        } else {
+            childString = "Children are "
+
+        }
+        if (foreignerPlural === false) {
+            foreignerString = "Foreigner is "
+        } else {
+            foreignerString = "Foreigners are "
+
+        }
+
+        let statement2 = `
+        ${adultString} ${adultNameString}\n
+        ${childString} ${childNameString}\n
+        ${foreignerString} ${foreignerNameString}`
+        setConversation(prev => [...prev, {sender: 'bot', text: statement2}, {
+            sender: "bot",
+            text: 'Are the above details correct?'
+        }])
+
+    }
 
     function handleMicrophoneClick() {
         setIsOpen(true);
