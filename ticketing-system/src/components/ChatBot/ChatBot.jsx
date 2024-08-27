@@ -415,6 +415,7 @@ const Chatbot = () => {
 
 
             } else if (handleThirdQuestion) {
+                bookingIndex = bookingIndex + 1
                 setConversation(prev => [...prev, {sender: 'user', text: input}])
 
                 const json = parseTicketInfo(input)
@@ -468,6 +469,7 @@ const Chatbot = () => {
                 console.log("n:" + negativeScore)
 
                 if (positiveScore >= negativeScore) {
+                    bookingIndex = bookingIndex + 1
 
                     setHandleFirstQuestion(false)
                     setHandleThirdQuestion(false)
@@ -476,7 +478,7 @@ const Chatbot = () => {
                     setHandleFifthQuestion(true)
                     setHandleSixthQuestion(false)
                     console.log(extractNames(input))
-                    setConversation(prev => [...prev, {sender: 'bot', text: bookingQuestions[++bookingIndex]}])
+                    setConversation(prev => [...prev, {sender: 'bot', text: bookingQuestions[bookingIndex]}])
                     setInput('')
                 } else {
                     setInput('')
@@ -490,7 +492,7 @@ const Chatbot = () => {
                 }
 
 
-            } else if (handleForthQuestion) {
+            } else if (handleFifthQuestion) {
 
 
             }
