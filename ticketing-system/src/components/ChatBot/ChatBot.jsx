@@ -511,9 +511,16 @@ const Chatbot = () => {
                     const finalNames = []
                     const names = extractNames(input.toUpperCase())
                     for (let i = 1; i < names.length; i++) {
-                        finalNames.push(names[i].trim())
+                        try {
+                            finalNames.push(names[i].trim())
+                        } catch (e) {
+                            console.log(e)
+                        }
+
                     }
                     console.log(finalNames)
+                    setInput('')
+
                     setHandleFirstQuestion(false)
                     setHandleThirdQuestion(false)
                     setHandleSeventhQuestion(false)
@@ -536,6 +543,8 @@ const Chatbot = () => {
                         finalNames.push(names[i].trim())
                     }
                     console.log(finalNames)
+                    setInput('')
+
                     setHandleFirstQuestion(false)
                     setHandleThirdQuestion(false)
                     setHandleForthQuestion(false)
@@ -557,12 +566,14 @@ const Chatbot = () => {
                         finalNames.push(names[i].trim())
                     }
                     console.log(finalNames)
+                    setInput('')
+
                     setHandleFirstQuestion(false)
                     setHandleThirdQuestion(false)
                     setHandleForthQuestion(false)
                     setHandleSecondQuestion(false)
                     setHandleFifthQuestion(false)
-                    setHandleSixthQuestion(true)
+                    setHandleSixthQuestion(false)
 
                     setConversation(prevState => [...prevState, {
                         sender: 'bot',
@@ -575,6 +586,7 @@ const Chatbot = () => {
 
 
         }
+
     ;
 
     function handleMicrophoneClick() {
