@@ -62,7 +62,8 @@ export const bookingQuestions = [
     "How many of these are for adults, children, and foreigners? \nExample -> X child, X adult, X foreigners",
     "Please provide the first name with last name for each adult ticket. Reply skip if no adult is there. Example -> satwik kar,other names,etc",
     "Please provide the first name with last name for each child ticket. Reply skip if no child is there.",
-    "Please provide the first name with last name for each foreigner ticket. Reply skip if no foreigner is there."
+    "Please provide the first name with last name for each foreigner ticket. Reply skip if no foreigner is there.",
+    "For which city you want to book the museum?"
 
 
 ]
