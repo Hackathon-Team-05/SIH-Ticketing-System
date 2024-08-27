@@ -207,280 +207,236 @@ const Chatbot = () => {
     }
 
     const handleSendMessage = async () => {
-        if (isBookingProcess === false) {
-            setIsLoading(true);
+            if (isBookingProcess === false) {
+                setIsLoading(true);
 
-            if (enterTicketNumber) {
-                if (checkValidTicketStructure(enterTicketNumber)) {
-                    const notValidTicketIdPrompt = notValidPrompts;
+                if (enterTicketNumber) {
+                    if (checkValidTicketStructure(enterTicketNumber)) {
+                        const notValidTicketIdPrompt = notValidPrompts;
 
-                    // backend call
+                        // backend call
+                    } else {
+                        const ticketStructurePrompts = ticketStructurePrompt;
+                        const randomIndex = Math.floor(Math.random() * ticketStructurePrompts.length);
+                        const text = ticketStructurePrompts[randomIndex];
+                        setConversation(prev => [...prev, {sender: 'bot', text: text}]);
+                    }
+                    setIsLoading(false);
+                    return;
+                }
+
+                if (input.trim() === '') return;
+
+                const newConversation = prev => [...prev, {sender: 'user', text: input}];
+                setConversation(newConversation);
+
+                if (await isQueryQuestion(input)) {
+                    try {
+                        const bookingProcessStartStatement = bookingProcessStart
+                        const randomIndex = Math.floor(Math.random() * bookingProcessStartStatement.length);
+                        const sentence = bookingProcessStartStatement[randomIndex];
+                        setInput('')
+                        const result = await axios.post('http://localhost:5000/chat', {"message": input});
+                        setConversation(prev => [...prev, {sender: 'bot', text: result.data.response}, {
+                            sender: 'bot',
+                            text: sentence
+                        }, {sender: 'bot', text: bookingQuestions[bookingIndex]}]);
+
+                        // setIsANumberInput(true)
+                        setIsLoading(false)
+
+
+                    } catch (error) {
+                        console.error('Error:', error);
+                        setIsLoading(false)
+
+                    }
                 } else {
-                    const ticketStructurePrompts = ticketStructurePrompt;
-                    const randomIndex = Math.floor(Math.random() * ticketStructurePrompts.length);
-                    const text = ticketStructurePrompts[randomIndex];
-                    setConversation(prev => [...prev, {sender: 'bot', text: text}]);
+                    try {
+
+
+                        const apiUrl = "https://api-inference.huggingface.co/models/google/flan-t5-large";
+                        const headers = {
+                            "Authorization": "Bearer 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"
+                        };
+
+                        const conversationHistory = [
+                            "User:Keep in mind that you are a e-ticketing chat bot for National Museum tickets of India. " +
+                            "Your name is Ticket Aarakshan Mitra. You help people to book their national museum tickets.",
+                            "Assistant: Sure, I’d be happy to help!",
+
+                        ];
+
+
+                        const inputText = [...conversationHistory, `User: ${formatMessage(input)}\nAssistant:`].join("\n");
+
+                        const payload = {
+                            inputs: inputText
+                        };
+
+
+                        axios.post(apiUrl, payload, {headers: headers})
+                            .then(response => {
+                                console.log(response.data);
+                                setConversation(prev => [...prev, {
+                                    sender: 'bot',
+                                    text: response.data[0].generated_text
+                                }]);
+                                setIsLoading(false);
+
+                            })
+                            .catch(error => {
+                                console.error('Error making request:', error);
+                                setConversation(prev => [...prev, {sender: 'bot', text: error}]);
+                                setIsLoading(false);
+
+                            });
+
+                        setInput('');
+
+                        setIsLoading(false);
+                        console.log(inputText);
+
+
+                    } catch (error) {
+                        console.error('Error communicating with the API:', error);
+                        setIsLoading(false);
+
+                        setConversation(prev => [...prev, {
+                            sender: 'bot',
+                            text: 'Sorry, I encountered an error. Please refresh the page.'
+                        }]);
+                    }
                 }
-                setIsLoading(false);
-                return;
-            }
 
-            if (input.trim() === '') return;
-
-            const newConversation = prev => [...prev, {sender: 'user', text: input}];
-            setConversation(newConversation);
-
-            if (await isQueryQuestion(input)) {
-                try {
-                    const bookingProcessStartStatement = bookingProcessStart
-                    const randomIndex = Math.floor(Math.random() * bookingProcessStartStatement.length);
-                    const sentence = bookingProcessStartStatement[randomIndex];
-                    setInput('')
-                    const result = await axios.post('http://localhost:5000/chat', {"message": input});
-                    setConversation(prev => [...prev, {sender: 'bot', text: result.data.response}, {
-                        sender: 'bot',
-                        text: sentence
-                    }, {sender: 'bot', text: bookingQuestions[bookingIndex]}]);
-
-                    // setIsANumberInput(true)
-                    setIsLoading(false)
-
-
-                } catch (error) {
-                    console.error('Error:', error);
-                    setIsLoading(false)
-
-                }
             } else {
-                try {
+                setIsLoading(false);
+                if (handleZerothQuestion) {
+                    if (input.trim().toLowerCase() === "individual") {
+                        bookingIndex = bookingIndex + 1
+
+                        setIsOrganisation(false)
+                        setInput('')
+                        setHandleFirstQuestion(true)
+                        setHandleThirdQuestion(false)
+                        setHandleForthQuestion(false)
+                        setHandleSecondQuestion(false)
+                        setHandleFifthQuestion(false)
+                        setHandleSixthQuestion(false)
+                        setHandleZerothQuestion(false)
+                        setConversation(prev => [...prev, {
+                            sender: 'user',
+                            text: input
+                        }, {
+                            sender: 'bot',
+                            text: bookingQuestions[bookingIndex]
+                        }]);
+                    } else if (input.trim().toLowerCase() === "organisation") {
+                        bookingIndex = bookingIndex + 1
+
+                        setIsOrganisation(true)
+
+                        setConversation(prev => [...prev, {
+                            sender: 'bot',
+                            text: "Congo, you are eligible for a discount of 5%."
+                        }, {
+                            sender: 'bot',
+                            text: bookingQuestions[bookingIndex]
+                        }]);
+                        setInput('')
+                        setHandleFirstQuestion(true)
+                        setHandleThirdQuestion(false)
+                        setHandleForthQuestion(false)
+                        setHandleSecondQuestion(false)
+                        setHandleFifthQuestion(false)
+                        setHandleSixthQuestion(false)
+                        setHandleZerothQuestion(false)
+
+                    } else {
+                        setConversation(prev => [...prev, {
+                            sender: 'bot',
+                            text: "I cannot understand. Please try again."
+                        }]);
+                    }
 
 
-                    const apiUrl = "https://api-inference.huggingface.co/models/google/flan-t5-large";
-                    const headers = {
-                        "Authorization": "Bearer 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"
-                    };
+                } else if (handleFirstQuestion) {
+                    setConversation(prev => [...prev, {
+                        sender: 'user',
+                        text: input
+                    }])
+                    if (input.trim().length === 10) {
+                        if (handleSendOtp(input)) {
+                            bookingIndex += 1
 
-                    const conversationHistory = [
-                        "User:Keep in mind that you are a e-ticketing chat bot for National Museum tickets of India. " +
-                        "Your name is Ticket Aarakshan Mitra. You help people to book their national museum tickets.",
-                        "Assistant: Sure, I’d be happy to help!",
-
-                    ];
-
-
-                    const inputText = [...conversationHistory, `User: ${formatMessage(input)}\nAssistant:`].join("\n");
-
-                    const payload = {
-                        inputs: inputText
-                    };
-
-
-                    axios.post(apiUrl, payload, {headers: headers})
-                        .then(response => {
-                            console.log(response.data);
+                            setInput('')
+                            setHandleFirstQuestion(false)
+                            setHandleThirdQuestion(false)
+                            setHandleForthQuestion(false)
+                            setHandleSecondQuestion(true)
+                            setHandleFifthQuestion(false)
+                            setHandleSixthQuestion(false)
                             setConversation(prev => [...prev, {
                                 sender: 'bot',
-                                text: response.data[0].generated_text
-                            }]);
-                            setIsLoading(false);
+                                text: bookingQuestions[bookingIndex]
+                            }])
+                        }
 
-                        })
-                        .catch(error => {
-                            console.error('Error making request:', error);
-                            setConversation(prev => [...prev, {sender: 'bot', text: error}]);
-                            setIsLoading(false);
-
-                        });
-
-                    setInput('');
-
-                    setIsLoading(false);
-                    console.log(inputText);
+                    } else {
+                        setConversation(prev => [...prev, {
+                            sender: 'bot',
+                            text: 'This is not a valid phone number. Please message again.'
+                        }])
+                    }
 
 
-                } catch (error) {
-                    console.error('Error communicating with the API:', error);
-                    setIsLoading(false);
-
+                } else if (handleSecondQuestion) {
                     setConversation(prev => [...prev, {
-                        sender: 'bot',
-                        text: 'Sorry, I encountered an error. Please refresh the page.'
-                    }]);
-                }
-            }
+                        sender: 'user',
+                        text: input
+                    }])
+                    if (handleCheckOtp(input)) {
+                        bookingIndex = bookingIndex + 1
 
-        } else {
-            setIsLoading(false);
-            if (handleZerothQuestion) {
-                if (input.trim().toLowerCase() === "individual") {
-                    bookingIndex = bookingIndex + 1
-
-                    setIsOrganisation(false)
-                    setInput('')
-                    setHandleFirstQuestion(true)
-                    setHandleThirdQuestion(false)
-                    setHandleForthQuestion(false)
-                    setHandleSecondQuestion(false)
-                    setHandleFifthQuestion(false)
-                    setHandleSixthQuestion(false)
-                    setHandleZerothQuestion(false)
-                } else if (input.trim().toLowerCase() === "organisation") {
-                    bookingIndex = bookingIndex + 1
-
-                    setIsOrganisation(true)
-
-                    setConversation(prev => [...prev, {
-                        sender: 'bot',
-                        text: "Congo, you are eligible for a discount of 5%."
-                    }, {
-                        sender: 'bot',
-                        text: bookingQuestions[bookingIndex]
-                    }]);
-                    setInput('')
-                    setHandleFirstQuestion(true)
-                    setHandleThirdQuestion(false)
-                    setHandleForthQuestion(false)
-                    setHandleSecondQuestion(false)
-                    setHandleFifthQuestion(false)
-                    setHandleSixthQuestion(false)
-                    setHandleZerothQuestion(false)
-
-                } else {
-                    setConversation(prev => [...prev, {
-                        sender: 'bot',
-                        text: "I cannot understand. Please try again."
-                    }]);
-                }
-
-
-            } else if (handleFirstQuestion) {
-                setConversation(prev => [...prev, {
-                    sender: 'user',
-                    text: input
-                }])
-                if (input.trim().length === 10) {
-                    if (handleSendOtp(input)) {
-                        bookingIndex += 1
 
                         setInput('')
                         setHandleFirstQuestion(false)
-                        setHandleThirdQuestion(false)
+                        setHandleThirdQuestion(true)
                         setHandleForthQuestion(false)
-                        setHandleSecondQuestion(true)
+                        setHandleSecondQuestion(false)
                         setHandleFifthQuestion(false)
                         setHandleSixthQuestion(false)
                         setConversation(prev => [...prev, {
                             sender: 'bot',
+                            text: 'OTP verified!'
+                        }, {
+                            sender: 'bot',
                             text: bookingQuestions[bookingIndex]
+                        }])
+                    } else {
+                        setConversation(prev => [...prev, {
+                            sender: 'bot',
+                            text: 'OTP invalid!.'
                         }])
                     }
 
-                } else {
-                    setConversation(prev => [...prev, {
-                        sender: 'bot',
-                        text: 'This is not a valid phone number. Please message again.'
-                    }])
-                }
 
+                } else if (handleThirdQuestion) {
 
-            } else if (handleSecondQuestion) {
-                setConversation(prev => [...prev, {
-                    sender: 'user',
-                    text: input
-                }])
-                if (handleCheckOtp(input)) {
-                    bookingIndex = bookingIndex + 1
+                    setConversation(prev => [...prev, {sender: 'user', text: input}])
 
+                    const json = parseTicketInfo(input)
 
-                    setInput('')
-                    setHandleFirstQuestion(false)
-                    setHandleThirdQuestion(true)
-                    setHandleForthQuestion(false)
-                    setHandleSecondQuestion(false)
-                    setHandleFifthQuestion(false)
-                    setHandleSixthQuestion(false)
-                    setConversation(prev => [...prev, {
-                        sender: 'bot',
-                        text: 'OTP verified!'
-                    }, {
-                        sender: 'bot',
-                        text: bookingQuestions[bookingIndex]
-                    }])
-                } else {
-                    setConversation(prev => [...prev, {
-                        sender: 'bot',
-                        text: 'OTP invalid!.'
-                    }])
-                }
-
-
-            } else if (handleThirdQuestion) {
-
-                setConversation(prev => [...prev, {sender: 'user', text: input}])
-
-                const json = parseTicketInfo(input)
-
-                console.log(json)
-                const adult = Number(json.adults)
-                const child = Number(json.children)
-                const foreigner = Number(json.foreigners)
-                const total = adult + child + foreigner
-                const formattedMessage = `You’ve selected ${total} tickets:${adult} adults, ${child} children, and ${foreigner} foreigners.
+                    console.log(json)
+                    const adult = Number(json.adults)
+                    const child = Number(json.children)
+                    const foreigner = Number(json.foreigners)
+                    const total = adult + child + foreigner
+                    const formattedMessage = `You’ve selected ${total} tickets:${adult} adults, ${child} children, and ${foreigner} foreigners.
                 Shall i proceed further?
                 
 `
-                setConversation(prev => [...prev, {sender: 'bot', text: formattedMessage}])
-                setInput('')
-                setHandleFirstQuestion(false)
-                setHandleThirdQuestion(false)
-                setHandleForthQuestion(true)
-                setHandleSecondQuestion(false)
-                setHandleFifthQuestion(false)
-                setHandleSixthQuestion(false)
-
-            } else if (handleForthQuestion) {
-                setConversation(prev => [...prev, {sender: 'user', text: input}])
-
-                const response = await fetch(
-                    "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english",
-                    {
-                        headers: {
-                            Authorization: "Bearer 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",
-                            "Content-Type": "application/json",
-                        },
-                        method: "POST",
-                        body: JSON.stringify(input),
-                    }
-                );
-                const result = await response.json();
-                let positiveScore = null;
-                let negativeScore = null;
-
-                result.forEach(innerArray => {
-                    innerArray.forEach(item => {
-                        if (item.label === "POSITIVE") {
-                            positiveScore = item.score;
-                        } else if (item.label === "NEGATIVE") {
-                            negativeScore = item.score;
-                        }
-                    });
-                });
-                console.log("p:" + positiveScore)
-                console.log("n:" + negativeScore)
-
-                if (positiveScore >= negativeScore) {
-                    bookingIndex = bookingIndex + 1
-
-                    setHandleFirstQuestion(false)
-                    setHandleThirdQuestion(false)
-                    setHandleForthQuestion(false)
-                    setHandleSecondQuestion(false)
-                    setHandleFifthQuestion(true)
-                    setHandleSixthQuestion(false)
-                    console.log(extractNames(input))
-                    setConversation(prev => [...prev, {sender: 'bot', text: bookingQuestions[bookingIndex]}])
-                    setInput('')
-                } else {
+                    setConversation(prev => [...prev, {sender: 'bot', text: formattedMessage}])
                     setInput('')
                     setHandleFirstQuestion(false)
                     setHandleThirdQuestion(false)
@@ -488,20 +444,74 @@ const Chatbot = () => {
                     setHandleSecondQuestion(false)
                     setHandleFifthQuestion(false)
                     setHandleSixthQuestion(false)
-                    setConversation(prev => [...prev, {sender: 'bot', text: "Okay.Try again!"}])
+
+                } else if (handleForthQuestion) {
+                    setConversation(prev => [...prev, {sender: 'user', text: input}])
+
+                    const response = await fetch(
+                        "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english",
+                        {
+                            headers: {
+                                Authorization: "Bearer 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",
+                                "Content-Type": "application/json",
+                            },
+                            method: "POST",
+                            body: JSON.stringify(input),
+                        }
+                    );
+                    const result = await response.json();
+                    let positiveScore = null;
+                    let negativeScore = null;
+
+                    result.forEach(innerArray => {
+                        innerArray.forEach(item => {
+                            if (item.label === "POSITIVE") {
+                                positiveScore = item.score;
+                            } else if (item.label === "NEGATIVE") {
+                                negativeScore = item.score;
+                            }
+                        });
+                    });
+                    console.log("p:" + positiveScore)
+                    console.log("n:" + negativeScore)
+
+                    if (positiveScore >= negativeScore) {
+                        bookingIndex = bookingIndex + 1
+
+                        setHandleFirstQuestion(false)
+                        setHandleThirdQuestion(false)
+                        setHandleForthQuestion(false)
+                        setHandleSecondQuestion(false)
+                        setHandleFifthQuestion(true)
+                        setHandleSixthQuestion(false)
+                        console.log(extractNames(input))
+                        setConversation(prev => [...prev, {sender: 'bot', text: bookingQuestions[bookingIndex]}])
+                        setInput('')
+                    } else {
+                        setInput('')
+                        setHandleFirstQuestion(false)
+                        setHandleThirdQuestion(false)
+                        setHandleForthQuestion(true)
+                        setHandleSecondQuestion(false)
+                        setHandleFifthQuestion(false)
+                        setHandleSixthQuestion(false)
+                        setConversation(prev => [...prev, {sender: 'bot', text: "Okay.Try again!"}])
+                    }
+
+
+                } else if (handleFifthQuestion) {
+
+                    const names = extractNames(input)
+                    console.log(names)
+
                 }
-
-
-            } else if (handleFifthQuestion) {
 
 
             }
 
 
         }
-
-
-    };
+    ;
 
     function handleMicrophoneClick() {
         setIsOpen(true);
@@ -566,7 +576,8 @@ const Chatbot = () => {
                             <img src="/assets/ChatBot/logo-ministry.png" width={100} height={100} alt="Logo 2"/>
                         </div>
                         <div className={'shortcuts'}>
-                            <button onClick={handleTicketStatus} className="shortcut_btn">Check ticket status</button>
+                            <button onClick={handleTicketStatus} className="shortcut_btn">Check ticket status
+                            </button>
                             <button onClick={handleMyBookings} className="shortcut_btn">My bookings</button>
                             <button onClick={handleCheckAvailability} className="shortcut_btn">Check Availability
                             </button>
