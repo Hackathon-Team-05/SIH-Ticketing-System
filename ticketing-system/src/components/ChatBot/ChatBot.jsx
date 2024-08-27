@@ -34,13 +34,15 @@ const Chatbot = () => {
     const [enterTicketNumber, setEnterTicketNumber] = useState(false);
     const [isBookingProcess, setIsBookingProcess] = useState(false);
     const [numberInput, setIsANumberInput] = useState(false);
-    const [handleFirstQuestion, setHandleFirstQuestion] = useState(true);
+    const [handleZerothQuestion, setHandleZerothQuestion] = useState(true);
+
+    const [handleFirstQuestion, setHandleFirstQuestion] = useState(false);
     const [handleSecondQuestion, setHandleSecondQuestion] = useState(false);
     const [handleThirdQuestion, setHandleThirdQuestion] = useState(false);
     const [handleForthQuestion, setHandleForthQuestion] = useState(false);
     const [handleFifthQuestion, setHandleFifthQuestion] = useState(false);
     const [handleSixthQuestion, setHandleSixthQuestion] = useState(false);
-
+    const [isOrganisation, setIsOrganisation] = useState(false);
 
     // useEffect(() => {
     //     const fetchConversation = async () => {
@@ -309,8 +311,49 @@ const Chatbot = () => {
 
         } else {
             setIsLoading(false);
+            if (handleZerothQuestion) {
+                if (input.trim().toLowerCase() === "individual") {
+                    bookingIndex = bookingIndex + 1
 
-            if (handleFirstQuestion) {
+                    setIsOrganisation(false)
+                    setInput('')
+                    setHandleFirstQuestion(true)
+                    setHandleThirdQuestion(false)
+                    setHandleForthQuestion(false)
+                    setHandleSecondQuestion(false)
+                    setHandleFifthQuestion(false)
+                    setHandleSixthQuestion(false)
+                    setHandleZerothQuestion(false)
+                } else if (input.trim().toLowerCase() === "organisation") {
+                    bookingIndex = bookingIndex + 1
+
+                    setIsOrganisation(true)
+
+                    setConversation(prev => [...prev, {
+                        sender: 'bot',
+                        text: "Congo, you are eligible for a discount of 5%."
+                    }, {
+                        sender: 'bot',
+                        text: bookingQuestions[bookingIndex]
+                    }]);
+                    setInput('')
+                    setHandleFirstQuestion(true)
+                    setHandleThirdQuestion(false)
+                    setHandleForthQuestion(false)
+                    setHandleSecondQuestion(false)
+                    setHandleFifthQuestion(false)
+                    setHandleSixthQuestion(false)
+                    setHandleZerothQuestion(false)
+
+                } else {
+                    setConversation(prev => [...prev, {
+                        sender: 'bot',
+                        text: "I cannot understand. Please try again."
+                    }]);
+                }
+
+
+            } else if (handleFirstQuestion) {
                 setConversation(prev => [...prev, {
                     sender: 'user',
                     text: input
@@ -395,6 +438,8 @@ const Chatbot = () => {
                 setHandleSixthQuestion(false)
 
             } else if (handleForthQuestion) {
+                setConversation(prev => [...prev, {sender: 'user', text: input}])
+
                 const response = await fetch(
                     "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english",
                     {
@@ -445,7 +490,8 @@ const Chatbot = () => {
                 }
 
 
-            } else if (handleFirstQuestion) {
+            } else if (handleForthQuestion) {
+
 
             }
 

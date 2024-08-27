@@ -56,6 +56,7 @@ export const bookingProcessStart = [
     "Let's begin making your reservation."
 ];
 export const bookingQuestions = [
+    "Are you an individual or an organisation? Tickets price may vary accordingly.",
     "Provide your mobile number for authentication.",
     "OTP sent to the provided mobile number. Submit the Otp to continue.",
     "How many of these are for adults, children, and foreigners? \nExample -> X child, X adult, X foreigners",
