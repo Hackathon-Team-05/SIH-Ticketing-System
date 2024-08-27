@@ -721,7 +721,7 @@ const Chatbot = () => {
                 const city = input.trim().toLowerCase()
                 const statement = `List the museums which are situated in the city ${city}`
                 const result = await axios.post('http://localhost:5000/chat', {"message": statement});
-                setConversation(prev => [...prev, {sender: 'bot', text: result.data}])
+                setConversation(prev => [...prev, {sender: 'bot', text: result.data.response}])
 
                 console.log(result.data.response)
 
