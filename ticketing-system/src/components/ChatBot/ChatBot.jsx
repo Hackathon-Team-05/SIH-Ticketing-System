@@ -520,7 +520,7 @@ const Chatbot = () => {
 
 
             } else if (handleFifthQuestion) {
-                bookingIndex = bookingIndex + 1
+
                 const finalNamesAdult = []
                 const names = extractNames(input.toUpperCase())
                 for (let i = 1; i < names.length; i++) {
@@ -531,23 +531,50 @@ const Chatbot = () => {
                     }
 
                 }
-                setAdultNames(finalNamesAdult)
-                console.log(finalNamesAdult)
-                setInput('')
+                if (finalNamesAdult.length === noOfAdults) {
+                    bookingIndex = bookingIndex + 1
+                    setAdultNames(finalNamesAdult)
+                    console.log(finalNamesAdult)
+                    setInput('')
 
-                setHandleFirstQuestion(false)
-                setHandleThirdQuestion(false)
-                setHandleSeventhQuestion(false)
+                    setHandleFirstQuestion(false)
+                    setHandleThirdQuestion(false)
+                    setHandleSeventhQuestion(false)
 
-                setHandleForthQuestion(false)
-                setHandleSecondQuestion(false)
-                setHandleFifthQuestion(false)
-                setHandleSixthQuestion(true)
+                    setHandleForthQuestion(false)
+                    setHandleSecondQuestion(false)
+                    setHandleFifthQuestion(false)
+                    setHandleSixthQuestion(true)
 
-                setConversation(prevState => [...prevState, {
-                    sender: 'bot',
-                    text: bookingQuestions[bookingIndex]
-                }])
+                    setConversation(prevState => [...prevState, {
+                        sender: 'bot',
+                        text: bookingQuestions[bookingIndex]
+                    }])
+                } else if (input.trim().toLowerCase() === "skip") {
+                    bookingIndex = bookingIndex + 1
+                    setInput('')
+
+                    setHandleFirstQuestion(false)
+                    setHandleThirdQuestion(false)
+                    setHandleSeventhQuestion(false)
+
+                    setHandleForthQuestion(false)
+                    setHandleSecondQuestion(false)
+                    setHandleFifthQuestion(false)
+                    setHandleSixthQuestion(true)
+
+                    setConversation(prevState => [...prevState, {
+                        sender: 'bot',
+                        text: bookingQuestions[bookingIndex]
+                    }])
+                } else {
+                    setConversation(prevState => [...prevState, {
+                        sender: 'bot',
+                        text: `You have two give ${noOfAdults} names. But you have given ${finalNamesAdult.length} names. Please try again.`
+                    }])
+
+                }
+
 
             } else if (handleSixthQuestion) {
                 bookingIndex = bookingIndex + 1
@@ -560,23 +587,48 @@ const Chatbot = () => {
                         console.log(e)
                     }
                 }
-                setChildNames(finalNamesChild)
-                console.log(finalNamesChild)
-                setInput('')
+                if (finalNamesChild.length === noOfChilds) {
+                    setChildNames(finalNamesChild)
+                    console.log(finalNamesChild)
+                    setInput('')
 
-                setHandleFirstQuestion(false)
-                setHandleThirdQuestion(false)
-                setHandleForthQuestion(false)
-                setHandleSecondQuestion(false)
-                setHandleFifthQuestion(false)
-                setHandleSeventhQuestion(true)
+                    setHandleFirstQuestion(false)
+                    setHandleThirdQuestion(false)
+                    setHandleForthQuestion(false)
+                    setHandleSecondQuestion(false)
+                    setHandleFifthQuestion(false)
+                    setHandleSeventhQuestion(true)
 
-                setHandleSixthQuestion(false)
+                    setHandleSixthQuestion(false)
 
-                setConversation(prevState => [...prevState, {
-                    sender: 'bot',
-                    text: bookingQuestions[bookingIndex]
-                }])
+                    setConversation(prevState => [...prevState, {
+                        sender: 'bot',
+                        text: bookingQuestions[bookingIndex]
+                    }])
+                } else if (input.trim().toLowerCase() === "skip") {
+                    bookingIndex = bookingIndex + 1
+                    setInput('')
+
+                    setHandleFirstQuestion(false)
+                    setHandleThirdQuestion(false)
+                    setHandleForthQuestion(false)
+                    setHandleSecondQuestion(false)
+                    setHandleFifthQuestion(false)
+                    setHandleSeventhQuestion(true)
+
+                    setHandleSixthQuestion(false)
+
+                    setConversation(prevState => [...prevState, {
+                        sender: 'bot',
+                        text: bookingQuestions[bookingIndex]
+                    }])
+                } else {
+                    setConversation(prevState => [...prevState, {
+                        sender: 'bot',
+                        text: `You have two give ${noOfChilds} names. But you have given ${finalNamesChild.length} names. Please try again.`
+                    }])
+                }
+
             } else if (handleSeventhQuestion) {
                 bookingIndex = bookingIndex + 1
                 const finalNamesForeigners = []
@@ -588,22 +640,46 @@ const Chatbot = () => {
                         console.log(e)
                     }
                 }
-                setForeignerNames(finalNamesForeigners)
-                console.log(finalNamesForeigners)
-                setInput('')
+                if (finalNamesForeigners.length === noOfForeigners) {
+                    setForeignerNames(finalNamesForeigners)
+                    console.log(finalNamesForeigners)
+                    setInput('')
 
-                setHandleFirstQuestion(false)
-                setHandleThirdQuestion(false)
-                setHandleForthQuestion(false)
-                setHandleSecondQuestion(false)
-                setHandleFifthQuestion(false)
-                setHandleSixthQuestion(false)
+                    setHandleFirstQuestion(false)
+                    setHandleThirdQuestion(false)
+                    setHandleForthQuestion(false)
+                    setHandleSecondQuestion(false)
+                    setHandleFifthQuestion(false)
+                    setHandleSixthQuestion(false)
 
-                setConversation(prevState => [...prevState, {
-                    sender: 'bot',
-                    text: bookingQuestions[bookingIndex]
-                }])
-                handleInquiryFinal()
+                    setConversation(prevState => [...prevState, {
+                        sender: 'bot',
+                        text: bookingQuestions[bookingIndex]
+                    }])
+                    handleInquiryFinal()
+                } else if (input.trim().toLowerCase() === "skip") {
+                    bookingIndex = bookingIndex + 1
+                    setInput('')
+
+                    setHandleFirstQuestion(false)
+                    setHandleThirdQuestion(false)
+                    setHandleForthQuestion(false)
+                    setHandleSecondQuestion(false)
+                    setHandleFifthQuestion(false)
+                    setHandleSixthQuestion(false)
+
+                    setConversation(prevState => [...prevState, {
+                        sender: 'bot',
+                        text: bookingQuestions[bookingIndex]
+                    }])
+                    handleInquiryFinal()
+                } else {
+                    setConversation(prevState => [...prevState, {
+                        sender: 'bot',
+                        text: `You have two give ${noOfForeigners} names. But you have given ${finalNamesForeigners.length} names. Please try again.`
+                    }])
+                }
+
             }
 
 
@@ -620,16 +696,27 @@ const Chatbot = () => {
         setConversation(prev => [...prev, {sender: 'bot', text: statement1}])
         let adultNameString = ""
         adultNames.forEach(adult => {
-            adultNameString += adult
+            adultNameString += adult + " "
         })
         let childNameString = ""
         childNames.forEach(child => {
-            childNameString += child
+            childNameString += child + " "
         })
         let foreignerNameString = ""
         foreignerNames.forEach(foreigner => {
-            foreignerNameString += foreigner
+            foreignerNameString += foreigner + " "
         })
+        if (adultNameString === "") {
+            adultNameString = " no one."
+        }
+        if (childNameString === "") {
+            childNameString = " no one."
+
+        }
+        if (foreignerNameString === "") {
+            foreignerNameString = " no one."
+
+        }
         let adultPlural = false
         if (noOfAdults > 1) {
             adultPlural = true
