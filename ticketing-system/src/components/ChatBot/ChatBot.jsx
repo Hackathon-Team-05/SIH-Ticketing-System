@@ -744,6 +744,7 @@ const Chatbot = () => {
 
                     setConversation(prev => [...prev, {sender: 'bot', text: "Okay. Cancelled the booking process."}])
                     setIsBookingProcess(false)
+                    setInput('')
                 }
 
             } else if (!paymentCheckout && !fetchMuseumId && !handleEighthQuestion && !handleZerothQuestion &&
