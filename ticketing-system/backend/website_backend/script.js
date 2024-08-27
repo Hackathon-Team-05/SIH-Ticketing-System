@@ -79,7 +79,32 @@ app.get('/api/prices', (req, res) => {
         res.json(row);
     });
 });
-const conversationFilePath = path.join(__dirname, '../conversation_history.json'); // Adjusted path
+
+app.get('/api/fetch_price/:museumId', (req, res) => {
+    const museumId = req.params.museumId;
+
+    if (!museumId) {
+        return res.status(400).send({error: 'museum_id is required'});
+    }
+
+    const query = `
+        SELECT adult_price, child_price, foreigner_price
+        FROM museums
+        WHERE id = ?;`;
+
+    db.get(query, [museumId], (err, row) => {
+        if (err) {
+            return res.status(500).json({error: err.message});
+        }
+        if (!row) {
+            console.log("not found")
+            return res.status(404).json({error: `Item not found IN database {${museumId}}`});
+        }
+        res.json(row);
+    });
+});
+
+const conversationFilePath = path.join(__dirname, '../conversation_history.json');
 
 app.get('/api/conversation', (req, res) => {
     fs.readFile(conversationFilePath, 'utf8', (err, data) => {
