@@ -717,11 +717,12 @@ const Chatbot = () => {
                 }
 
             } else if (handleEighthQuestion) {
-
+                setInput('')
                 const city = input.trim().toLowerCase()
-                const statement = `List the museums which are situated in the city ${city}`
+                const statement = `List the museums which are situated in the city ${city} with their respective museum id.`
                 const result = await axios.post('http://localhost:5000/chat', {"message": statement});
                 setConversation(prev => [...prev, {sender: 'bot', text: result.data.response}])
+                setConversation(prev => [...prev, {sender: 'bot', text: "Reply the museum id, that you want to book."}])
 
                 console.log(result.data.response)
 
