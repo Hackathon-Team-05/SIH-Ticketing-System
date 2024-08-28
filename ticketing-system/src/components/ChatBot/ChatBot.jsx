@@ -255,7 +255,7 @@ const Chatbot = () => {
             setConversation(newConversation);
             const query = await isQueryQuestion(input)
 
-            if (query === TICKET_BOOK_QUERY_ || query === GENERAL_INQUIRY_) {
+            if (query === TICKET_BOOK_QUERY_) {
                 try {
                     const bookingProcessStartStatement = bookingProcessStart
                     const randomIndex = Math.floor(Math.random() * bookingProcessStartStatement.length);
@@ -263,7 +263,7 @@ const Chatbot = () => {
                     setInput('')
 
                     const result = await axios.post(`http://localhost:${chatbotBackend}/chat`, {"message": input});
-                    setConversation(prev => [...prev, {sender: 'bot', text: result.data.response}, {
+                    setConversation(prev => [...prev, {
                         sender: 'bot',
                         text: sentence
                     }, {sender: 'bot', text: bookingQuestions[bookingIndex]}]);
@@ -277,6 +277,10 @@ const Chatbot = () => {
                     setIsLoading(false)
 
                 }
+            } else if (query === GENERAL_INQUIRY_) {
+                const result = await axios.post(`http://localhost:${chatbotBackend}/chat`, {"message": input});
+                setConversation(prev => [...prev, {sender: 'bot', text: result.data.response}])
+                setIsLoading(false)
             } else if (query === GREETINGS_) {
                 try {
 
