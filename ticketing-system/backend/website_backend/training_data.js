@@ -1,4 +1,3 @@
-
 const {
     MUSEUM_TICKET_BOOK_QUERY,
     GENERAL_INQUIRY,
@@ -20,6 +19,7 @@ const trainingData = [
     {text: "Tell me about the museum", intent: GENERAL_INQUIRY},
     {text: "What are the top museums?", intent: GENERAL_INQUIRY},
     {text: "Are there any popular museums?", intent: GENERAL_INQUIRY},
+    {text: "is there ny booking for ?", intent: GENERAL_INQUIRY},
 
 
     {text: "Hello", intent: GREETINGS},

@@ -231,6 +231,7 @@ const Chatbot = () => {
     }
 
     const handleSendMessage = async (message) => {
+        setInput('')
         if (isBookingProcessStarted === false) {
             setIsLoading(true);
 
