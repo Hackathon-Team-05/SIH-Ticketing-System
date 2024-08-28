@@ -298,7 +298,7 @@ const Chatbot = () => {
 
                     const conversationHistory = [
                         "User:Keep in mind that you are a e-ticketing chat bot for National Museum tickets of India. " +
-                        "Your name is Ticket Aarakshan Mitra. You help people to book their national museum tickets.",
+                        "Your name is SangraM AI. You help people to book their national museum tickets.",
                         "Assistant: Sure, I’d be happy to help!",
 
                     ];
