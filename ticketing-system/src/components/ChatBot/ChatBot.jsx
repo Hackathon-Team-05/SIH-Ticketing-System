@@ -19,6 +19,7 @@ import axios from "axios";
 import nlp from 'compromise';
 import SpeakerButton from "./SpeakerButton.jsx";
 import {GENERAL_INQUIRY, GREETINGS, MUSEUM_TICKET_BOOK_QUERY} from "./query_constants";
+import LanguageButton from "./LanguageButton";
 
 let bookingIndex = 0;
 let backendPort = 8080
@@ -232,8 +233,9 @@ const Chatbot = () => {
 
     const handleSendMessage = async (message) => {
         setInput('')
+        if (message.trim() === '') return;
         if (isBookingProcessStarted === false) {
-            setIsLoading(true);
+
 
             if (enterTicketNumber) {
                 if (checkValidTicketStructure(enterTicketNumber)) {
@@ -250,8 +252,8 @@ const Chatbot = () => {
                 return;
             }
 
-            if (message.trim() === '') return;
 
+            setIsLoading(true);
             const newConversation = prev => [...prev, {sender: 'user', text: message}];
             setConversation(newConversation);
             const query = await isQueryQuestion(message)
@@ -890,6 +892,14 @@ const Chatbot = () => {
                                 </div>
                                 <div className={'messaging'}>
                                     <div className="msgBtnBox">
+                                        <Button onClick={() => {
+                                            handleSendMessage(input)
+                                        }}
+                                                type="primary"
+                                                shape="circle"
+                                                icon={<LanguageButton style={{color: 'black'}}/>}
+                                                style={{backgroundColor: '#ffffff', borderColor: '#007bff'}}
+                                        />
                                         <input
                                             className="message-input"
                                             id="message-input"
