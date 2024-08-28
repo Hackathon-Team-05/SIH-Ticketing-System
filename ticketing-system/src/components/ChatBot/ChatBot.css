@@ -34,7 +34,7 @@
 .gradient-border-up {
     width: 100%;
     height: 100%;
-    border: #8600f4 2px solid;
+    border: #8600f4 5px solid;
     background-image: url("../../../public/assets/ChatBot/culture-2.jpeg");
     background-size: cover;
     background-position: center;
@@ -89,7 +89,8 @@
     margin: 5px;
     max-width: 80%;
     word-wrap: break-word;
-    display: flex;gap: 20px;
+    display: flex;
+    gap: 20px;
     align-items: center;
     justify-content: center;
     font-size: 14px;
@@ -133,7 +134,7 @@
     flex: 1;
     gap: 5px;
     background-color: white;
-    border: #aa00fd 2px solid;
+    border: #8200f3 5px solid;
     border-radius: 20px;
     align-items: center;
 }
@@ -162,15 +163,30 @@
     height: 100%;
     justify-content: center;
     align-items: center;
-    flex-direction: row;
+    flex-direction: COLUMN;
 
+}
+
+.messaging {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 10px;
+    flex-direction: row;
 }
 
 .shortcuts {
     display: flex;
-    gap: 10px;
+    gap: 3px;
     justify-content: center;
     align-items: center;
+}
+
+@media (max-width: 768px) {
+    .shortcuts {
+        flex-direction: column;
+    }
 }
 
 .shortcut_btn {

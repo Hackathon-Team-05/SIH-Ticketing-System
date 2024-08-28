@@ -854,17 +854,10 @@ const Chatbot = () => {
                     <div className="gradient-border-up">
                         <div className={'ticket-title-div'}>
                             <img src="/assets/ChatBot/ncsm.png" width={100} height={100} alt="Logo 1"/>
-                            <h3><p>Ticket Aarakshan Mitra</p>टिकट आरक्षण मित्र</h3>
+                            <h3><p>SangraM AI</p>संग्राम ए.आई</h3>
                             <img src="/assets/ChatBot/logo-ministry.png" width={100} height={100} alt="Logo 2"/>
                         </div>
-                        <div className={'shortcuts'}>
-                            <button onClick={handleTicketStatus} className="shortcut_btn">Check ticket status
-                            </button>
-                            <button onClick={handleMyBookings} className="shortcut_btn">My bookings</button>
-                            <button onClick={handleCheckAvailability} className="shortcut_btn">Check Availability
-                            </button>
-                            <button onClick={handleStartBooking} className="shortcut_btn">Book my ticket now</button>
-                        </div>
+
                         <div className="scrollable">
                             <div className="message-container" ref={messageContainerRef}>
                                 {conversation.map((msg, index) => (
@@ -885,34 +878,47 @@ const Chatbot = () => {
                                 ))}
                             </div>
                             <div className={"chatbot-footer"}>
-                                <div className="msgBtnBox">
-                                    <input
-                                        className="message-input"
-                                        id="message-input"
-                                        placeholder={hintText}
-                                        type={numberInput ? "number" : "text"}
-                                        value={input}
-                                        min={0}
-                                        onChange={handleInputChange}
-                                    />
-                                    {!isLoading && (
-                                        <Button onClick={() => {
-                                            handleSendMessage(input)
-                                        }}
-                                                type="primary"
-                                                shape="circle"
-                                                icon={<SendButton style={{color: 'black'}}/>}
-                                                style={{backgroundColor: '#ffffff', borderColor: '#007bff'}}
-                                        />
-                                    )}
-                                    {isLoading && (<RingLoader size={32} color={"#8b00f6"}/>)}
+                                <div className={'shortcuts'}>
+                                    <button onClick={handleTicketStatus} className="shortcut_btn">Check ticket status
+                                    </button>
+                                    <button onClick={handleMyBookings} className="shortcut_btn">My bookings</button>
+                                    <button onClick={handleCheckAvailability} className="shortcut_btn">Check
+                                        Availability
+                                    </button>
+                                    <button onClick={handleStartBooking} className="shortcut_btn">Book my ticket now
+                                    </button>
                                 </div>
-                                <Button onClick={handleMicrophoneClick}
-                                        type="primary"
-                                        shape="circle"
-                                        icon={<MicrophoneButton style={{color: 'black'}}/>}
-                                        style={{backgroundColor: '#ffffff', borderColor: '#007bff'}}
-                                />
+                                <div className={'messaging'}>
+                                    <div className="msgBtnBox">
+                                        <input
+                                            className="message-input"
+                                            id="message-input"
+                                            placeholder={hintText}
+                                            type={numberInput ? "number" : "text"}
+                                            value={input}
+                                            min={0}
+                                            onChange={handleInputChange}
+                                        />
+                                        {!isLoading && (
+                                            <Button onClick={() => {
+                                                handleSendMessage(input)
+                                            }}
+                                                    type="primary"
+                                                    shape="circle"
+                                                    icon={<SendButton style={{color: 'black'}}/>}
+                                                    style={{backgroundColor: '#ffffff', borderColor: '#007bff'}}
+                                            />
+                                        )}
+                                        {isLoading && (<RingLoader size={32} color={"#8b00f6"}/>)}
+                                    </div>
+                                    <Button onClick={handleMicrophoneClick}
+                                            type="primary"
+                                            shape="circle"
+                                            icon={<MicrophoneButton style={{color: 'black'}}/>}
+                                            style={{backgroundColor: '#ffffff', borderColor: '#007bff'}}
+                                    />
+                                </div>
+
 
                             </div>
 
