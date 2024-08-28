@@ -23,6 +23,7 @@ import {GENERAL_INQUIRY, GREETINGS, MUSEUM_TICKET_BOOK_QUERY} from "./query_cons
 let bookingIndex = 0;
 
 const Chatbot = () => {
+    const [organisationDiscount, setOrganisationDiscount] = useState(5)
     const [input, setInput] = useState('');
     const [conversation, setConversation] = useState([]);
     const [conversationHistory, setConversationHistory] = useState([]);
@@ -355,7 +356,7 @@ const Chatbot = () => {
 
                     setConversation(prev => [...prev, {
                         sender: 'bot',
-                        text: "Congo, you are eligible for a discount of 5%."
+                        text: `Congratulations, you are eligible for a discount of ${organisationDiscount}%.`
                     }, {
                         sender: 'bot',
                         text: bookingQuestions[bookingIndex]
@@ -660,7 +661,7 @@ const Chatbot = () => {
                 let totalMoney = totalAdultPrice + totalChildPrice + totalForeignerPrice
 
                 if (isOrganisation) {
-                    totalMoney = totalMoney - ((5 / 100) * totalMoney)
+                    totalMoney = totalMoney - ((organisationDiscount / 100) * totalMoney)
                 }
 
                 setConversation(prev => [...prev, {
@@ -694,9 +695,9 @@ const Chatbot = () => {
                     setConversation(prev => [...prev, {
                         sender: 'bot', text: `
                 
-                ${isOrganisation ? "Additional 5% discount is added for your organisation." : ""}
+                ${isOrganisation ? `Additional ${organisationDiscount}% discount is added for your organisation.` : ""}
                 
-                Proceed to payments?
+                Proceed to payments and book the ticket?
                 
                 
                 `
@@ -739,6 +740,8 @@ const Chatbot = () => {
 
                     setConversation(prev => [...prev, {sender: 'bot', text: 'Redirecting to the payments page...'}])
                     setInput('')
+                    //response
+
                 } else {
 
 
@@ -760,81 +763,6 @@ const Chatbot = () => {
 
         }
 
-
-    }
-
-    function handleInquiryFinal() {
-        let statement1 =
-            "Please verify your details to continue to the payment." +
-            `You are an ${isOrganisation ? "organisation" : "individual"}. You have booked ${totalTickets} tickets. In which ${noOfAdults} adult tickets, ${noOfChildren} children tickets, ${noOfForeigners} foreigner tickets are there.`
-
-        setConversation(prev => [...prev, {sender: 'bot', text: statement1}])
-        let adultNameString = ""
-        adultNames.forEach(adult => {
-            adultNameString += adult + " "
-        })
-        let childNameString = ""
-        childNames.forEach(child => {
-            childNameString += child + " "
-        })
-        let foreignerNameString = ""
-        foreignerNames.forEach(foreigner => {
-            foreignerNameString += foreigner + " "
-        })
-        if (adultNameString === "") {
-            adultNameString = " no one."
-        }
-        if (childNameString === "") {
-            childNameString = " no one."
-
-        }
-        if (foreignerNameString === "") {
-            foreignerNameString = " no one."
-
-        }
-        let adultPlural = false
-        if (noOfAdults > 1) {
-            adultPlural = true
-        }
-        let childPlural = false
-        if (noOfChildren > 1) {
-            childPlural = true
-        }
-        let foreignerPlural = false
-        if (noOfForeigners > 1) {
-            foreignerPlural = true
-        }
-        let adultString = ""
-        let childString = ""
-        let foreignerString = ""
-        if (adultPlural === false) {
-            adultString = "Adult is "
-        } else {
-            adultString = "Adults are "
-
-        }
-        if (childPlural === false) {
-            childString = "Child is "
-        } else {
-            childString = "Children are "
-
-        }
-        if (foreignerPlural === false) {
-            foreignerString = "Foreigner is "
-        } else {
-            foreignerString = "Foreigners are "
-
-        }
-
-        let statement2 = `
-        ${adultString} ${adultNameString}\n
-        ${childString} ${childNameString}\n
-        ${foreignerString} ${foreignerNameString}`
-        setConversation(prev => [...prev, {sender: 'bot', text: `Your mobile number is ${phoneNumber}.`}])
-        setConversation(prev => [...prev, {sender: 'bot', text: statement2}, {
-            sender: "bot",
-            text: 'Are the above details correct?'
-        }])
 
     }
 
