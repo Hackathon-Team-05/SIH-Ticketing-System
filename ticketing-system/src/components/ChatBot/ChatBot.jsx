@@ -26,6 +26,7 @@ let chatbotBackend = 5000
 const GENERAL_INQUIRY_ = 0
 const TICKET_BOOK_QUERY_ = 1
 const GREETINGS_ = 2
+let isBookingProcessStarted = false
 const Chatbot = () => {
     const [organisationDiscount, setOrganisationDiscount] = useState(5)
     const [input, setInput] = useState('');
@@ -37,7 +38,7 @@ const Chatbot = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [hintText, setHintText] = useState("Type your message here...");
     const [enterTicketNumber, setEnterTicketNumber] = useState(false);
-    const [isBookingProcess, setIsBookingProcess] = useState(false);
+
     const [numberInput, setIsANumberInput] = useState(false);
 
     const [hasMuseum, setHasMuseum] = useState(false);
@@ -153,18 +154,17 @@ const Chatbot = () => {
         console.log(data)
         if (data.intent === GENERAL_INQUIRY) {
 
-            console.log("This is a general inquiry")
+
             return GENERAL_INQUIRY_
         } else if (data.intent === GREETINGS) {
-            console.log("This is a greeting")
+
             return GREETINGS_
 
 
         } else if (data.intent === MUSEUM_TICKET_BOOK_QUERY) {
-            console.log("This is a book ticket command")
 
-            setIsBookingProcess(true)
 
+            isBookingProcessStarted = true
 
             return TICKET_BOOK_QUERY_
         }
@@ -230,8 +230,8 @@ const Chatbot = () => {
         return matches ? matches : [];
     }
 
-    const handleSendMessage = async () => {
-        if (isBookingProcess === false) {
+    const handleSendMessage = async (message) => {
+        if (isBookingProcessStarted === false) {
             setIsLoading(true);
 
             if (enterTicketNumber) {
@@ -249,20 +249,21 @@ const Chatbot = () => {
                 return;
             }
 
-            if (input.trim() === '') return;
+            if (message.trim() === '') return;
 
-            const newConversation = prev => [...prev, {sender: 'user', text: input}];
+            const newConversation = prev => [...prev, {sender: 'user', text: message}];
             setConversation(newConversation);
-            const query = await isQueryQuestion(input)
+            const query = await isQueryQuestion(message)
 
             if (query === TICKET_BOOK_QUERY_) {
                 try {
+                    console.log("This is a ticket book intent")
                     const bookingProcessStartStatement = bookingProcessStart
                     const randomIndex = Math.floor(Math.random() * bookingProcessStartStatement.length);
                     const sentence = bookingProcessStartStatement[randomIndex];
                     setInput('')
 
-                    const result = await axios.post(`http://localhost:${chatbotBackend}/chat`, {"message": input});
+                    const result = await axios.post(`http://localhost:${chatbotBackend}/chat`, {"message": message});
                     setConversation(prev => [...prev, {
                         sender: 'bot',
                         text: sentence
@@ -278,10 +279,14 @@ const Chatbot = () => {
 
                 }
             } else if (query === GENERAL_INQUIRY_) {
-                const result = await axios.post(`http://localhost:${chatbotBackend}/chat`, {"message": input});
+                console.log("This is a general inquiry intent")
+
+                const result = await axios.post(`http://localhost:${chatbotBackend}/chat`, {"message": message});
                 setConversation(prev => [...prev, {sender: 'bot', text: result.data.response}])
                 setIsLoading(false)
             } else if (query === GREETINGS_) {
+                console.log("This is a greetings intent")
+
                 try {
 
 
@@ -298,7 +303,7 @@ const Chatbot = () => {
                     ];
 
 
-                    const inputText = [...conversationHistory, `User: ${formatMessage(input)}\nAssistant:`].join("\n");
+                    const inputText = [...conversationHistory, `User: ${formatMessage(message)}\nAssistant:`].join("\n");
 
                     const payload = {
                         inputs: inputText
@@ -350,11 +355,11 @@ const Chatbot = () => {
             setIsLoading(false);
             setConversation(prev => [...prev, {
                 sender: 'user',
-                text: input
+                text: message
             }])
 
             if (handleZerothQuestion) {
-                if (input.trim().toLowerCase() === "individual") {
+                if (message.trim().toLowerCase() === "individual") {
                     bookingIndex = bookingIndex + 1
 
                     setIsOrganisation(false)
@@ -365,7 +370,7 @@ const Chatbot = () => {
                         sender: 'bot',
                         text: bookingQuestions[bookingIndex]
                     }]);
-                } else if (input.trim().toLowerCase() === "organisation") {
+                } else if (message.trim().toLowerCase() === "organisation") {
                     bookingIndex = bookingIndex + 1
 
                     setIsOrganisation(true)
@@ -391,9 +396,9 @@ const Chatbot = () => {
 
             } else if (handleFirstQuestion) {
 
-                if (input.trim().length === 10) {
-                    if (handleSendOtp(input)) {
-                        setPhoneNumber(input)
+                if (message.trim().length === 10) {
+                    if (handleSendOtp(message)) {
+                        setPhoneNumber(message)
                         bookingIndex += 1
 
                         setInput('')
@@ -417,7 +422,7 @@ const Chatbot = () => {
 
             } else if (handleSecondQuestion) {
 
-                if (handleCheckOtp(input)) {
+                if (handleCheckOtp(message)) {
                     bookingIndex = bookingIndex + 1
 
 
@@ -443,7 +448,7 @@ const Chatbot = () => {
             } else if (handleThirdQuestion) {
 
 
-                const json = parseTicketInfo(input)
+                const json = parseTicketInfo(message)
 
                 console.log(json)
                 const adult = Number(json.adults)
@@ -473,7 +478,7 @@ const Chatbot = () => {
                             "Content-Type": "application/json",
                         },
                         method: "POST",
-                        body: JSON.stringify(input),
+                        body: JSON.stringify(message),
                     }
                 );
                 const result = await response.json();
@@ -515,7 +520,7 @@ const Chatbot = () => {
             } else if (handleFifthQuestion) {
 
                 const finalNamesAdult = []
-                const names = extractNames(input.toUpperCase())
+                const names = extractNames(message.toUpperCase())
                 for (let i = 1; i < names.length; i++) {
                     try {
                         finalNamesAdult.push(names[i].trim())
@@ -537,7 +542,7 @@ const Chatbot = () => {
                         sender: 'bot',
                         text: bookingQuestions[bookingIndex]
                     }])
-                } else if (input.trim().toLowerCase() === "skip") {
+                } else if (message.trim().toLowerCase() === "skip") {
                     bookingIndex = bookingIndex + 1
                     setInput('')
 
@@ -560,7 +565,7 @@ const Chatbot = () => {
             } else if (handleSixthQuestion) {
                 bookingIndex = bookingIndex + 1
                 const finalNamesChild = []
-                const names = extractNames(input.toUpperCase())
+                const names = extractNames(message.toUpperCase())
                 for (let i = 1; i < names.length; i++) {
                     try {
                         finalNamesChild.push(names[i].trim())
@@ -579,7 +584,7 @@ const Chatbot = () => {
                         sender: 'bot',
                         text: bookingQuestions[bookingIndex]
                     }])
-                } else if (input.trim().toLowerCase() === "skip") {
+                } else if (message.trim().toLowerCase() === "skip") {
                     bookingIndex = bookingIndex + 1
                     setInput('')
 
@@ -599,7 +604,7 @@ const Chatbot = () => {
             } else if (handleSeventhQuestion) {
 
                 const finalNamesForeigners = []
-                const names = extractNames(input.toUpperCase())
+                const names = extractNames(message.toUpperCase())
                 for (let i = 1; i < names.length; i++) {
                     try {
                         finalNamesForeigners.push(names[i].trim())
@@ -621,7 +626,7 @@ const Chatbot = () => {
                         text: bookingQuestions[bookingIndex]
                     }])
 
-                } else if (input.trim().toLowerCase() === "skip") {
+                } else if (message.trim().toLowerCase() === "skip") {
                     bookingIndex = bookingIndex + 1
                     setInput('')
 
@@ -642,7 +647,7 @@ const Chatbot = () => {
 
             } else if (handleEighthQuestion) {
                 setInput('')
-                const city = input.trim().toLowerCase()
+                const city = message.trim().toLowerCase()
                 const statement = `List the museums which are situated in the city ${city} with their respective museum id.`
                 const result = await axios.post(`http://localhost:${chatbotBackend}/chat`, {"message": statement});
                 setConversation(prev => [...prev, {sender: 'bot', text: result.data.response}])
@@ -655,7 +660,7 @@ const Chatbot = () => {
 
             } else if (fetchMuseumId) {
 
-                const museumId = input.trim()
+                const museumId = message.trim()
                 const result = await axios.get(`http://localhost:${backendPort}/api/fetch_price/${museumId}`)
                 console.log(result.data)
                 let adultPrice = null
@@ -706,7 +711,8 @@ const Chatbot = () => {
                     
                     `
                     }])
-                    setIsBookingProcess(false)
+
+                    isBookingProcessStarted = false
                 } else {
                     setConversation(prev => [...prev, {
                         sender: 'bot', text: `
@@ -723,7 +729,7 @@ const Chatbot = () => {
 
             } else if (paymentCheckout) {
 
-                const answerForCheckout = input.trim()
+                const answerForCheckout = message.trim()
                 const response = await fetch(
                     "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english",
                     {
@@ -762,7 +768,7 @@ const Chatbot = () => {
 
 
                     setConversation(prev => [...prev, {sender: 'bot', text: "Okay. Cancelled the booking process."}])
-                    setIsBookingProcess(false)
+                    isBookingProcessStarted = false
                     setInput('')
                 }
 
@@ -813,8 +819,14 @@ const Chatbot = () => {
         // todo
     }
 
-    function handleRefundStatus() {
-        // todo
+    function handleStartBooking() {
+
+        handleSendMessage("book my ticket").then(r => {
+
+            console.log("started:" + isBookingProcessStarted)
+
+        })
+
     }
 
     // // Save conversation history to backend
@@ -850,7 +862,7 @@ const Chatbot = () => {
                             <button onClick={handleMyBookings} className="shortcut_btn">My bookings</button>
                             <button onClick={handleCheckAvailability} className="shortcut_btn">Check Availability
                             </button>
-                            <button onClick={handleRefundStatus} className="shortcut_btn">Refund Status</button>
+                            <button onClick={handleStartBooking} className="shortcut_btn">Book my ticket now</button>
                         </div>
                         <div className="scrollable">
                             <div className="message-container" ref={messageContainerRef}>
@@ -883,7 +895,9 @@ const Chatbot = () => {
                                         onChange={handleInputChange}
                                     />
                                     {!isLoading && (
-                                        <Button onClick={handleSendMessage}
+                                        <Button onClick={() => {
+                                            handleSendMessage(input)
+                                        }}
                                                 type="primary"
                                                 shape="circle"
                                                 icon={<SendButton style={{color: 'black'}}/>}
