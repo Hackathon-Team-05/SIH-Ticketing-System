@@ -20,6 +20,7 @@ import nlp from 'compromise';
 import SpeakerButton from "./SpeakerButton.jsx";
 import {GENERAL_INQUIRY, GREETINGS, MUSEUM_TICKET_BOOK_QUERY} from "./query_constants";
 import LanguageButton from "./LanguageButton";
+import AlertDialog from "./AlertDialog";
 
 let bookingIndex = 0;
 let backendPort = 8080
@@ -68,7 +69,58 @@ const Chatbot = () => {
     const [childNames, setChildNames] = useState([]);
     const [foreignerNames, setForeignerNames] = useState([]);
     const [totalTickets, setTotal] = useState(0);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [languageCode, setLanguageCode] = useState('en');
+    const [textToTranslate, setTextToTranslate] = useState('');
 
+
+    const handleOpenDialog = () => {
+        setIsDialogOpen(true);
+    };
+
+    const handleCloseDialog = () => {
+        setIsDialogOpen(false);
+    };
+
+    const onLanguageChange = async (language) => {
+        setLanguageCode(language)
+
+        console.log(language)
+
+    }
+
+    async function translateIfRequired(text) {
+        if (languageCode === 'en') {
+            return text
+        }
+        try {
+            const RAPIDAPI_KEY = '22560c3fa1mshbed057c1c31ce39p1bcdedjsn5069492c2377';
+            const RAPIDAPI_HOST = 'microsoft-translator-text.p.rapidapi.com';
+            const response = await axios({
+                method: 'POST',
+                url: `https://${RAPIDAPI_HOST}/translate`,
+                params: {
+                    'api-version': '3.0',
+                    from: 'en',
+                    to: languageCode,
+                },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-RapidAPI-Key': RAPIDAPI_KEY,
+                    'X-RapidAPI-Host': RAPIDAPI_HOST,
+                },
+                data: [{
+                    text: textToTranslate
+                }]
+            });
+
+            const translation = response.data[0].translations[0].text;
+            console.log(`Translated text: ${translation}`);
+        } catch (error) {
+            console.error('Error translating text:', error);
+        }
+
+    }
 
     // useEffect(() => {
     //     const fetchConversation = async () => {
@@ -101,7 +153,7 @@ const Chatbot = () => {
         if (welcomeMessage) {
             setConversation(prev => [
                 ...prev,
-                {sender: 'bot', text: welcomeMessage}
+                {sender: 'bot', text: translateIfRequired(welcomeMessage)}
             ]);
         }
     }, [welcomeMessage]);
@@ -246,7 +298,7 @@ const Chatbot = () => {
                     const ticketStructurePrompts = ticketStructurePrompt;
                     const randomIndex = Math.floor(Math.random() * ticketStructurePrompts.length);
                     const text = ticketStructurePrompts[randomIndex];
-                    setConversation(prev => [...prev, {sender: 'bot', text: text}]);
+                    setConversation(prev => [...prev, {sender: 'bot', text: translateIfRequired(text)}]);
                 }
                 setIsLoading(false);
                 return;
@@ -254,7 +306,7 @@ const Chatbot = () => {
 
 
             setIsLoading(true);
-            const newConversation = prev => [...prev, {sender: 'user', text: message}];
+            const newConversation = prev => [...prev, {sender: 'user', text: translateIfRequired(message)}];
             setConversation(newConversation);
             const query = await isQueryQuestion(message)
 
@@ -266,11 +318,10 @@ const Chatbot = () => {
                     const sentence = bookingProcessStartStatement[randomIndex];
                     setInput('')
 
-                    const result = await axios.post(`http://localhost:${chatbotBackend}/chat`, {"message": message});
                     setConversation(prev => [...prev, {
                         sender: 'bot',
-                        text: sentence
-                    }, {sender: 'bot', text: bookingQuestions[bookingIndex]}]);
+                        text: translateIfRequired(sentence)
+                    }, {sender: 'bot', text: translateIfRequired(bookingQuestions[bookingIndex])}]);
 
                     // setIsANumberInput(true)
                     setIsLoading(false)
@@ -285,7 +336,7 @@ const Chatbot = () => {
                 console.log("This is a general inquiry intent")
 
                 const result = await axios.post(`http://localhost:${chatbotBackend}/chat`, {"message": message});
-                setConversation(prev => [...prev, {sender: 'bot', text: result.data.response}])
+                setConversation(prev => [...prev, {sender: 'bot', text: translateIfRequired(result.data.response)}])
                 setIsLoading(false)
             } else if (query === GREETINGS_) {
                 console.log("This is a greetings intent")
@@ -318,7 +369,7 @@ const Chatbot = () => {
                             console.log(response.data);
                             setConversation(prev => [...prev, {
                                 sender: 'bot',
-                                text: response.data[0].generated_text
+                                text: translateIfRequired(response.data[0].generated_text)
                             }]);
                             setIsLoading(false);
 
@@ -342,13 +393,13 @@ const Chatbot = () => {
 
                     setConversation(prev => [...prev, {
                         sender: 'bot',
-                        text: 'Sorry, I encountered an error. Please refresh the page.'
+                        text: translateIfRequired('Sorry, I encountered an error. Please refresh the page.')
                     }]);
                 }
             } else {
                 setConversation(prev => [...prev, {
                     sender: 'bot',
-                    text: "I'm sorry, I didn't quite get that. Could you please rephrase your question or provide more details?"
+                    text: translateIfRequired("I'm sorry, I didn't quite get that. Could you please rephrase your question or provide more details?")
                 }]);
                 setIsLoading(false)
 
@@ -358,7 +409,7 @@ const Chatbot = () => {
             setIsLoading(false);
             setConversation(prev => [...prev, {
                 sender: 'user',
-                text: message
+                text: translateIfRequired(message)
             }])
 
             if (handleZerothQuestion) {
@@ -371,7 +422,7 @@ const Chatbot = () => {
                     setHandleFirstQuestion(true)
                     setConversation(prev => [...prev, {
                         sender: 'bot',
-                        text: bookingQuestions[bookingIndex]
+                        text: translateIfRequired(bookingQuestions[bookingIndex])
                     }]);
                 } else if (message.trim().toLowerCase() === "organisation") {
                     bookingIndex = bookingIndex + 1
@@ -380,10 +431,10 @@ const Chatbot = () => {
 
                     setConversation(prev => [...prev, {
                         sender: 'bot',
-                        text: `Congratulations, you are eligible for a discount of ${organisationDiscount}%.`
+                        text: translateIfRequired(`Congratulations, you are eligible for a discount of ${organisationDiscount}%.`)
                     }, {
                         sender: 'bot',
-                        text: bookingQuestions[bookingIndex]
+                        text: translateIfRequired(bookingQuestions[bookingIndex])
                     }]);
                     setInput('')
                     setHandleZerothQuestion(false)
@@ -392,7 +443,7 @@ const Chatbot = () => {
                 } else {
                     setConversation(prev => [...prev, {
                         sender: 'bot',
-                        text: "I cannot understand. Please try again."
+                        text: translateIfRequired("I cannot understand. Please try again.")
                     }]);
                 }
 
@@ -411,14 +462,14 @@ const Chatbot = () => {
 
                         setConversation(prev => [...prev, {
                             sender: 'bot',
-                            text: bookingQuestions[bookingIndex]
+                            text: translateIfRequired(bookingQuestions[bookingIndex])
                         }])
                     }
 
                 } else {
                     setConversation(prev => [...prev, {
                         sender: 'bot',
-                        text: 'This is not a valid phone number. Please message again.'
+                        text: translateIfRequired('This is not a valid phone number. Please message again.')
                     }])
                 }
 
@@ -435,15 +486,15 @@ const Chatbot = () => {
 
                     setConversation(prev => [...prev, {
                         sender: 'bot',
-                        text: 'OTP verified!'
+                        text: translateIfRequired('OTP verified!')
                     }, {
                         sender: 'bot',
-                        text: bookingQuestions[bookingIndex]
+                        text: translateIfRequired(bookingQuestions[bookingIndex])
                     }])
                 } else {
                     setConversation(prev => [...prev, {
                         sender: 'bot',
-                        text: 'OTP invalid!.'
+                        text: translateIfRequired('OTP invalid!.')
                     }])
                 }
 
@@ -465,7 +516,7 @@ const Chatbot = () => {
                 setNoOfAdults(adult)
                 setNoOfForeigners(foreigner)
                 setTotal(total)
-                setConversation(prev => [...prev, {sender: 'bot', text: formattedMessage}])
+                setConversation(prev => [...prev, {sender: 'bot', text: translateIfRequired(formattedMessage)}])
                 setInput('')
                 setHandleThirdQuestion(false)
                 setHandleForthQuestion(true)
@@ -508,7 +559,7 @@ const Chatbot = () => {
                     setHandleForthQuestion(false)
                     setHandleFifthQuestion(true)
 
-                    setConversation(prev => [...prev, {sender: 'bot', text: bookingQuestions[bookingIndex]}])
+                    setConversation(prev => [...prev, {sender: 'bot', text: translateIfRequired(bookingQuestions[bookingIndex])}])
                     setInput('')
                 } else {
                     setInput('')
@@ -516,7 +567,7 @@ const Chatbot = () => {
                     setHandleForthQuestion(true)
                     setHandleFifthQuestion(false)
 
-                    setConversation(prev => [...prev, {sender: 'bot', text: "Okay.Try again!"}])
+                    setConversation(prev => [...prev, {sender: 'bot', text: translateIfRequired("Okay.Try again!")}])
                 }
 
 
@@ -543,7 +594,7 @@ const Chatbot = () => {
 
                     setConversation(prevState => [...prevState, {
                         sender: 'bot',
-                        text: bookingQuestions[bookingIndex]
+                        text: translateIfRequired(bookingQuestions[bookingIndex])
                     }])
                 } else if (message.trim().toLowerCase() === "skip") {
                     bookingIndex = bookingIndex + 1
@@ -554,12 +605,12 @@ const Chatbot = () => {
 
                     setConversation(prevState => [...prevState, {
                         sender: 'bot',
-                        text: bookingQuestions[bookingIndex]
+                        text: translateIfRequired(bookingQuestions[bookingIndex])
                     }])
                 } else {
                     setConversation(prevState => [...prevState, {
                         sender: 'bot',
-                        text: `You have two give ${noOfAdults} names. But you have given ${finalNamesAdult.length} names. Please try again.`
+                        text: translateIfRequired(`You have two give ${noOfAdults} names. But you have given ${finalNamesAdult.length} names. Please try again.`)
                     }])
 
                 }
@@ -585,7 +636,7 @@ const Chatbot = () => {
                     setHandleSeventhQuestion(true)
                     setConversation(prevState => [...prevState, {
                         sender: 'bot',
-                        text: bookingQuestions[bookingIndex]
+                        text: translateIfRequired(bookingQuestions[bookingIndex])
                     }])
                 } else if (message.trim().toLowerCase() === "skip") {
                     bookingIndex = bookingIndex + 1
@@ -595,12 +646,12 @@ const Chatbot = () => {
                     setHandleSeventhQuestion(true)
                     setConversation(prevState => [...prevState, {
                         sender: 'bot',
-                        text: bookingQuestions[bookingIndex]
+                        text: translateIfRequired(bookingQuestions[bookingIndex])
                     }])
                 } else {
                     setConversation(prevState => [...prevState, {
                         sender: 'bot',
-                        text: `You have two give ${noOfChildren} names. But you have given ${finalNamesChild.length} names. Please try again.`
+                        text: translateIfRequired(`You have two give ${noOfChildren} names. But you have given ${finalNamesChild.length} names. Please try again.`)
                     }])
                 }
 
@@ -626,7 +677,7 @@ const Chatbot = () => {
 
                     setConversation(prevState => [...prevState, {
                         sender: 'bot',
-                        text: bookingQuestions[bookingIndex]
+                        text: translateIfRequired(bookingQuestions[bookingIndex])
                     }])
 
                 } else if (message.trim().toLowerCase() === "skip") {
@@ -638,13 +689,13 @@ const Chatbot = () => {
 
                     setConversation(prevState => [...prevState, {
                         sender: 'bot',
-                        text: bookingQuestions[bookingIndex]
+                        text: translateIfRequired(bookingQuestions[bookingIndex])
                     }])
 
                 } else {
                     setConversation(prevState => [...prevState, {
                         sender: 'bot',
-                        text: `You have two give ${noOfForeigners} names. But you have given ${finalNamesForeigners.length} names. Please try again.`
+                        text: translateIfRequired(`You have two give ${noOfForeigners} names. But you have given ${finalNamesForeigners.length} names. Please try again.`)
                     }])
                 }
 
@@ -653,8 +704,8 @@ const Chatbot = () => {
                 const city = message.trim().toLowerCase()
                 const statement = `List the museums which are situated in the city ${city} with their respective museum id.`
                 const result = await axios.post(`http://localhost:${chatbotBackend}/chat`, {"message": statement});
-                setConversation(prev => [...prev, {sender: 'bot', text: result.data.response}])
-                setConversation(prev => [...prev, {sender: 'bot', text: "Reply the museum id, that you want to book."}])
+                setConversation(prev => [...prev, {sender: 'bot', text: translateIfRequired(result.data.response)}])
+                setConversation(prev => [...prev, {sender: 'bot', text: translateIfRequired("Reply the museum id, that you want to book.")}])
 
                 setHandleEighthQuestion(false)
                 setFetchMuseumId(true)
@@ -689,43 +740,43 @@ const Chatbot = () => {
                 }
 
                 setConversation(prev => [...prev, {
-                    sender: 'bot', text: `
+                    sender: 'bot', text: translateIfRequired(`
                 Here are the details for the pricing of the tickets for ${result.data.name}:
                     (1). Adult: ${adultPrice != null ? adultPrice : "Not specified."}
                     (2). Child: ${childPrice != null ? childPrice : "Not specified."}
                     (3). Foreigner: ${foreignerPrice != null ? foreignerPrice : "Not specified."}
-                `
+                `)
                 }])
 
                 setConversation(prev => [...prev, {
-                    sender: 'bot', text: `
+                    sender: 'bot', text:translateIfRequired(`
                 Your total bill amount is ${totalMoney}.
                 Number of adult tickets is ${noOfAdults} which adds up to ${totalAdultPrice}.
                 Number of child tickets is ${noOfChildren} which adds up to ${totalChildPrice}.
                 Number of foreigner tickets is ${noOfForeigners} which adds up to ${totalForeignerPrice}.
 
-                `
+                `)
                 }])
                 if (totalMoney === 0) {
 
                     setConversation(prev => [...prev, {
-                        sender: 'bot', text: `Free Free Free !!! You do not need to get a ticket for ${result.data.name}
+                        sender: 'bot', text: translateIfRequired(`Free Free Free !!! You do not need to get a ticket for ${result.data.name}
                     There is a free entry. Booking process closed.
                     
-                    `
+                    `)
                     }])
 
                     isBookingProcessStarted = false
                 } else {
                     setConversation(prev => [...prev, {
-                        sender: 'bot', text: `
+                        sender: 'bot', text:translateIfRequired(`
                 
                 ${isOrganisation ? `Additional ${organisationDiscount}% discount is added for your organisation.` : ""}
                 
                 Proceed to payments and book the ticket?
                 
                 
-                `
+                `)
                     }])
                     setAskedForPaymentCheckout(true)
                 }
@@ -763,14 +814,14 @@ const Chatbot = () => {
 
                     setAskedForPaymentCheckout(false)
 
-                    setConversation(prev => [...prev, {sender: 'bot', text: 'Redirecting to the payments page...'}])
+                    setConversation(prev => [...prev, {sender: 'bot', text: translateIfRequired('Redirecting to the payments page...')}])
                     setInput('')
                     //response
 
                 } else {
 
 
-                    setConversation(prev => [...prev, {sender: 'bot', text: "Okay. Cancelled the booking process."}])
+                    setConversation(prev => [...prev, {sender: 'bot', text: translateIfRequired("Okay. Cancelled the booking process.")}])
                     isBookingProcessStarted = false
                     setInput('')
                 }
@@ -811,7 +862,7 @@ const Chatbot = () => {
         const text = ticketPrompts[randomIndex];
         setEnterTicketNumber(true);
         setHintText("Enter the ticket number...");
-        setConversation([...conversation, {sender: 'bot', text: text}]);
+        setConversation([...conversation, {sender: 'bot', text: translateIfRequired(text)}]);
     }
 
     function handleMyBookings() {
@@ -848,6 +899,10 @@ const Chatbot = () => {
     //
     //     saveConversation();
     // }, [conversation]);
+    const handleLanguageChange = () => {
+        handleOpenDialog()
+
+    }
 
     return (
         <div className="main-container">
@@ -892,9 +947,9 @@ const Chatbot = () => {
                                 </div>
                                 <div className={'messaging'}>
                                     <div className="msgBtnBox">
-                                        <Button onClick={() => {
-                                            handleSendMessage(input)
-                                        }}
+                                        <Button onClick={
+                                            handleLanguageChange
+                                        }
                                                 type="primary"
                                                 shape="circle"
                                                 icon={<LanguageButton style={{color: 'black'}}/>}
@@ -927,6 +982,8 @@ const Chatbot = () => {
                                             icon={<MicrophoneButton style={{color: 'black'}}/>}
                                             style={{backgroundColor: '#ffffff', borderColor: '#007bff'}}
                                     />
+                                    <AlertDialog open={isDialogOpen} onClose={handleCloseDialog}
+                                                 onLanguageChange={onLanguageChange}/>
                                 </div>
 
 
