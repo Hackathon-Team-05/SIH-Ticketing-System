@@ -365,7 +365,7 @@ const Chatbot = () => {
                         setPhoneNumber(message)
                         bookingIndex += 1
                         setInput('')
-                        setHandleFirstQuestion(false)
+                        setHandleFirstQuestionsetHandleFirstQuestion(false)
                         setHandleSecondQuestion(true)
                         await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
                     }
