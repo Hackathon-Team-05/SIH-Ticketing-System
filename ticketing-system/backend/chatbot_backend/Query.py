@@ -18,7 +18,8 @@ class Query:
     def process_query(self, user_query):
         sql_prompt_raw = """
         Based on the table schema below, write a SQL query that would answer the user's question.
-        You are not allowed to write any data in the SQL database.
+        You are not allowed to insert any data in the SQL database.
+        You are allowed to read any data from the SQL database.
         Output only the SQL query without any additional text.
 
         Schema:
@@ -38,8 +39,8 @@ class Query:
 
         response_prompt_raw = """
         Based on the table schema below, question, SQL query, and SQL response, write a natural language response.
-        You are not allowed to write any data in the SQL database.
-
+        You are not allowed to insert any data in the SQL database.
+        You are allowed to read any data from the SQL database.
         Output only the natural language response without any additional text.
 
         Schema:

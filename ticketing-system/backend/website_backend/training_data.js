@@ -20,6 +20,7 @@ const trainingData = [
     {text: "What are the top museums?", intent: GENERAL_INQUIRY},
     {text: "Are there any popular museums?", intent: GENERAL_INQUIRY},
     {text: "is there ny booking for ?", intent: GENERAL_INQUIRY},
+    {text: "i want to know the status for the booking ?", intent: GENERAL_INQUIRY},
 
 
     {text: "Hello", intent: GREETINGS},
