@@ -28,7 +28,7 @@ db.connect((err) => {
 });
 
 app.get('/api/states', (req, res) => {
-    const query = 'SELECT * FROM states';
+    const query = 'SELECT * FROM States';
     db.query(query, (err, rows) => {
         if (err) {
             return res.status(500).json({error: err.message});
@@ -43,7 +43,7 @@ app.get('/api/cities', (req, res) => {
     if (!state_code) {
         return res.status(400).send({error: 'state_code is required'});
     }
-    const query = 'SELECT * FROM cities WHERE state_code = ?'
+    const query = 'SELECT * FROM Cities WHERE state_code = ?'
 
     db.query(query, [state_code], (err, rows) => {
         if (err) {
@@ -56,7 +56,7 @@ app.get('/api/cities', (req, res) => {
 
 app.get('/api/museums', (req, res) => {
     const {city} = req.query;
-    const query = 'SELECT * FROM museums WHERE city_name = ?';
+    const query = 'SELECT * FROM Museums WHERE city_name = ?';
     db.query(query, [city], (err, rows) => {
         if (err) {
             return res.status(500).json({error: err.message});
@@ -73,8 +73,8 @@ app.get('/api/prices', (req, res) => {
     }
 
     const query = `
-        SELECT adult_price, child_price, foreigner_price
-        FROM museums
+        SELECT price_adult, price_child, price_foreiner
+        FROM Museums
         WHERE name = ?;`;
 
     db.query(query, [museum], (err, row) => {
@@ -95,7 +95,7 @@ app.get('/api/fetch_price/:museumId', (req, res) => {
         return res.status(400).send({error: 'museum_id is required'});
     }
 
-    const query = `SELECT * FROM museums WHERE id = ?;`;
+    const query = `SELECT * FROM Museums WHERE id = ?;`;
 
     db.query(query, [museumId], (err, row) => {
         if (err) {

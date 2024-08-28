@@ -5,7 +5,7 @@ from langchain_cohere import ChatCohere
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-port = 5000
+backend_port = 5000
 os.environ[
     'COHERE_API_KEY'] = 'WxPWfSIHVASNIFMlfnLMrViai4iKklvMl1jvfVu5'
 username = "sih2024"
@@ -47,4 +47,4 @@ def api():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=port)
+    app.run(debug=True, port=backend_port)

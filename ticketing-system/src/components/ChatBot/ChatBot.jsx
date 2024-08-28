@@ -21,7 +21,8 @@ import SpeakerButton from "./SpeakerButton.jsx";
 import {GENERAL_INQUIRY, GREETINGS, MUSEUM_TICKET_BOOK_QUERY} from "./query_constants";
 
 let bookingIndex = 0;
-
+let backendPort = 8080
+let chatbotBackend = 5000
 const Chatbot = () => {
     const [organisationDiscount, setOrganisationDiscount] = useState(5)
     const [input, setInput] = useState('');
@@ -144,7 +145,7 @@ const Chatbot = () => {
             body: JSON.stringify({message: input})
         };
 
-        const response = await fetch('http://localhost:3000/classify', options);
+        const response = await fetch(`http://localhost:${backendPort}/classify`, options);
         const data = await response.json();
         console.log(data)
         if (data.intent === GENERAL_INQUIRY) {
@@ -257,7 +258,7 @@ const Chatbot = () => {
                     const sentence = bookingProcessStartStatement[randomIndex];
                     setInput('')
 
-                    const result = await axios.post('http://localhost:5000/chat', {"message": input});
+                    const result = await axios.post(`http://localhost:${chatbotBackend}/chat`, {"message": input});
                     setConversation(prev => [...prev, {sender: 'bot', text: result.data.response}, {
                         sender: 'bot',
                         text: sentence
@@ -628,7 +629,7 @@ const Chatbot = () => {
                 setInput('')
                 const city = input.trim().toLowerCase()
                 const statement = `List the museums which are situated in the city ${city} with their respective museum id.`
-                const result = await axios.post('http://localhost:5000/chat', {"message": statement});
+                const result = await axios.post(`http://localhost:${chatbotBackend}/chat`, {"message": statement});
                 setConversation(prev => [...prev, {sender: 'bot', text: result.data.response}])
                 setConversation(prev => [...prev, {sender: 'bot', text: "Reply the museum id, that you want to book."}])
 
@@ -640,7 +641,7 @@ const Chatbot = () => {
             } else if (fetchMuseumId) {
 
                 const museumId = input.trim()
-                const result = await axios.get(`http://localhost:3000/api/fetch_price/${museumId}`)
+                const result = await axios.get(`http://localhost:${backendPort}/api/fetch_price/${museumId}`)
                 console.log(result.data)
                 let adultPrice = null
                 let childPrice = null
