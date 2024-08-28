@@ -23,6 +23,9 @@ import {GENERAL_INQUIRY, GREETINGS, MUSEUM_TICKET_BOOK_QUERY} from "./query_cons
 let bookingIndex = 0;
 let backendPort = 8080
 let chatbotBackend = 5000
+const GENERAL_INQUIRY_ = 0
+const TICKET_BOOK_QUERY_ = 1
+const GREETINGS_ = 2
 const Chatbot = () => {
     const [organisationDiscount, setOrganisationDiscount] = useState(5)
     const [input, setInput] = useState('');
@@ -151,10 +154,10 @@ const Chatbot = () => {
         if (data.intent === GENERAL_INQUIRY) {
 
             console.log("This is a general inquiry")
-            return true
+            return GENERAL_INQUIRY_
         } else if (data.intent === GREETINGS) {
             console.log("This is a greeting")
-            return false
+            return GREETINGS_
 
 
         } else if (data.intent === MUSEUM_TICKET_BOOK_QUERY) {
@@ -163,7 +166,7 @@ const Chatbot = () => {
             setIsBookingProcess(true)
 
 
-            return true
+            return TICKET_BOOK_QUERY_
         }
         return false
     }
@@ -250,8 +253,9 @@ const Chatbot = () => {
 
             const newConversation = prev => [...prev, {sender: 'user', text: input}];
             setConversation(newConversation);
+            const query = await isQueryQuestion(input)
 
-            if (await isQueryQuestion(input)) {
+            if (query === TICKET_BOOK_QUERY_ || query === GENERAL_INQUIRY_) {
                 try {
                     const bookingProcessStartStatement = bookingProcessStart
                     const randomIndex = Math.floor(Math.random() * bookingProcessStartStatement.length);
@@ -273,7 +277,7 @@ const Chatbot = () => {
                     setIsLoading(false)
 
                 }
-            } else {
+            } else if (query === GREETINGS_) {
                 try {
 
 
@@ -329,6 +333,13 @@ const Chatbot = () => {
                         text: 'Sorry, I encountered an error. Please refresh the page.'
                     }]);
                 }
+            } else {
+                setConversation(prev => [...prev, {
+                    sender: 'bot',
+                    text: "I'm sorry, I didn't quite get that. Could you please rephrase your question or provide more details?"
+                }]);
+                setIsLoading(false)
+
             }
 
         } else {
