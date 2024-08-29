@@ -4,6 +4,13 @@ from langchain_community.utilities import SQLDatabase
 from langchain_cohere import ChatCohere
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+import json
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.pipeline import Pipeline
+from sklearn.metrics import classification_report
 
 backend_port = 5000
 os.environ[
@@ -34,6 +41,23 @@ if db:
     query_handler = Query(llm, db)
 
 
+def load_training_data(file_path):
+    with open(file_path, 'r') as file:
+        data = json.load(file)
+    texts = [entry["text"] for entry in data]
+    intents = [entry["intent"] for entry in data]
+    return texts, intents
+
+
+texts, intents = load_training_data('training_data.json')
+
+pipeline = Pipeline([
+    ('vectorizer', CountVectorizer()),
+    ('classifier', MultinomialNB())
+])
+pipeline.fit(texts, intents)
+
+
 @app.route('/chat', methods=['POST'])
 def api():
     data = request.get_json()
@@ -44,6 +68,25 @@ def api():
     result = query_handler.process_query(user_query)
 
     return jsonify({'response': result})
+
+
+@app.route('/classify', methods=['POST'])
+def classify_intent():
+    try:
+
+        data = request.json
+        text = data.get('text', '')
+
+        if not text:
+            return jsonify({'error': 'No text provided'}), 400
+
+        prediction = pipeline.predict([text])
+        intent = prediction[0]
+
+        return jsonify({'intent': intent}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 if __name__ == '__main__':

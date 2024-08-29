@@ -172,20 +172,14 @@ const Chatbot = () => {
     }
 
     async function isQueryQuestion(input) {
-        const options = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({message: input})
-        };
 
-        const response = await fetch(`http://localhost:${backendPort}/classify`, options);
-        const data = await response.json();
+
+        const response = await axios.post(`http://localhost:${chatbotBackend}/classify`, {text: input})
+        const data = await response.data;
         console.log(data)
-        if (data.intent === GENERAL_INQUIRY) {
+        if (data.intent === "GENERAL_INQUIRY") {
             return GENERAL_INQUIRY_
-        } else if (data.intent === MUSEUM_TICKET_BOOK_QUERY) {
+        } else if (data.intent === "MUSEUM_TICKET_BOOK_QUERY") {
             isBookingProcessStarted = true
             return TICKET_BOOK_QUERY_
         } else {

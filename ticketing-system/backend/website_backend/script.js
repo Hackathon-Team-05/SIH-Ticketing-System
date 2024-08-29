@@ -2,8 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
-const natural = require('natural');
-const {intentTrainingData} = require("./training_data");
 const mysql = require('mysql2');
 
 const app = express();
@@ -115,7 +113,7 @@ app.get('/api/fetch_price/event/:eventId', (req, res) => {
         return res.status(400).send({error: 'eventId is required'});
     }
 
-    const query = `SELECT * FROM Events WHERE id = ?;`;
+    const query = "SELECT * FROM Events WHERE id = ?;"
 
     db.query(query, [eventId], (err, row) => {
         if (err) {
@@ -176,15 +174,7 @@ app.post('/api/conversation', (req, res) => {
     });
 });
 
-const classifier = new natural.BayesClassifier();
-intentTrainingData.forEach(item => classifier.addDocument(item.text, item.intent));
-classifier.train();
 
-app.post('/classify', (req, res) => {
-    const {message} = req.body;
-    const predictedIntent = classifier.classify(message);
-    res.json({intent: predictedIntent});
-});
 
 app.listen(port, () => {
     console.log(`Server started on port ${port}`);
