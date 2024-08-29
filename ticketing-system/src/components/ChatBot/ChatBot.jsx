@@ -245,7 +245,8 @@ const Chatbot = () => {
 
         return matches ? matches : [];
     }
-     function extractIdsFromString(message) {
+
+    function extractIdsFromString(message) {
         const namePattern = /\b\d+(?:,\d+)*\b/
 
         const matches = message.match(namePattern);
@@ -555,18 +556,39 @@ const Chatbot = () => {
             } else if (fetchMuseumId) {
                 const museumId = message.trim()
                 const result = await axios.get(`http://localhost:${backendPort}/api/fetch_price/${museumId}`)
-                console.log(result.data)
+
+
+                const statement = `Is there any event going on for the museum id ${museumId} ?`
+                const requestQueryEvents = await axios.post(`http://localhost:${chatbotBackend}/chat`, {"message": statement});
+                const answer = await requestQueryEvents.data.response;
+                ////////////////////////////////////
+                const requestSentiment = await fetch(
+                    "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english",
+                    {
+                        headers: {
+                            Authorization: "Bearer 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",
+                            "Content-Type": "application/json",
+                        },
+                        method: "POST",
+                        body: JSON.stringify(answer),
+                    }
+                );
+                const resultSentiment = await requestSentiment.json();
+                let positiveScore = null;
+                let negativeScore = null;
+
+
                 let adultPrice = null
                 let childPrice = null
                 let foreignerPrice = null
-                if (result.data.adult_price != null) {
-                    adultPrice = result.data.adult_price
+                if (result.data.price_adult != null) {
+                    adultPrice = result.data.price_adult
                 }
-                if (result.data.child_price != null) {
-                    childPrice = result.data.child_price
+                if (result.data.price_child != null) {
+                    childPrice = result.data.price_child
                 }
-                if (result.data.foreigner_price != null) {
-                    foreignerPrice = result.data.foreigner_price
+                if (result.data.price_foreigner != null) {
+                    foreignerPrice = result.data.price_foreigner
                 }
 
                 const totalAdultPrice = Number(adultPrice) * Number(noOfAdults)
@@ -604,79 +626,89 @@ const Chatbot = () => {
                     });
                     isBookingProcessStarted = false
                 } else {
-                    const statement = `List the events with their prices which are added for the museum of id ${museumId} with their respective event id.`
-                    const result = await axios.post(`http://localhost:${chatbotBackend}/chat`, {"message": statement});
+
+
+                    resultSentiment.forEach(innerArray => {
+                        innerArray.forEach(item => {
+                            if (item.label === "POSITIVE") {
+                                positiveScore = item.score;
+                            } else if (item.label === "NEGATIVE") {
+                                negativeScore = item.score;
+                            }
+                        });
+                    });
+                    console.log("p:" + positiveScore)
+                    console.log("n:" + negativeScore)
                     await updateConversation({
                         sender: 'bot', text: `
-                ${isOrganisation ? `Additional ${organisationDiscount}% discount is added for your organisation.` : ""}
-                Do you want to book any events for this museum?
-                `
+                ${isOrganisation ? `Additional ${organisationDiscount}% discount is added for your organisation.` : ""}`
                     });
 
-                    await updateConversation({sender: 'bot', text: result.data.response});
-                    await updateConversation({
-                        sender: 'bot',
-                        text: "Reply the event id to add to the booking or reply skip to skip the event booking."
-                    });
-                    setTicketEventAdded(true)
+                    if (positiveScore >= negativeScore) {
+                        const statement = `List the events going on for the museum id ${museumId} with their event ids?`
+                        const requestListOfEvents = await axios.post(`http://localhost:${chatbotBackend}/chat`, {"message": statement});
+                        const eventListResult = await requestListOfEvents.data.response;
+
+                        await updateConversation({sender: 'bot', text: 'There are events going on for this museum.'})
+                        await updateConversation({sender: 'bot', text: eventListResult})
+
+
+                        await updateConversation({
+                            sender: 'bot',
+                            text: 'Reply the event id/ids to book. Reply skip to proceed to payments.'
+                        })
+                        setFetchMuseumId(false)
+                        setTicketEventAdded(true)
+                        setAskedForPaymentCheckout(false)
+
+                    } else {
+                        setFetchMuseumId(false)
+                        setAskedForPaymentCheckout(true)
+                        setTicketEventAdded(false)
+                        await updateConversation({
+                            sender: 'bot',
+                            text: 'Proceed to payments?'
+                        })
+                    }
+
+
+
                 }
             } else if (checkEventAdded) {
                 if (message.trim() === "skip") {
 
+
+                    await updateConversation({
+                        sender: 'bot',
+                        text: "Do you really want to skip the event booking for this museum?"
+                    });
                     setAskedForPaymentCheckout(true)
+
+                } else {
+
+
+                    const eventIds = extractIdsFromString(message.trim())
+                    // handle the loop to add pricing
+
+
+                    const json = {events: eventIds};
+                    for (let i = 0; i < eventIds.length; i++) {
+                        const request = await axios.post(`http://localhost:${backendPort}/api/fetch_price/event/${eventIds[i]}`, json);
+
+                        const result = await request.data
+                        console.log(result)
+
+                    }
+
+
                     await updateConversation({
                         sender: 'bot',
                         text: "Proceed to payments?"
                     });
-                    return
-
-                } else {
-                    const answerForEventAdding = extractIdsFromString(message.trim())
-                    // handle the loop to add pricing
-
-                }
-
-
-                const response = await fetch(
-                    "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english",
-                    {
-                        headers: {
-                            Authorization: "Bearer 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",
-                            "Content-Type": "application/json",
-                        },
-                        method: "POST",
-                        body: JSON.stringify(answerForEventAdding),
-                    }
-                );
-                const result = await response.json();
-                let positiveScore = null;
-                let negativeScore = null;
-
-                result.forEach(innerArray => {
-                    innerArray.forEach(item => {
-                        if (item.label === "POSITIVE") {
-                            positiveScore = item.score;
-                        } else if (item.label === "NEGATIVE") {
-                            negativeScore = item.score;
-                        }
-                    });
-                });
-                console.log("p:" + positiveScore)
-                console.log("n:" + negativeScore)
-                if (positiveScore >= negativeScore) {
-
-
-                    await updateConversation({
-                        sender: 'bot',
-                        text: 'You have added the events. Proceeding to payments...'
-                    });
-                    setInput('')
                     setAskedForPaymentCheckout(true)
-                } else {
-                    await updateConversation({sender: 'bot', text: "Okay. Cancelled the booking process."});
-                    isBookingProcessStarted = false
-                    setInput('')
+
                 }
+
 
             } else if (paymentCheckout) {
                 const answerForCheckout = message.trim()
