@@ -46,6 +46,7 @@ const Chatbot = () => {
 
     const [hasMuseum, setHasMuseum] = useState(false);
     const [fetchMuseumId, setFetchMuseumId] = useState(false);
+    const [checkEventAdded, setTicketEventAdded] = useState(false);
     const [paymentCheckout, setAskedForPaymentCheckout] = useState(false);
 
     const [museumName, SetMuseumName] = useState('');
@@ -239,6 +240,13 @@ const Chatbot = () => {
 
     function extractNames(message) {
         const namePattern = /([A-Z][A-Z\s]+)(?:,\s?([A-Z][A-Z\s]+))?/
+
+        const matches = message.match(namePattern);
+
+        return matches ? matches : [];
+    }
+     function extractIdsFromString(message) {
+        const namePattern = /\b\d+(?:,\d+)*\b/
 
         const matches = message.match(namePattern);
 
@@ -596,14 +604,80 @@ const Chatbot = () => {
                     });
                     isBookingProcessStarted = false
                 } else {
+                    const statement = `List the events with their prices which are added for the museum of id ${museumId} with their respective event id.`
+                    const result = await axios.post(`http://localhost:${chatbotBackend}/chat`, {"message": statement});
                     await updateConversation({
                         sender: 'bot', text: `
                 ${isOrganisation ? `Additional ${organisationDiscount}% discount is added for your organisation.` : ""}
-                Proceed to payments and book the ticket?
+                Do you want to book any events for this museum?
                 `
                     });
-                    setAskedForPaymentCheckout(true)
+
+                    await updateConversation({sender: 'bot', text: result.data.response});
+                    await updateConversation({
+                        sender: 'bot',
+                        text: "Reply the event id to add to the booking or reply skip to skip the event booking."
+                    });
+                    setTicketEventAdded(true)
                 }
+            } else if (checkEventAdded) {
+                if (message.trim() === "skip") {
+
+                    setAskedForPaymentCheckout(true)
+                    await updateConversation({
+                        sender: 'bot',
+                        text: "Proceed to payments?"
+                    });
+                    return
+
+                } else {
+                    const answerForEventAdding = extractIdsFromString(message.trim())
+                    // handle the loop to add pricing
+
+                }
+
+
+                const response = await fetch(
+                    "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english",
+                    {
+                        headers: {
+                            Authorization: "Bearer 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",
+                            "Content-Type": "application/json",
+                        },
+                        method: "POST",
+                        body: JSON.stringify(answerForEventAdding),
+                    }
+                );
+                const result = await response.json();
+                let positiveScore = null;
+                let negativeScore = null;
+
+                result.forEach(innerArray => {
+                    innerArray.forEach(item => {
+                        if (item.label === "POSITIVE") {
+                            positiveScore = item.score;
+                        } else if (item.label === "NEGATIVE") {
+                            negativeScore = item.score;
+                        }
+                    });
+                });
+                console.log("p:" + positiveScore)
+                console.log("n:" + negativeScore)
+                if (positiveScore >= negativeScore) {
+
+
+                    await updateConversation({
+                        sender: 'bot',
+                        text: 'You have added the events. Proceeding to payments...'
+                    });
+                    setInput('')
+                    setAskedForPaymentCheckout(true)
+                } else {
+                    await updateConversation({sender: 'bot', text: "Okay. Cancelled the booking process."});
+                    isBookingProcessStarted = false
+                    setInput('')
+                }
+
             } else if (paymentCheckout) {
                 const answerForCheckout = message.trim()
                 const response = await fetch(

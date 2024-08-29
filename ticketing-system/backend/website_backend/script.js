@@ -108,6 +108,26 @@ app.get('/api/fetch_price/:museumId', (req, res) => {
         res.json(row[0]);
     });
 });
+app.get('/api/fetch_price/event/:eventId', (req, res) => {
+    const eventId = req.params.eventId;
+
+    if (!eventId) {
+        return res.status(400).send({error: 'eventId is required'});
+    }
+
+    const query = `SELECT * FROM Events WHERE id = ?;`;
+
+    db.query(query, [eventId], (err, row) => {
+        if (err) {
+            return res.status(500).json({error: err.message});
+        }
+        if (row.length === 0) {
+            console.log("not found")
+            return res.status(404).json({error: `Item not found in database {${eventId}}`});
+        }
+        res.json(row[0]);
+    });
+});
 
 const conversationFilePath = path.join(__dirname, '../conversation_history.json');
 
