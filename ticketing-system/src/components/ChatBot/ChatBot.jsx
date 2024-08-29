@@ -18,7 +18,7 @@ import {
 import axios from "axios";
 import nlp from 'compromise';
 import SpeakerButton from "./SpeakerButton.jsx";
-import {GENERAL_INQUIRY, GREETINGS, MUSEUM_TICKET_BOOK_QUERY} from "./query_constants";
+import {GENERAL_INQUIRY, MUSEUM_TICKET_BOOK_QUERY} from "./query_constants";
 import LanguageButton from "./LanguageButton";
 import AlertDialog from "./AlertDialog";
 
@@ -185,13 +185,12 @@ const Chatbot = () => {
         console.log(data)
         if (data.intent === GENERAL_INQUIRY) {
             return GENERAL_INQUIRY_
-        } else if (data.intent === GREETINGS) {
-            return GREETINGS_
         } else if (data.intent === MUSEUM_TICKET_BOOK_QUERY) {
             isBookingProcessStarted = true
             return TICKET_BOOK_QUERY_
+        } else {
+            return GREETINGS_
         }
-        return false
     }
 
     function parseTicketInfo(input) {

@@ -8,25 +8,24 @@ const {
 } = require("../../src/components/ChatBot/query_constants");
 
 const trainingData = [
+    {text: "Hello", intent: GREETINGS},
+    {text: "Hi there", intent: GREETINGS},
+    {text: "Good morning", intent: GREETINGS},
+    {text: "Hey", intent: GREETINGS},
+
 
     {text: "I want to book a museum ticket", intent: MUSEUM_TICKET_BOOK_QUERY},
-    {text: "Can you help me with a ticket?", intent: MUSEUM_TICKET_BOOK_QUERY},
+    {text: "Can you help me with a ticket booking", intent: MUSEUM_TICKET_BOOK_QUERY},
     {text: "Book a ticket for the museum", intent: MUSEUM_TICKET_BOOK_QUERY},
-    {text: "How do I book a museum ticket?", intent: MUSEUM_TICKET_BOOK_QUERY},
+    {text: "How do I book a museum ticket", intent: MUSEUM_TICKET_BOOK_QUERY},
 
 
-    {text: "Give me the number of museums I can book tickets for?", intent: GENERAL_INQUIRY},
+    {text: "Give me the number of museums I can book tickets for", intent: GENERAL_INQUIRY},
     {text: "Tell me about the museum", intent: GENERAL_INQUIRY},
-    {text: "What are the top museums?", intent: GENERAL_INQUIRY},
-    {text: "Are there any popular museums?", intent: GENERAL_INQUIRY},
-    {text: "is there ny booking for ?", intent: GENERAL_INQUIRY},
-    {text: "i want to know the status for the booking ?", intent: GENERAL_INQUIRY},
-
-
-    {text: "Hello", intent: GREETINGS},
-    {text: "Hi there!", intent: GREETINGS},
-    {text: "Good morning", intent: GREETINGS},
-    {text: "Hey!", intent: GREETINGS},
+    {text: "What are the top museums", intent: GENERAL_INQUIRY},
+    {text: "Are there any popular museums", intent: GENERAL_INQUIRY},
+    {text: "is there any booking for", intent: GENERAL_INQUIRY},
+    {text: "i want to know the status for the booking", intent: GENERAL_INQUIRY},
 
 
     {text: "Goodbye", intent: FAREWELL},
