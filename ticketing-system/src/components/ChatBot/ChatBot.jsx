@@ -261,6 +261,7 @@ const Chatbot = () => {
 
     const handleSendMessage = async (message) => {
         setInput('')
+        setIsLoading(true)
         if (message.trim() === '') return;
         if (isBookingProcessStarted === false) {
             if (enterTicketNumber) {
@@ -276,8 +277,6 @@ const Chatbot = () => {
                 setIsLoading(false);
                 return;
             }
-
-            setIsLoading(true);
             await updateConversation({sender: 'user', text: message});
             const query = await isQueryQuestion(message)
 
@@ -354,6 +353,8 @@ const Chatbot = () => {
                     setHandleZerothQuestion(false)
                     setHandleFirstQuestion(true)
                     await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
+                    setIsLoading(false);
+
                 } else if (message.trim().toLowerCase() === "organisation") {
                     bookingIndex = bookingIndex + 1
                     setIsOrganisation(true)
@@ -365,8 +366,12 @@ const Chatbot = () => {
                     setInput('')
                     setHandleZerothQuestion(false)
                     setHandleFirstQuestion(true)
+                    setIsLoading(false);
+
                 } else {
                     await updateConversation({sender: 'bot', text: "I cannot understand. Please try again."});
+                    setIsLoading(false);
+
                 }
             } else if (handleFirstQuestion) {
                 if (message.trim().length === 10) {
@@ -377,12 +382,16 @@ const Chatbot = () => {
                         setHandleFirstQuestion(false)
                         setHandleSecondQuestion(true)
                         await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
+                        setIsLoading(false);
+
                     }
                 } else {
                     await updateConversation({
                         sender: 'bot',
                         text: 'This is not a valid phone number. Please message again.'
                     });
+                    setIsLoading(false);
+
                 }
             } else if (handleSecondQuestion) {
                 if (handleCheckOtp(message)) {
@@ -392,8 +401,12 @@ const Chatbot = () => {
                     setHandleThirdQuestion(true)
                     await updateConversation({sender: 'bot', text: 'OTP verified!'});
                     await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
+                    setIsLoading(false);
+
                 } else {
                     await updateConversation({sender: 'bot', text: 'OTP invalid!.'});
+                    setIsLoading(false);
+
                 }
             } else if (handleThirdQuestion) {
                 const json = parseTicketInfo(message)
@@ -413,6 +426,8 @@ const Chatbot = () => {
                 setInput('')
                 setHandleThirdQuestion(false)
                 setHandleForthQuestion(true)
+                setIsLoading(false);
+
             } else if (handleForthQuestion) {
                 const response = await fetch(
                     "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english",
@@ -447,11 +462,15 @@ const Chatbot = () => {
                     setHandleFifthQuestion(true)
                     await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
                     setInput('')
+                    setIsLoading(false);
+
                 } else {
                     setInput('')
                     setHandleForthQuestion(true)
                     setHandleFifthQuestion(false)
                     await updateConversation({sender: 'bot', text: "Okay.Try again!"});
+                    setIsLoading(false);
+
                 }
             } else if (handleFifthQuestion) {
                 const finalNamesAdult = []
@@ -471,17 +490,23 @@ const Chatbot = () => {
                     setHandleFifthQuestion(false)
                     setHandleSixthQuestion(true)
                     await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
+                    setIsLoading(false);
+
                 } else if (message.trim().toLowerCase() === "skip") {
                     bookingIndex = bookingIndex + 1
                     setInput('')
                     setHandleFifthQuestion(false)
                     setHandleSixthQuestion(true)
                     await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
+                    setIsLoading(false);
+
                 } else {
                     await updateConversation({
                         sender: 'bot',
                         text: `You have two give ${noOfAdults} names. But you have given ${finalNamesAdult.length} names. Please try again.`
                     });
+                    setIsLoading(false);
+
                 }
             } else if (handleSixthQuestion) {
                 bookingIndex = bookingIndex + 1
@@ -501,17 +526,23 @@ const Chatbot = () => {
                     setHandleSixthQuestion(false)
                     setHandleSeventhQuestion(true)
                     await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
+                    setIsLoading(false);
+
                 } else if (message.trim().toLowerCase() === "skip") {
                     bookingIndex = bookingIndex + 1
                     setInput('')
                     setHandleSixthQuestion(false)
                     setHandleSeventhQuestion(true)
                     await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
+                    setIsLoading(false);
+
                 } else {
                     await updateConversation({
                         sender: 'bot',
                         text: `You have two give ${noOfChildren} names. But you have given ${finalNamesChild.length} names. Please try again.`
                     });
+                    setIsLoading(false);
+
                 }
             } else if (handleSeventhQuestion) {
                 const finalNamesForeigners = []
@@ -531,17 +562,23 @@ const Chatbot = () => {
                     setHandleSeventhQuestion(false)
                     setHandleEighthQuestion(true)
                     await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
+                    setIsLoading(false);
+
                 } else if (message.trim().toLowerCase() === "skip") {
                     bookingIndex = bookingIndex + 1
                     setInput('')
                     setHandleSeventhQuestion(false)
                     setHandleEighthQuestion(true)
                     await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
+                    setIsLoading(false);
+
                 } else {
                     await updateConversation({
                         sender: 'bot',
                         text: `You have two give ${noOfForeigners} names. But you have given ${finalNamesForeigners.length} names. Please try again.`
                     });
+                    setIsLoading(false);
+
                 }
             } else if (handleEighthQuestion) {
                 setInput('')
@@ -553,6 +590,8 @@ const Chatbot = () => {
                 setHandleEighthQuestion(false)
                 setFetchMuseumId(true)
                 console.log(result.data.response)
+                setIsLoading(false);
+
             } else if (fetchMuseumId) {
                 const museumId = message.trim()
                 const result = await axios.get(`http://localhost:${backendPort}/api/fetch_price/${museumId}`)
@@ -625,6 +664,8 @@ const Chatbot = () => {
                     `
                     });
                     isBookingProcessStarted = false
+                    setIsLoading(false);
+
                 } else {
 
 
@@ -660,6 +701,8 @@ const Chatbot = () => {
                         setFetchMuseumId(false)
                         setTicketEventAdded(true)
                         setAskedForPaymentCheckout(false)
+                        setIsLoading(false);
+
 
                     } else {
                         setFetchMuseumId(false)
@@ -669,6 +712,8 @@ const Chatbot = () => {
                             sender: 'bot',
                             text: 'Proceed to payments?'
                         })
+                        setIsLoading(false);
+
                     }
 
 
@@ -684,6 +729,7 @@ const Chatbot = () => {
                     setFetchMuseumId(false)
                     setTicketEventAdded(false)
                     setAskedForPaymentCheckout(true)
+                    setIsLoading(false);
 
                 } else {
 
@@ -712,6 +758,7 @@ const Chatbot = () => {
                     setFetchMuseumId(false)
                     setTicketEventAdded(false)
                     setAskedForPaymentCheckout(true)
+                    setIsLoading(false);
 
                 }
 
@@ -748,16 +795,22 @@ const Chatbot = () => {
                     setAskedForPaymentCheckout(false)
                     await updateConversation({sender: 'bot', text: 'Redirecting to the payments page...'});
                     setInput('')
+                    setIsLoading(false);
+
                     //response
                 } else {
                     await updateConversation({sender: 'bot', text: "Okay. Cancelled the booking process."});
                     isBookingProcessStarted = false
                     setInput('')
+                    setIsLoading(false);
+
                 }
             } else if (!paymentCheckout && !fetchMuseumId && !handleEighthQuestion && !handleZerothQuestion &&
                 !handleFirstQuestion && !handleSecondQuestion && !handleThirdQuestion
                 && !handleForthQuestion && !handleFifthQuestion && !handleSixthQuestion && !handleSeventhQuestion) {
                 await updateConversation({sender: 'bot', text: ''});
+                setIsLoading(false);
+
             }
         }
     }
