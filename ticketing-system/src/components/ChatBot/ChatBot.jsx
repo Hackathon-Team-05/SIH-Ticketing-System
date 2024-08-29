@@ -689,6 +689,7 @@ const Chatbot = () => {
 
 
                     const eventIds = extractIdsFromString(message.trim())
+                    const prices = {}
                     // handle the loop to add pricing
 
 
@@ -697,9 +698,11 @@ const Chatbot = () => {
                         const request = await axios.get(`http://localhost:${backendPort}/api/fetch_price/event/${eventIds[i]}`);
 
                         const result = await request.data
+                        prices[eventIds[i]] = result.price
                         console.log(result)
 
                     }
+                    console.log(prices)
 
 
                     await updateConversation({
