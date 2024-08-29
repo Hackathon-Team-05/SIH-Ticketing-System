@@ -672,7 +672,6 @@ const Chatbot = () => {
                     }
 
 
-
                 }
             } else if (checkEventAdded) {
                 if (message.trim() === "skip") {
@@ -682,6 +681,8 @@ const Chatbot = () => {
                         sender: 'bot',
                         text: "Do you really want to skip the event booking for this museum?"
                     });
+                    setFetchMuseumId(false)
+                    setTicketEventAdded(false)
                     setAskedForPaymentCheckout(true)
 
                 } else {
@@ -693,7 +694,7 @@ const Chatbot = () => {
 
                     const json = {events: eventIds};
                     for (let i = 0; i < eventIds.length; i++) {
-                        const request = await axios.post(`http://localhost:${backendPort}/api/fetch_price/event/${eventIds[i]}`, json);
+                        const request = await axios.get(`http://localhost:${backendPort}/api/fetch_price/event/${eventIds[i]}`);
 
                         const result = await request.data
                         console.log(result)
@@ -705,6 +706,8 @@ const Chatbot = () => {
                         sender: 'bot',
                         text: "Proceed to payments?"
                     });
+                    setFetchMuseumId(false)
+                    setTicketEventAdded(false)
                     setAskedForPaymentCheckout(true)
 
                 }
