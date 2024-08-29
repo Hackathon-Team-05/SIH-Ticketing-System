@@ -83,6 +83,7 @@ const Chatbot = () => {
 
     const onLanguageChange = async (language) => {
         setLanguageCode(language)
+        handleCloseDialog();
         console.log(language)
     }
 
@@ -90,6 +91,7 @@ const Chatbot = () => {
         if (languageCode === 'en') {
             return text
         }
+        setIsLoading(true);
         try {
             const RAPIDAPI_KEY = '22560c3fa1mshbed057c1c31ce39p1bcdedjsn5069492c2377';
             const RAPIDAPI_HOST = 'microsoft-translator-text.p.rapidapi.com';
@@ -116,6 +118,8 @@ const Chatbot = () => {
         } catch (error) {
             console.error('Error translating text:', error);
             return text;
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -179,12 +183,13 @@ const Chatbot = () => {
         console.log(data)
         if (data.intent === "GENERAL_INQUIRY") {
             return GENERAL_INQUIRY_
+        } else if (data.intent === "GREETINGS") {
+            return GREETINGS_
         } else if (data.intent === "MUSEUM_TICKET_BOOK_QUERY") {
             isBookingProcessStarted = true
             return TICKET_BOOK_QUERY_
-        } else {
-            return GREETINGS_
         }
+        return false
     }
 
     function parseTicketInfo(input) {
@@ -248,8 +253,15 @@ const Chatbot = () => {
     }
 
     const updateConversation = async (newMessage) => {
-        const translatedText = await translateIfRequired(newMessage.text);
-        setConversation(prev => [...prev, {...newMessage, text: translatedText}]);
+        setIsLoading(true);
+        try {
+            const translatedText = await translateIfRequired(newMessage.text);
+            setConversation(prev => [...prev, {...newMessage, text: translatedText}]);
+        } catch (error) {
+            console.error('Error in updateConversation:', error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleSendMessage = async (message) => {

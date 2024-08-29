@@ -16,6 +16,14 @@
     "intent": "GREETINGS"
   },
   {
+    "text": "Who are you",
+    "intent": "GREETINGS"
+  },
+  {
+    "text": "What is your name",
+    "intent": "GREETINGS"
+  },
+  {
     "text": "I want to book a museum ticket",
     "intent": "MUSEUM_TICKET_BOOK_QUERY"
   },

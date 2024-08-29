@@ -5,6 +5,7 @@ from langchain_cohere import ChatCohere
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import json
+import joblib  # Import joblib for saving and loading the model
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
@@ -13,22 +14,20 @@ from sklearn.pipeline import Pipeline
 from sklearn.metrics import classification_report
 
 backend_port = 5000
-os.environ[
-    'COHERE_API_KEY'] = 'WxPWfSIHVASNIFMlfnLMrViai4iKklvMl1jvfVu5'
+os.environ['COHERE_API_KEY'] = 'WxPWfSIHVASNIFMlfnLMrViai4iKklvMl1jvfVu5'
 username = "sih2024"
 password = "sih12345."
 host = "sihdbconnection.cvu4owusgq3p.ap-south-1.rds.amazonaws.com"
 port = 3306
 database = "Travel_Chatbot"
 db_url = f"mysql+mysqlconnector://{username}:{password}@{host}:{port}/{database}"
+model_file = 'intent_classifier_model.pkl'  # File to save/load the model
 global db, query_handler
+
 try:
     db = SQLDatabase.from_uri(db_url)
-
     db.run("SELECT 1")
-
     print("Connection to the database established successfully!")
-
 except Exception as e:
     print(f"Error connecting to the database: {e}")
 
@@ -49,31 +48,37 @@ def load_training_data(file_path):
     return texts, intents
 
 
-texts, intents = load_training_data('training_data.json')
+def train_and_save_model():
+    texts, intents = load_training_data('training_data.json')
+    pipeline = Pipeline([
+        ('vectorizer', CountVectorizer()),
+        ('classifier', MultinomialNB())
+    ])
+    pipeline.fit(texts, intents)
+    joblib.dump(pipeline, model_file)
+    return pipeline
 
-pipeline = Pipeline([
-    ('vectorizer', CountVectorizer()),
-    ('classifier', MultinomialNB())
-])
-pipeline.fit(texts, intents)
+
+if os.path.exists(model_file):
+    pipeline = joblib.load(model_file)
+    print("Model loaded from file.")
+else:
+    pipeline = train_and_save_model()
+    print("Model trained and saved to file.")
 
 
 @app.route('/chat', methods=['POST'])
 def api():
     data = request.get_json()
-
     user_query = data.get('message', '')
     print("USER_QUERY:" + user_query)
-
     result = query_handler.process_query(user_query)
-
     return jsonify({'response': result})
 
 
 @app.route('/classify', methods=['POST'])
 def classify_intent():
     try:
-
         data = request.json
         text = data.get('text', '')
 
