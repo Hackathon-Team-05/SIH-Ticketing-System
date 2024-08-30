@@ -11,6 +11,8 @@ import {
     bookingProcessStart,
     bookingQuestions,
     notValidPrompts,
+    sorryNess,
+    startComplaint,
     ticketPrompt,
     ticketStructurePrompt,
     welcomeMsgs
@@ -28,8 +30,9 @@ let chatbotBackend = 5000
 const GENERAL_INQUIRY_ = 0
 const TICKET_BOOK_QUERY_ = 1
 const GREETINGS_ = 2
+const COMPLAINT_ = 3
 let isBookingProcessStarted = false
-
+let isComplainProcessStarted = false
 const Chatbot = () => {
     const [organisationDiscount, setOrganisationDiscount] = useState(5)
     const [input, setInput] = useState('');
@@ -172,7 +175,7 @@ const Chatbot = () => {
 
     function checkValidTicketStructure(e) {
         // todo
-        return false;
+        return true;
     }
 
     async function isQueryQuestion(input) {
@@ -188,6 +191,8 @@ const Chatbot = () => {
         } else if (data.intent === "MUSEUM_TICKET_BOOK_QUERY") {
             isBookingProcessStarted = true
             return TICKET_BOOK_QUERY_
+        } else if (data.intent === "COMPLAINT") {
+            return COMPLAINT_
         }
         return false
     }
@@ -242,6 +247,15 @@ const Chatbot = () => {
         const matches = message.match(namePattern);
 
         return matches ? matches : [];
+    }
+
+    function extractTicketIds(message) {
+        //ODI2408300d1c5
+        const ticketIdRegex = /[A-Z]{3}\d{6}[a-z0-9]+/;
+
+        const ticketIds = message.match(ticketIdRegex);
+
+        return ticketIds ? ticketIds : [];
     }
 
     function extractIdsFromString(message) {
@@ -339,6 +353,29 @@ const Chatbot = () => {
                         text: 'Sorry, I encountered an error. Please refresh the page.'
                     });
                 }
+            } else if (query === COMPLAINT_) {
+
+                try {
+                    console.log("This is a complaints intent")
+                    let sryStatements = sorryNess
+                    let startComplaintStatements = startComplaint
+
+                    const random = Math.floor(Math.random() * sryStatements.length)
+                    let sryStatement = sryStatements[random];
+                    let startComplaintStatement = startComplaintStatements[random];
+
+
+                    updateConversation({sender: 'bot', text: sryStatement});
+                    updateConversation({sender: 'bot', text: startComplaintStatement});
+                    updateConversation({sender: 'bot', text: "Reply your ticket id written on your ticket."});
+                    isComplainProcessStarted = true
+
+                    setIsLoading(false)
+                } catch (error) {
+                    console.error('Error:', error);
+                    setIsLoading(false)
+                }
+
             } else {
                 await updateConversation({
                     sender: 'bot',
@@ -346,6 +383,56 @@ const Chatbot = () => {
                 });
                 setIsLoading(false)
             }
+        } else if (isComplainProcessStarted) {
+
+            ///////////////////////////////////
+            let prompts = notValidPrompts
+
+
+            const ticketIdMessage = message.trim()
+            const ticketIds = extractTicketIds(ticketIdMessage)
+            if (ticketIds.length === 1) {
+                if (checkValidTicketStructure(ticketIds[0])) {
+                    updateConversation({sender: 'bot', text: `Your given ticket id is ${ticketIds[0]}`})
+                    //
+
+                } else {
+                    const random = Math.floor(Math.random() * prompts.length)
+                    let noValidPrompt = prompts[random];
+                    updateConversation({sender: 'bot', text: noValidPrompt})
+
+                }
+
+            } else if (ticketIds.length > 1) {
+                updateConversation({sender: 'bot', text: `You have given more than 1 ticket ids.`})
+                let arrayOfValidTickets = []
+                let arrayOfNonValidTickets = []
+                for (let i = 0; i < ticketIds.length; i++) {
+                    if (checkValidTicketStructure(ticketIds[i])) {
+                        arrayOfValidTickets.push(ticketIds[i])
+
+                    } else {
+                        arrayOfNonValidTickets.push(ticketIds[i])
+                    }
+
+                }
+
+                if (arrayOfValidTickets.length === ticketIds.length) {
+                    //alll are valids
+
+
+                } else {
+                    //any non valid ticket is there
+
+
+                }
+
+
+            } else {
+                updateConversation({sender: 'bot', text: 'Can you again reply the ticket id?'})
+            }
+
+
         } else {
             setIsLoading(false);
             await updateConversation({sender: 'user', text: message});
@@ -868,7 +955,7 @@ const Chatbot = () => {
                     <div className="gradient-border-up">
                         <div className={'ticket-title-div'}>
                             <img src="/assets/ChatBot/ncsm.png" width={100} height={100} alt="Logo 1"/>
-                            <h3><p>SangraM AI</p>संग्राम ए.आई</h3>
+                            <h3><p><img src={'/assets/ChatBot/sangram-ai.png'} style={{width:170,height:55,marginTop:40}} /></p><p style={{marginBottom:30,color:'#4c2500',backgroundColor:'#fff',borderRadius:15,padding:5}}>संग्राम ए.आई</p></h3>
                             <img src="/assets/ChatBot/logo-ministry.png" width={100} height={100} alt="Logo 2"/>
                         </div>
 

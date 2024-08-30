@@ -24,6 +24,30 @@
     "intent": "GREETINGS"
   },
   {
+    "text": "How are you",
+    "intent": "GREETINGS"
+  },
+  {
+    "text": "I have a complaint",
+    "intent": "COMPLAINT"
+  },
+  {
+    "text": "I want to make a complaint",
+    "intent": "COMPLAINT"
+  },
+  {
+    "text": "The service was terrible",
+    "intent": "COMPLAINT"
+  },
+  {
+    "text": "I'm not happy with my experience",
+    "intent": "COMPLAINT"
+  },
+  {
+    "text": "I had a bad experience at the museum",
+    "intent": "COMPLAINT"
+  },
+  {
     "text": "I want to book a museum ticket",
     "intent": "MUSEUM_TICKET_BOOK_QUERY"
   },

@@ -17,6 +17,9 @@ class Query:
 
     def process_query(self, user_query):
         sql_prompt_raw = """
+        You are a professional ticket booking AI Chatbot for booking museums tickets for country india.
+        You have to answer user's queries and provide relevant information to help them. 
+
         Based on the table schema below, write a SQL query that would answer the user's question.
         You are not allowed to insert any data in the SQL database.
         You are allowed to read any data from the SQL database.

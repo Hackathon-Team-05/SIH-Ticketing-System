@@ -56,6 +56,28 @@ export const bookingProcessStart = [
     "Let's start your booking now.",
     "Let's begin making your reservation."
 ];
+export const startComplaint = [
+    "Let's get your complaint started.",
+    "Let's address your complaint right away.",
+    "Let's begin filing your complaint.",
+    "Let’s start resolving your complaint.",
+    "Let's begin the complaint process.",
+    "Let's start your complaint process.",
+    "Let's work on it together.",
+    "Let's get your complaint sorted out.",
+    "Let's start addressing your complaint now."]
+export const sorryNess = [
+    "We're sorry to hear about your experience.",
+    "I apologize for the inconvenience.",
+    "We regret that you had this issue.",
+    "I’m sorry this happened.",
+    "Our apologies for the trouble.",
+    "We’re here to make things right.",
+    "I’m sorry to hear about your concern.",
+    "We sincerely apologize for any inconvenience.",
+    "I’m here to help."
+];
+
 export const bookingQuestions = [
     "Are you an individual or an organisation? Tickets price may vary accordingly.",
     "Provide your mobile number for authentication.",
@@ -68,6 +90,7 @@ export const bookingQuestions = [
 
 
 ]
+
 // {
 //     "id": 1,
 //     "name": "Odisha State Museum (OSM)",
