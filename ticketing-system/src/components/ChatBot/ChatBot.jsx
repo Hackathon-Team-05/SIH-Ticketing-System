@@ -9,7 +9,6 @@ import {startSpeechRecognition} from './SpeechRecognition';
 import {RingLoader} from 'react-spinners';
 import {
     bookingProcessStart,
-    bookingQuestions,
     notValidPrompts,
     sorryNess,
     startComplaint,
@@ -99,19 +98,13 @@ const Chatbot = () => {
             const RAPIDAPI_KEY = '22560c3fa1mshbed057c1c31ce39p1bcdedjsn5069492c2377';
             const RAPIDAPI_HOST = 'microsoft-translator-text.p.rapidapi.com';
             const response = await axios({
-                method: 'POST',
-                url: `https://${RAPIDAPI_HOST}/translate`,
-                params: {
-                    'api-version': '3.0',
-                    from: 'en',
-                    to: languageCode,
-                },
-                headers: {
+                method: 'POST', url: `https://${RAPIDAPI_HOST}/translate`, params: {
+                    'api-version': '3.0', from: 'en', to: languageCode,
+                }, headers: {
                     'Content-Type': 'application/json',
                     'X-RapidAPI-Key': RAPIDAPI_KEY,
                     'X-RapidAPI-Host': RAPIDAPI_HOST,
-                },
-                data: [{
+                }, data: [{
                     text: text
                 }]
             });
@@ -207,8 +200,7 @@ const Chatbot = () => {
         };
 
         const numberWords = {
-            one: 1, two: 2, three: 3, four: 4, five: 5,
-            six: 6, seven: 7, eight: 8, nine: 9, ten: 10
+            one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10
         };
 
         const convertWordToNumber = (word) => numberWords[word] || parseInt(word, 10);
@@ -227,9 +219,7 @@ const Chatbot = () => {
         }
 
         return {
-            adults,
-            children,
-            foreigners
+            adults, children, foreigners
         };
     }
 
@@ -308,7 +298,10 @@ const Chatbot = () => {
                     setInput('')
 
                     await updateConversation({sender: 'bot', text: sentence});
-                    await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
+                    await updateConversation({
+                        sender: 'bot',
+                        text: "Are you an individual or an organisation? Tickets price may vary accordingly."
+                    });
 
                     setIsLoading(false)
                 } catch (error) {
@@ -330,11 +323,7 @@ const Chatbot = () => {
                         "Authorization": "Bearer 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"
                     };
 
-                    const conversationHistory = [
-                        "User:Keep in mind that you are a e-ticketing chat bot for National Museum tickets of India. " +
-                        "Your name is SangraM AI. You help people to book their national museum tickets.",
-                        "Assistant: Sure, I'd be happy to help!",
-                    ];
+                    const conversationHistory = ["User:Keep in mind that you are a e-ticketing chat bot for National Museum tickets of India. " + "Your name is SangraM AI. You help people to book their national museum tickets.", "Assistant: Sure, I'd be happy to help!",];
 
                     const inputText = [...conversationHistory, `User: ${formatMessage(message)}\nAssistant:`].join("\n");
 
@@ -349,8 +338,7 @@ const Chatbot = () => {
                     console.error('Error communicating with the API:', error);
                     setIsLoading(false);
                     await updateConversation({
-                        sender: 'bot',
-                        text: 'Sorry, I encountered an error. Please refresh the page.'
+                        sender: 'bot', text: 'Sorry, I encountered an error. Please refresh the page.'
                     });
                 }
             } else if (query === COMPLAINT_) {
@@ -439,22 +427,22 @@ const Chatbot = () => {
 
             if (handleZerothQuestion) {
                 if (message.trim().toLowerCase() === "individual") {
-                    bookingIndex = bookingIndex + 1
+
                     setIsOrganisation(false)
                     setInput('')
                     setHandleZerothQuestion(false)
                     setHandleFirstQuestion(true)
-                    await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
+                    await updateConversation({sender: 'bot', text: "Provide your mobile number for authentication."});
                     setIsLoading(false);
 
                 } else if (message.trim().toLowerCase() === "organisation") {
-                    bookingIndex = bookingIndex + 1
+
                     setIsOrganisation(true)
                     await updateConversation({
                         sender: 'bot',
                         text: `Congratulations, you are eligible for a discount of ${organisationDiscount}%.`
                     });
-                    await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
+                    await updateConversation({sender: 'bot', text: "Provide your mobile number for authentication."});
                     setInput('')
                     setHandleZerothQuestion(false)
                     setHandleFirstQuestion(true)
@@ -469,30 +457,35 @@ const Chatbot = () => {
                 if (message.trim().length === 10) {
                     if (handleSendOtp(message)) {
                         setPhoneNumber(message)
-                        bookingIndex += 1
+
                         setInput('')
                         setHandleFirstQuestion(false)
                         setHandleSecondQuestion(true)
-                        await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
+                        await updateConversation({
+                            sender: 'bot',
+                            text: "OTP sent to the provided mobile number. Submit the Otp to continue."
+                        });
                         setIsLoading(false);
 
                     }
                 } else {
                     await updateConversation({
-                        sender: 'bot',
-                        text: 'This is not a valid phone number. Please message again.'
+                        sender: 'bot', text: 'This is not a valid phone number. Please message again.'
                     });
                     setIsLoading(false);
 
                 }
             } else if (handleSecondQuestion) {
                 if (handleCheckOtp(message)) {
-                    bookingIndex = bookingIndex + 1
+
                     setInput('')
                     setHandleSecondQuestion(false)
                     setHandleThirdQuestion(true)
                     await updateConversation({sender: 'bot', text: 'OTP verified!'});
-                    await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
+                    await updateConversation({
+                        sender: 'bot',
+                        text: "How many of these are for adults, children, and foreigners? \nExample -> X child, X adult, X foreigners"
+                    });
                     setIsLoading(false);
 
                 } else {
@@ -521,17 +514,12 @@ const Chatbot = () => {
                 setIsLoading(false);
 
             } else if (handleForthQuestion) {
-                const response = await fetch(
-                    "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english",
-                    {
-                        headers: {
-                            Authorization: "Bearer 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",
-                            "Content-Type": "application/json",
-                        },
-                        method: "POST",
-                        body: JSON.stringify(message),
-                    }
-                );
+                const response = await fetch("https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english", {
+                    headers: {
+                        Authorization: "Bearer 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",
+                        "Content-Type": "application/json",
+                    }, method: "POST", body: JSON.stringify(message),
+                });
                 const result = await response.json();
                 let positiveScore = null;
                 let negativeScore = null;
@@ -549,129 +537,34 @@ const Chatbot = () => {
                 console.log("n:" + negativeScore)
 
                 if (positiveScore >= negativeScore) {
-                    bookingIndex = bookingIndex + 1
+
                     setHandleForthQuestion(false)
-                    setHandleFifthQuestion(true)
-                    await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
+                    setHandleSeventhQuestion(true)
+                    await updateConversation({
+                        sender: 'bot',
+                        text: "Please provide the first name with last name for the ticket. Example -> satwik kar,other names,etc"
+                    });
                     setInput('')
                     setIsLoading(false);
 
                 } else {
                     setInput('')
                     setHandleForthQuestion(true)
-                    setHandleFifthQuestion(false)
+                    setHandleSeventhQuestion(false)
                     await updateConversation({sender: 'bot', text: "Okay.Try again!"});
                     setIsLoading(false);
 
                 }
-            } else if (handleFifthQuestion) {
-                const finalNamesAdult = []
-                const names = extractNames(message.toUpperCase())
-                for (let i = 1; i < names.length; i++) {
-                    try {
-                        finalNamesAdult.push(names[i].trim())
-                    } catch (e) {
-                        console.log(e)
-                    }
-                }
-                if (finalNamesAdult.length === noOfAdults) {
-                    bookingIndex = bookingIndex + 1
-                    setAdultNames(finalNamesAdult)
-                    console.log(finalNamesAdult)
-                    setInput('')
-                    setHandleFifthQuestion(false)
-                    setHandleSixthQuestion(true)
-                    await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
-                    setIsLoading(false);
-
-                } else if (message.trim().toLowerCase() === "skip") {
-                    bookingIndex = bookingIndex + 1
-                    setInput('')
-                    setHandleFifthQuestion(false)
-                    setHandleSixthQuestion(true)
-                    await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
-                    setIsLoading(false);
-
-                } else {
-                    await updateConversation({
-                        sender: 'bot',
-                        text: `You have to give ${noOfAdults} names. But you have given ${finalNamesAdult.length} names. Please try again.`
-                    });
-                    setIsLoading(false);
-
-                }
-            } else if (handleSixthQuestion) {
-                bookingIndex = bookingIndex + 1
-                const finalNamesChild = []
-                const names = extractNames(message.toUpperCase())
-                for (let i = 1; i < names.length; i++) {
-                    try {
-                        finalNamesChild.push(names[i].trim())
-                    } catch (e) {
-                        console.log(e)
-                    }
-                }
-                if (finalNamesChild.length === noOfChildren) {
-                    setChildNames(finalNamesChild)
-                    console.log(finalNamesChild)
-                    setInput('')
-                    setHandleSixthQuestion(false)
-                    setHandleSeventhQuestion(true)
-                    await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
-                    setIsLoading(false);
-
-                } else if (message.trim().toLowerCase() === "skip") {
-                    bookingIndex = bookingIndex + 1
-                    setInput('')
-                    setHandleSixthQuestion(false)
-                    setHandleSeventhQuestion(true)
-                    await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
-                    setIsLoading(false);
-
-                } else {
-                    await updateConversation({
-                        sender: 'bot',
-                        text: `You have two give ${noOfChildren} names. But you have given ${finalNamesChild.length} names. Please try again.`
-                    });
-                    setIsLoading(false);
-
-                }
             } else if (handleSeventhQuestion) {
-                const finalNamesForeigners = []
-                const names = extractNames(message.toUpperCase())
-                for (let i = 1; i < names.length; i++) {
-                    try {
-                        finalNamesForeigners.push(names[i].trim())
-                    } catch (e) {
-                        console.log(e)
-                    }
-                }
-                if (finalNamesForeigners.length === noOfForeigners) {
-                    bookingIndex = bookingIndex + 1
-                    setForeignerNames(finalNamesForeigners)
-                    console.log(finalNamesForeigners)
-                    setInput('')
-                    setHandleSeventhQuestion(false)
-                    setHandleEighthQuestion(true)
-                    await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
-                    setIsLoading(false);
 
-                } else if (message.trim().toLowerCase() === "skip") {
-                    bookingIndex = bookingIndex + 1
-                    setInput('')
-                    setHandleSeventhQuestion(false)
-                    setHandleEighthQuestion(true)
-                    await updateConversation({sender: 'bot', text: bookingQuestions[bookingIndex]});
-                    setIsLoading(false);
 
-                } else {
-                    await updateConversation({
-                        sender: 'bot',
-                        text: `You have two give ${noOfForeigners} names. But you have given ${finalNamesForeigners.length} names. Please try again.`
-                    });
-                    setIsLoading(false);
+                setInput('')
+                setHandleSeventhQuestion(false)
+                setHandleEighthQuestion(true)
+                await updateConversation({sender: 'bot', text: "For which city you want to book the museum?"});
+                setIsLoading(false);
 
-                }
+
             } else if (handleEighthQuestion) {
                 setInput('')
                 const city = message.trim().toLowerCase()
@@ -686,6 +579,7 @@ const Chatbot = () => {
 
             } else if (fetchMuseumId) {
                 const museumId = message.trim()
+                console.log("museum id"+museumId)
                 const result = await axios.get(`http://localhost:${backendPort}/api/fetch_price/${museumId}`)
 
 
@@ -693,17 +587,12 @@ const Chatbot = () => {
                 const requestQueryEvents = await axios.post(`http://localhost:${chatbotBackend}/chat`, {"message": statement});
                 const answer = await requestQueryEvents.data.response;
                 ////////////////////////////////////
-                const requestSentiment = await fetch(
-                    "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english",
-                    {
-                        headers: {
-                            Authorization: "Bearer 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",
-                            "Content-Type": "application/json",
-                        },
-                        method: "POST",
-                        body: JSON.stringify(answer),
-                    }
-                );
+                const requestSentiment = await fetch("https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english", {
+                    headers: {
+                        Authorization: "Bearer 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",
+                        "Content-Type": "application/json",
+                    }, method: "POST", body: JSON.stringify(answer),
+                });
                 const resultSentiment = await requestSentiment.json();
                 let positiveScore = null;
                 let negativeScore = null;
@@ -787,8 +676,7 @@ const Chatbot = () => {
 
 
                         await updateConversation({
-                            sender: 'bot',
-                            text: 'Reply the event id/ids to book. Reply skip to proceed to payments.'
+                            sender: 'bot', text: 'Reply the event id/ids to book. Reply skip to proceed to payments.'
                         })
                         setFetchMuseumId(false)
                         setTicketEventAdded(true)
@@ -801,8 +689,7 @@ const Chatbot = () => {
                         setAskedForPaymentCheckout(true)
                         setTicketEventAdded(false)
                         await updateConversation({
-                            sender: 'bot',
-                            text: 'Proceed to payments?'
+                            sender: 'bot', text: 'Proceed to payments?'
                         })
                         setIsLoading(false);
 
@@ -815,8 +702,7 @@ const Chatbot = () => {
 
 
                     await updateConversation({
-                        sender: 'bot',
-                        text: "Do you really want to skip the event booking for this museum?"
+                        sender: 'bot', text: "Do you really want to skip the event booking for this museum?"
                     });
                     setFetchMuseumId(false)
                     setTicketEventAdded(false)
@@ -844,8 +730,7 @@ const Chatbot = () => {
 
 
                     await updateConversation({
-                        sender: 'bot',
-                        text: "Proceed to payments?"
+                        sender: 'bot', text: "Proceed to payments?"
                     });
                     setFetchMuseumId(false)
                     setTicketEventAdded(false)
@@ -857,17 +742,12 @@ const Chatbot = () => {
 
             } else if (paymentCheckout) {
                 const answerForCheckout = message.trim()
-                const response = await fetch(
-                    "https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english",
-                    {
-                        headers: {
-                            Authorization: "Bearer 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",
-                            "Content-Type": "application/json",
-                        },
-                        method: "POST",
-                        body: JSON.stringify(answerForCheckout),
-                    }
-                );
+                const response = await fetch("https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english", {
+                    headers: {
+                        Authorization: "Bearer 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",
+                        "Content-Type": "application/json",
+                    }, method: "POST", body: JSON.stringify(answerForCheckout),
+                });
                 const result = await response.json();
                 let positiveScore = null;
                 let negativeScore = null;
@@ -897,9 +777,7 @@ const Chatbot = () => {
                     setIsLoading(false);
 
                 }
-            } else if (!paymentCheckout && !fetchMuseumId && !handleEighthQuestion && !handleZerothQuestion &&
-                !handleFirstQuestion && !handleSecondQuestion && !handleThirdQuestion
-                && !handleForthQuestion && !handleFifthQuestion && !handleSixthQuestion && !handleSeventhQuestion) {
+            } else if (!paymentCheckout && !fetchMuseumId && !handleEighthQuestion && !handleZerothQuestion && !handleFirstQuestion && !handleSecondQuestion && !handleThirdQuestion && !handleForthQuestion && !handleFifthQuestion && !handleSixthQuestion && !handleSeventhQuestion) {
                 await updateConversation({sender: 'bot', text: ''});
                 setIsLoading(false);
 
@@ -909,16 +787,13 @@ const Chatbot = () => {
 
     function handleMicrophoneClick() {
         setIsOpen(true);
-        startSpeechRecognition(
-            (transcript) => {
-                setInput(transcript);
-                setIsOpen(false);
-            },
-            (error) => {
-                console.error('Speech recognition error:', error);
-                setIsOpen(false);
-            }
-        );
+        startSpeechRecognition((transcript) => {
+            setInput(transcript);
+            setIsOpen(false);
+        }, (error) => {
+            console.error('Speech recognition error:', error);
+            setIsOpen(false);
+        });
     }
 
     function handleTicketStatus() {
@@ -948,14 +823,20 @@ const Chatbot = () => {
         handleOpenDialog()
     }
 
-    return (
-        <div className="main-container">
+    return (<div className="main-container">
             <div className="flex-item-big">
                 <div className="gradient-border">
                     <div className="gradient-border-up">
                         <div className={'ticket-title-div'}>
                             <img src="/assets/ChatBot/ncsm.png" width={100} height={100} alt="Logo 1"/>
-                            <h3><p><img src={'/assets/ChatBot/sangram-ai.png'} style={{width:170,height:55,marginTop:40}} /></p><p style={{marginBottom:30,color:'#4c2500',backgroundColor:'#fff',borderRadius:15,padding:5}}>संग्राम ए.आई</p></h3>
+                            <h3><p><img src={'/assets/ChatBot/sangram-ai.png'}
+                                        style={{width: 170, height: 55, marginTop: 40}}/></p><p style={{
+                                marginBottom: 30,
+                                color: '#4c2500',
+                                backgroundColor: '#fff',
+                                borderRadius: 15,
+                                padding: 5
+                            }}>संग्राम ए.आई</p></h3>
                             <img src="/assets/ChatBot/logo-ministry.png" width={100} height={100} alt="Logo 2"/>
                         </div>
 
@@ -964,19 +845,22 @@ const Chatbot = () => {
                                 {conversation.map((msg, index) => (
                                     <div key={index} className={`message ${msg.sender} message-anim`}>
                                         {msg.text}
-                                        {msg.sender === 'bot' && (
-                                            <Button onClick={() => {
-                                                speakMessage(msg.text)
-                                            }}
-                                                    type="primary"
-                                                    shape="circle"
-                                                    icon={<SpeakerButton
-                                                        style={{cursor: 'pointer', marginLeft: '8px'}}/>}
-                                                    style={{backgroundColor: '#ffffff', alignSelf: 'flex-end'}}
-                                            />
-                                        )}
-                                    </div>
-                                ))}
+                                        {msg.sender === 'bot' && (<Button onClick={() => {
+                                            speakMessage(msg.text)
+                                        }}
+                                                                          type="primary"
+                                                                          shape="circle"
+                                                                          icon={<SpeakerButton
+                                                                              style={{
+                                                                                  cursor: 'pointer',
+                                                                                  marginLeft: '8px'
+                                                                              }}/>}
+                                                                          style={{
+                                                                              backgroundColor: '#ffffff',
+                                                                              alignSelf: 'flex-end'
+                                                                          }}
+                                        />)}
+                                    </div>))}
                             </div>
                             <div className={"chatbot-footer"}>
                                 <div className={'shortcuts'}>
@@ -991,9 +875,7 @@ const Chatbot = () => {
                                 </div>
                                 <div className={'messaging'}>
                                     <div className="msgBtnBox">
-                                        <Button onClick={
-                                            handleLanguageChange
-                                        }
+                                        <Button onClick={handleLanguageChange}
                                                 type="primary"
                                                 shape="circle"
                                                 icon={<LanguageButton style={{color: 'black'}}/>}
@@ -1008,16 +890,17 @@ const Chatbot = () => {
                                             min={0}
                                             onChange={handleInputChange}
                                         />
-                                        {!isLoading && (
-                                            <Button onClick={() => {
-                                                handleSendMessage(input)
-                                            }}
-                                                    type="primary"
-                                                    shape="circle"
-                                                    icon={<SendButton style={{color: 'black'}}/>}
-                                                    style={{backgroundColor: '#ffffff', borderColor: '#007bff'}}
-                                            />
-                                        )}
+                                        {!isLoading && (<Button onClick={() => {
+                                            handleSendMessage(input)
+                                        }}
+                                                                type="primary"
+                                                                shape="circle"
+                                                                icon={<SendButton style={{color: 'black'}}/>}
+                                                                style={{
+                                                                    backgroundColor: '#ffffff',
+                                                                    borderColor: '#007bff'
+                                                                }}
+                                        />)}
                                         {isLoading && (<RingLoader size={32} color={"#8b00f6"}/>)}
                                     </div>
                                     <Button onClick={handleMicrophoneClick}
