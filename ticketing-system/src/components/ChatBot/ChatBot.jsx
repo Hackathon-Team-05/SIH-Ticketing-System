@@ -426,7 +426,9 @@ const Chatbot = () => {
             await updateConversation({sender: 'user', text: message});
 
             if (handleZerothQuestion) {
-                if (message.trim().toLowerCase() === "individual") {
+
+
+                if (message.trim().toLowerCase().split(" ").includes("individual")) {
 
                     setIsOrganisation(false)
                     setInput('')
@@ -435,7 +437,7 @@ const Chatbot = () => {
                     await updateConversation({sender: 'bot', text: "Provide your mobile number for authentication."});
                     setIsLoading(false);
 
-                } else if (message.trim().toLowerCase() === "organisation") {
+                } else if (message.trim().toLowerCase().split(" ").includes("organisation")) {
 
                     setIsOrganisation(true)
                     await updateConversation({
@@ -579,7 +581,7 @@ const Chatbot = () => {
 
             } else if (fetchMuseumId) {
                 const museumId = message.trim()
-                console.log("museum id"+museumId)
+                console.log("museum id" + museumId)
                 const result = await axios.get(`http://localhost:${backendPort}/api/fetch_price/${museumId}`)
 
 
