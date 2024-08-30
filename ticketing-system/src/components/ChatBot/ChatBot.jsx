@@ -508,7 +508,7 @@ const Chatbot = () => {
                 } else {
                     await updateConversation({
                         sender: 'bot',
-                        text: `You have two give ${noOfAdults} names. But you have given ${finalNamesAdult.length} names. Please try again.`
+                        text: `You have to give ${noOfAdults} names. But you have given ${finalNamesAdult.length} names. Please try again.`
                     });
                     setIsLoading(false);
 
