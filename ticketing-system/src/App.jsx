@@ -1,16 +1,26 @@
-import { useState } from 'react'
-import './App.css'
+import React, { useState } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
+import PreLoader from './components/Home_Page_Components/PreLoader';
 
-import  Chatbot  from './components/ChatBot/ChatBot.jsx'
-import Dropdown from "./components/Dropdownn.jsx";
+const App = () => {
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate(); // Navigate to other routes after preloader completes
 
-function App() {
-  const [count, setCount] = useState(0)
+  // Function to be called when preloader animation completes
+  const handleAnimationComplete = () => {
+    setLoading(false); // Set loading to false after preloader animation is done
+    navigate('/home'); // Navigate to home after animation completes
+  };
 
-return (<>
-  {/*<Dropdown/>*/}
-  <Chatbot/>
-</>)
-}
+  return (
+      <div className="app-container">
+        {loading ? (
+            <PreLoader onAnimationComplete={handleAnimationComplete} />
+        ) : (
+            <Outlet />  // Render the actual content only when loading is false
+        )}
+      </div>
+  );
+};
 
-export default App
+export default App;
