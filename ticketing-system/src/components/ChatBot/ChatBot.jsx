@@ -23,6 +23,7 @@ import {GENERAL_INQUIRY, MUSEUM_TICKET_BOOK_QUERY} from "./query_constants";
 import LanguageButton from "./LanguageButton";
 import AlertDialog from "./AlertDialog";
 import {handlePayment} from "./HandlePayment";
+import Mailjet from "node-mailjet";
 
 let bookingIndex = 0;
 let backendPort = 8080
@@ -83,6 +84,9 @@ const Chatbot = () => {
     const [museumId, setMuseumId] = useState(-1);
     const [museumName, setMuseumName] = useState('');
     const [eventNames, setEventNames] = useState([]);
+    const [wantTicketInEmail, setWantTicketInEmail] = useState(false);
+    const [imageData, setImageData] = useState('');
+    const [ticketId, setTicketId] = useState('');
 
     const handleOpenDialog = () => {
         setIsDialogOpen(true);
@@ -240,6 +244,15 @@ const Chatbot = () => {
         return true
     }
 
+    function extractEmail(message) {
+        // const emailPattern = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/
+        const emailPattern = /^[^\s@]+@[^\s@]+.[^\s@]+$/
+
+        const matches = message.match(emailPattern);
+
+        return matches ? matches : [];
+    }
+
     function extractNames(message) {
         const namePattern = /([A-Z][A-Z\s]+)(?:,\s?([A-Z][A-Z\s]+))?/
 
@@ -283,14 +296,15 @@ const Chatbot = () => {
         }
     }
 
-    const downloadImage = async (ticketId, email) => {
+    const downloadImage = async (ticketId) => {
         try {
             const response = await fetch(
-                `http://localhost:${backendPort}/api/generate-image/${ticketId}/${email}`
+                `http://localhost:${backendPort}/api/generate-image/${ticketId}`
             );
             const data = await response.json();
             console.log(data);
             const dataURI = `data:image/png;base64,${data.imageData}`;
+            setImageData(data.imageData)
 
             const link = document.createElement("a");
             link.href = dataURI;
@@ -301,6 +315,53 @@ const Chatbot = () => {
         } catch (error) {
             console.error("Error downloading the image:", error);
         }
+    };
+    const sendTicketMail = (base64String, email = null, ticketid) => {
+        if (email === null || email === "null") {
+            return;
+        }
+
+        const pubkey = "7773977fa4c821182c2e6c0b39ccf93b";
+        const seckey = "e4658c43c7eeca489681e1be54e5001a";
+
+        const mailjet = Mailjet.apiConnect(pubkey, seckey);
+
+        const request = mailjet.post("send", {version: "v3.1"}).request({
+            Messages: [
+                {
+                    From: {
+                        Email: "ashish.kumar.samantaray2003@gmail.com",
+                        Name: "SangrahaMitra",
+                    },
+                    To: [
+                        {
+                            Email: email,
+                            Name: ticketid,
+                        },
+                    ],
+                    Subject: "SangrahaMitra ticket booking",
+                    TextPart:
+                        "Dear users, welcome to the advanced AI based ticketing system",
+                    HTMLPart:
+                        "<h3>Welcome to SangrahaMitra</h3><br/>May the museum visit be flawless",
+                    Attachments: [
+                        {
+                            ContentType: "image/png",
+                            Filename: `ticket${ticketid}.png`,
+                            Base64Content: base64String,
+                        },
+                    ],
+                },
+            ],
+        });
+
+        request
+            .then((result) => {
+                console.log(result.body);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     };
 
     const handleSendMessage = async (message) => {
@@ -903,7 +964,19 @@ const Chatbot = () => {
                             console.log("Updated response");
                             console.log(ticketID);
                             let ticketIDD = ticketID.ticket_id
-                            downloadImage(ticketIDD, "satwik.k.2000@gmail.com")
+                            setTicketId(ticketIDD)
+                            updateConversation({
+                                sender: 'bot',
+                                text: 'Ticket ID generated successfully.Here is your ticket ID'
+                            })
+                            updateConversation({sender: 'bot', text: ticketIDD})
+
+                            downloadImage(ticketIDD)
+                            updateConversation({
+                                sender: 'bot',
+                                text: "Do you want to send the ticket in your email? If yes, please provide your email id..."
+                            })
+                            setWantTicketInEmail(true)
 
 
                         }).catch(error => {
@@ -923,7 +996,38 @@ const Chatbot = () => {
                     setIsLoading(false);
 
                 }
-            } else if (!checkEventAdded && !paymentCheckout && !fetchMuseumId && !handleEighthQuestion && !handleZerothQuestion && !handleFirstQuestion && !handleSecondQuestion && !handleThirdQuestion && !handleForthQuestion && !handleFifthQuestion && !handleSixthQuestion && !handleSeventhQuestion) {
+            } else if (wantTicketInEmail) {
+                let email = extractEmail(message.trim())
+                if (email.length !== 0) {
+
+                    updateConversation({
+                        sender: 'bot',
+                        text: "Not a valid email address.Please try giving a correct email address."
+                    })
+
+                } else if (email.length > 1) {
+                    updateConversation({
+                        sender: 'bot',
+                        text: "You have given more than one email address.Kindly give only one email address."
+                    })
+
+                } else {
+                    sendTicketMail(imageData, email[0], ticketId)
+                    updateConversation({
+                        sender: 'bot',
+                        text: "Ticket successfully sent to your email address. Thank you for your cooperation."
+                    })
+                    updateConversation({
+                        sender: 'bot',
+                        text: "Have a great day."
+                    })
+                    setWantTicketInEmail(false)
+                    isBookingProcessStarted = false
+
+                }
+
+
+            } else if (!wantTicketInEmail && !checkEventAdded && !paymentCheckout && !fetchMuseumId && !handleEighthQuestion && !handleZerothQuestion && !handleFirstQuestion && !handleSecondQuestion && !handleThirdQuestion && !handleForthQuestion && !handleFifthQuestion && !handleSixthQuestion && !handleSeventhQuestion) {
 
 
             }

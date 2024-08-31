@@ -133,53 +133,6 @@ app.get('/api/fetch_price/event/:eventId', (req, res) => {
 });
 
 const conversationFilePath = path.join(__dirname, '../conversation_history.json');
-const sendTicketMail = (base64String, email = null, ticketid) => {
-    if (email === null || email == "null") {
-        return;
-    }
-
-    const pubkey = "7773977fa4c821182c2e6c0b39ccf93b";
-    const seckey = "e4658c43c7eeca489681e1be54e5001a";
-
-    const mailjet = Mailjet.apiConnect(pubkey, seckey);
-
-    const request = mailjet.post("send", {version: "v3.1"}).request({
-        Messages: [
-            {
-                From: {
-                    Email: "ashish.kumar.samantaray2003@gmail.com",
-                    Name: "SangrahaMitra",
-                },
-                To: [
-                    {
-                        Email: email,
-                        Name: ticketid,
-                    },
-                ],
-                Subject: "SangrahaMitra ticket booking",
-                TextPart:
-                    "Dear users, welcome to the advanced AI based ticketing system",
-                HTMLPart:
-                    "<h3>Welcome to SangrahaMitra</h3><br/>May the museum visit be flawless",
-                Attachments: [
-                    {
-                        ContentType: "image/png",
-                        Filename: `ticket${ticketid}.png`,
-                        Base64Content: base64String,
-                    },
-                ],
-            },
-        ],
-    });
-
-    request
-        .then((result) => {
-            console.log(result.body);
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-};
 const genimage = async function generateTicket(ticketid) {
     const data = {
         Tid: ticketid,
@@ -264,15 +217,15 @@ const genimage = async function generateTicket(ticketid) {
         console.error("Error generating ticket:", error.message);
     }
 };
-app.get("/api/generate-image/:ticketid/:emailid", async (req, res) => {
+app.get("/api/generate-image/:ticketid/", async (req, res) => {
     const tid = req.params.ticketid;
-    const eid = req.params.emailid;
 
-    console.log(tid, eid);
+
+    console.log(tid);
 
     await genimage(tid).catch((err) => console.error(err));
 
-    // Wait 2 secs for the genimage resolve and file is created successfully..
+
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     const ticketFile = "./ticket.png";
@@ -283,11 +236,10 @@ app.get("/api/generate-image/:ticketid/:emailid", async (req, res) => {
             res.status(500).send("Error reading file");
         } else {
             const base64Data = data.toString("base64");
-            sendTicketMail(base64Data, eid, tid)
             res.json({imageData: base64Data, ticket_id: tid});
         }
 
-        // Delete the file after sending
+
         fs.unlink(ticketFile, (err) => {
             if (err) {
                 console.error("Error deleting file:", err);
