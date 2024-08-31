@@ -22,6 +22,7 @@ import SpeakerButton from "./SpeakerButton.jsx";
 import {GENERAL_INQUIRY, MUSEUM_TICKET_BOOK_QUERY} from "./query_constants";
 import LanguageButton from "./LanguageButton";
 import AlertDialog from "./AlertDialog";
+import {handlePayment} from "./HandlePayment";
 
 let bookingIndex = 0;
 let backendPort = 8080
@@ -53,7 +54,6 @@ const Chatbot = () => {
     const [checkEventAdded, setTicketEventAdded] = useState(false);
     const [paymentCheckout, setAskedForPaymentCheckout] = useState(false);
 
-    const [museumName, SetMuseumName] = useState('');
 
     const [handleZerothQuestion, setHandleZerothQuestion] = useState(true);
     const [handleFirstQuestion, setHandleFirstQuestion] = useState(false);
@@ -79,6 +79,10 @@ const Chatbot = () => {
     const [complainDescription, setAskedForComplainDescription] = useState(false);
     const [finalArrayOfValidTickets, setArrayOfValidTickets] = useState([]);
     const [totalBill, setTotalBill] = useState(0);
+    const [name, setName] = useState('Satwik Kar');
+    const [museumId, setMuseumId] = useState(-1);
+    const [museumName, setMuseumName] = useState('');
+    const [eventNames, setEventNames] = useState([]);
 
     const handleOpenDialog = () => {
         setIsDialogOpen(true);
@@ -591,8 +595,9 @@ const Chatbot = () => {
 
                 }
             } else if (handleSeventhQuestion) {
-
-
+                let name = message.trim()
+                let f_name = extractNames(name)
+                setName("Satwik Kar")
                 setInput('')
                 setHandleSeventhQuestion(false)
                 setHandleEighthQuestion(true)
@@ -614,8 +619,13 @@ const Chatbot = () => {
 
             } else if (fetchMuseumId) {
                 const museumId = message.trim()
-                console.log("museum id" + museumId)
-                const result = await axios.get(`http://localhost:${backendPort}/api/fetch_price/${museumId}`)
+                console.log("museum id:" + museumId)
+                setMuseumId(museumId)
+                const url = `https://guyk0ymti9.execute-api.ap-south-1.amazonaws.com/server-dev/api/fetch_price/${museumId}`
+                const result = await axios.get(url)
+
+                let name = result.data.name
+                setMuseumName(name)
 
 
                 const statement = `Is there any event going on for the museum id ${museumId} ?`
@@ -767,6 +777,7 @@ const Chatbot = () => {
                                 //
                                 // }
                                 console.log(data)
+                                setEventNames(prevState => [...prevState, data.event_name])
 
 
                                 let priceEventTotal = Number(data.adult_price) * (noOfAdults + noOfForeigners + noOfChildren)
@@ -831,7 +842,49 @@ const Chatbot = () => {
                     setAskedForPaymentCheckout(false)
                     await updateConversation({sender: 'bot', text: 'Redirecting to the payments page...'});
                     setInput('')
-                    setIsLoading(false);
+                    let eventAppendString = ""
+
+                    for (let i = 0; i < eventNames.length; i++) {
+                        console.log(eventNames[i])
+                        eventAppendString += `${eventNames[i]} `
+                    }
+                    const date = new Date();
+                    const year = date.getFullYear().toString().slice(-2);
+                    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                    const day = date.getDate().toString().padStart(2, '0');
+
+                    let dateString = `${year}-${month}-${day}`
+                    console.log("eventAppend:" + eventAppendString)
+
+                    let url = `https://o05edcws0c.execute-api.ap-south-1.amazonaws.com/payment-gateway-dev/api/create-order/${totalBill}/${name}/${phoneNumber}/${noOfChildren}/${noOfForeigners}/${noOfAdults}/${museumName}/${dateString}/${eventAppendString}`
+
+
+                    await axios.post(url).then((response) => {
+
+
+                        return response.data
+
+                    }).then(async data => {
+
+
+                        console.log(data)
+                        await handlePayment(url).then(async response => {
+
+                            try {
+                                const response = await axios.post('https://o05edcws0c.execute-api.ap-south-1.amazonaws.com/payment-gateway-dev/api/payment-success', data);
+                                console.log('Ticket inserted successfully:', response.data);
+                            } catch (error) {
+                                console.error('Error inserting ticket:', error);
+                            }
+
+
+                        })
+
+
+                    }).finally(r => {
+                        setIsLoading(false);
+                    })
+
 
                     //response
                 } else {
@@ -841,9 +894,8 @@ const Chatbot = () => {
                     setIsLoading(false);
 
                 }
-            } else if (!paymentCheckout && !fetchMuseumId && !handleEighthQuestion && !handleZerothQuestion && !handleFirstQuestion && !handleSecondQuestion && !handleThirdQuestion && !handleForthQuestion && !handleFifthQuestion && !handleSixthQuestion && !handleSeventhQuestion) {
-                await updateConversation({sender: 'bot', text: ''});
-                setIsLoading(false);
+            } else if (!checkEventAdded && !paymentCheckout && !fetchMuseumId && !handleEighthQuestion && !handleZerothQuestion && !handleFirstQuestion && !handleSecondQuestion && !handleThirdQuestion && !handleForthQuestion && !handleFifthQuestion && !handleSixthQuestion && !handleSeventhQuestion) {
+
 
             }
         }

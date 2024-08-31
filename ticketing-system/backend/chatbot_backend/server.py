@@ -5,7 +5,7 @@ from langchain_cohere import ChatCohere
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import json
-import joblib  # Import joblib for saving and loading the model
+import joblib
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
@@ -14,14 +14,14 @@ from sklearn.pipeline import Pipeline
 from sklearn.metrics import classification_report
 
 backend_port = 5000
-os.environ['COHERE_API_KEY'] = 'WxPWfSIHVASNIFMlfnLMrViai4iKklvMl1jvfVu5'
+os.environ['COHERE_API_KEY'] = 'V5POk06fbvq1UEYNDsOAwfSP7BoIP5dMZ5hoNA3k'
 username = "sih2024"
 password = "sih12345."
 host = "sihdbconnection.cvu4owusgq3p.ap-south-1.rds.amazonaws.com"
 port = 3306
 database = "Travel_Chatbot"
 db_url = f"mysql+mysqlconnector://{username}:{password}@{host}:{port}/{database}"
-model_file = 'intent_classifier_model.pkl'  # File to save/load the model
+model_file = 'intent_classifier_model.pkl'
 global db, query_handler
 
 try:

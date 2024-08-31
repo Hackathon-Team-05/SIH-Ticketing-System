@@ -113,7 +113,7 @@ app.get('/api/fetch_price/event/:eventId', (req, res) => {
         return res.status(400).send({error: 'eventId is required'});
     }
 
-    const query = `SELECT * FROM Events WHERE id = ?;`
+    const query = `SELECT event_name, child_price, adult_price, foreigner_price  FROM Events WHERE id = ?;`
 
     db.query(query, [eventId], (err, row) => {
         if (err) {
@@ -173,7 +173,6 @@ app.post('/api/conversation', (req, res) => {
         });
     });
 });
-
 
 
 app.listen(port, () => {
