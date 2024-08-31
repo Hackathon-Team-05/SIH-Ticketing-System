@@ -284,7 +284,6 @@ const Chatbot = () => {
     }
 
 
-
     const handleSendMessage = async (message) => {
         setInput('')
         setIsLoading(true)
@@ -881,13 +880,12 @@ const Chatbot = () => {
                     }).then(async data => {
 
 
-                        console.log(data)
-                        await handlePayment(url).then(response => {
-
-                            console.log(response)
-
-                        })
-
+                        await handlePayment(url).then(ticketID => {
+                            console.log("Updated response");
+                            console.log(ticketID); // This should log the ticketID
+                        }).catch(error => {
+                            console.error("An error occurred:", error);
+                        });
 
                     }).finally(r => {
                         setIsLoading(false);
@@ -971,18 +969,18 @@ const Chatbot = () => {
                                         {msg.text}
                                         {msg.sender === 'bot' && (<Button onClick={() => {
                                             speakMessage(msg.text)
-                                          }}
-                                                  type="primary"
-                                                  shape="circle"
-                                                  icon={<SpeakerButton
-                                                      style={{
-                                                          cursor: 'pointer',
-                                                          marginLeft: '8px'
-                                                      }}/>}
-                                                  style={{
-                                                      backgroundColor: '#ffffff',
-                                                      alignSelf: 'flex-end'
-                                                  }}
+                                        }}
+                                                                          type="primary"
+                                                                          shape="circle"
+                                                                          icon={<SpeakerButton
+                                                                              style={{
+                                                                                  cursor: 'pointer',
+                                                                                  marginLeft: '8px'
+                                                                              }}/>}
+                                                                          style={{
+                                                                              backgroundColor: '#ffffff',
+                                                                              alignSelf: 'flex-end'
+                                                                          }}
                                         />)}
                                     </div>))}
                             </div>
