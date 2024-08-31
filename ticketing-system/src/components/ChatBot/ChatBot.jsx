@@ -410,8 +410,6 @@ const Chatbot = () => {
                     if (arrayOfValidTickets.length === ticketIds.length) {
                         //alll are valids
 
-
-                        updateConversation({sender: 'bot', text: 'Give me some time. Fetching the details...'})
                         updateConversation({sender: 'bot', text: 'Reply the description of your complain.'})
                         setArrayOfValidTickets(arrayOfValidTickets)
                         setAskedForComplainDescription(true)
