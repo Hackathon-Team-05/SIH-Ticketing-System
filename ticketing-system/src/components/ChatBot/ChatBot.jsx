@@ -85,6 +85,7 @@ const Chatbot = () => {
     const [museumName, setMuseumName] = useState('');
     const [eventNames, setEventNames] = useState([]);
     const [wantTicketInEmail, setWantTicketInEmail] = useState(false);
+    const [checkWantEmail, setCheckWantEmail] = useState(false);
     const [imageData, setImageData] = useState('');
     const [ticketId, setTicketId] = useState('');
 
@@ -974,9 +975,13 @@ const Chatbot = () => {
                             downloadImage(ticketIDD)
                             updateConversation({
                                 sender: 'bot',
-                                text: "Do you want to send the ticket in your email? If yes, please provide your email id..."
+                                text: "Ticket is successfully downloaded to your device."
                             })
-                            setWantTicketInEmail(true)
+                            updateConversation({
+                                sender: 'bot',
+                                text: "Do you want to send the ticket in your email?"
+                            })
+                            setCheckWantEmail(true)
 
 
                         }).catch(error => {
@@ -996,34 +1001,89 @@ const Chatbot = () => {
                     setIsLoading(false);
 
                 }
-            } else if (wantTicketInEmail) {
-                let email = extractEmail(message.trim())
-                if (email.length !== 0) {
+            } else if (checkWantEmail) {
+                let answer = message.trim()
+                console.log("checkWantEmail:" + answer)
+                ///////////////////////////
+                const response = await fetch("https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english", {
+                    headers: {
+                        Authorization: "Bearer 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",
+                        "Content-Type": "application/json",
+                    }, method: "POST", body: JSON.stringify(answer),
+                });
+                const result = await response.json();
+                let positiveScore = null;
+                let negativeScore = null;
 
-                    updateConversation({
+                result.forEach(innerArray => {
+                    innerArray.forEach(item => {
+                        if (item.label === "POSITIVE") {
+                            positiveScore = item.score;
+                        } else if (item.label === "NEGATIVE") {
+                            negativeScore = item.score;
+                        }
+                    });
+                });
+                console.log("p:" + positiveScore)
+                console.log("n:" + negativeScore)
+                if (positiveScore >= negativeScore) {
+                    await updateConversation({
                         sender: 'bot',
-                        text: "Not a valid email address.Please try giving a correct email address."
+                        text: "Reply you email to send the ticket..."
                     })
-
-                } else if (email.length > 1) {
-                    updateConversation({
-                        sender: 'bot',
-                        text: "You have given more than one email address.Kindly give only one email address."
-                    })
+                    setWantTicketInEmail(true)
 
                 } else {
-                    sendTicketMail(imageData, email[0], ticketId)
-                    updateConversation({
+                    await updateConversation({
                         sender: 'bot',
-                        text: "Ticket successfully sent to your email address. Thank you for your cooperation."
+                        text: "Booking successfully done. Thank you for your cooperation. Enjoy your trip!!"
                     })
-                    updateConversation({
+                    setWantTicketInEmail(false)
+                    isBookingProcessStarted = false
+
+                }
+
+            } else if (wantTicketInEmail) {
+                function extractAndValidateEmail(sentence) {
+                    // Regular expression for validating an email address
+                    const emailRegex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,})/;
+
+                    // Extract email address from the sentence
+                    const match = sentence.match(emailRegex);
+
+                    if (match) {
+                        // Extracted email
+                        const email = match[0];
+
+                        // Validate the email address (you can enhance this regex as needed)
+                        const isValidEmail = emailRegex.test(email);
+
+                        return isValidEmail ? email : null;
+                    }
+
+                    return null;
+                }
+
+
+                let email = extractAndValidateEmail(message.trim())
+
+                if (email !== null) {
+
+                    sendTicketMail(imageData, email, ticketId)
+                    await updateConversation({
+                        sender: 'bot',
+                        text: "Ticket successfully sent to your email address. Thank you for your co-operation."
+                    })
+                    await updateConversation({
                         sender: 'bot',
                         text: "Have a great day."
                     })
                     setWantTicketInEmail(false)
                     isBookingProcessStarted = false
 
+
+                } else {
+                    await updateConversation({sender: 'bot', text: "This is not a valid email. Please try again."});
                 }
 
 
