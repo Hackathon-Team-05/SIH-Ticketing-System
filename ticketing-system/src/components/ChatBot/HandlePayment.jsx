@@ -56,8 +56,8 @@ export const handlePayment = async (urlForPayment) => {
                     }
                 },
                 prefill: {
-                    name: "SangramAI",
-                    contact: "0603988787",
+                    name: data.name,
+                    contact: data.mobile_number,
                 },
                 theme: {
                     color: "#3399cc",

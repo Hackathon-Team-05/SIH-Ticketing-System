@@ -148,7 +148,7 @@ const sendTicketMail = (base64String, email = null, ticketid) => {
             {
                 From: {
                     Email: "ashish.kumar.samantaray2003@gmail.com",
-                    Name: "Ashish Kumar Samantaray",
+                    Name: "SangrahaMitra",
                 },
                 To: [
                     {
