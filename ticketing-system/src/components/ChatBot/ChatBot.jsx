@@ -277,6 +277,14 @@ const Chatbot = () => {
         }
     };
 
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            handleSendMessage(input)
+        }
+    }
+
+
+
     const handleSendMessage = async (message) => {
         setInput('')
         setIsLoading(true)
@@ -963,18 +971,18 @@ const Chatbot = () => {
                                         {msg.text}
                                         {msg.sender === 'bot' && (<Button onClick={() => {
                                             speakMessage(msg.text)
-                                        }}
-                                                                          type="primary"
-                                                                          shape="circle"
-                                                                          icon={<SpeakerButton
-                                                                              style={{
-                                                                                  cursor: 'pointer',
-                                                                                  marginLeft: '8px'
-                                                                              }}/>}
-                                                                          style={{
-                                                                              backgroundColor: '#ffffff',
-                                                                              alignSelf: 'flex-end'
-                                                                          }}
+                                          }}
+                                                  type="primary"
+                                                  shape="circle"
+                                                  icon={<SpeakerButton
+                                                      style={{
+                                                          cursor: 'pointer',
+                                                          marginLeft: '8px'
+                                                      }}/>}
+                                                  style={{
+                                                      backgroundColor: '#ffffff',
+                                                      alignSelf: 'flex-end'
+                                                  }}
                                         />)}
                                     </div>))}
                             </div>
@@ -1003,6 +1011,7 @@ const Chatbot = () => {
                                             placeholder={hintText}
                                             type={numberInput ? "number" : "text"}
                                             value={input}
+                                            onKeyDown={handleKeyPress}
                                             min={0}
                                             onChange={handleInputChange}
                                         />

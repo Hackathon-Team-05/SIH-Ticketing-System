@@ -48,9 +48,9 @@ export const handlePayment = async (urlForPayment) => {
                 postdata(jsonobj)
             },
             prefill: {
-                name: "Ashish",
-                email: "ashish@example.com",
-                contact: "9999999999",
+                name: "SangramAI",
+                email: "sangramAI@sangram.com",
+                contact: "0603988787",
             },
             theme: {
                 color: "#3399cc",
