@@ -156,7 +156,7 @@ const sendTicketMail = (base64String, email = null, ticketid) => {
                         Name: ticketid,
                     },
                 ],
-                Subject: "Sangramitra ticket booking",
+                Subject: "SangrahaMitra ticket booking",
                 TextPart:
                     "Dear users, welcome to the advanced AI based ticketing system",
                 HTMLPart:
