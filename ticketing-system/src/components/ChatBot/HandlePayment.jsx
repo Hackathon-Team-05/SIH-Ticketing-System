@@ -1,4 +1,19 @@
+import axios from "axios";
+
+const postdata = async (data) => {
+  try {
+    const response = await axios.post(
+      "https://o05edcws0c.execute-api.ap-south-1.amazonaws.com/payment-gateway-dev/api/payment-success",
+      data
+    );
+    console.log("Ticket inserted successfully:", response.data);
+  } catch (error) {
+    console.error("Error inserting ticket:", error);
+  }
+};
+
 export const handlePayment = async (urlForPayment) => {
+
     try {
         const response = await fetch(urlForPayment, {method: "POST"});
         if (!response.ok) {
@@ -30,6 +45,7 @@ export const handlePayment = async (urlForPayment) => {
 
 
                 console.log(jsonobj);
+                postdata(jsonobj)
             },
             prefill: {
                 name: "Ashish",

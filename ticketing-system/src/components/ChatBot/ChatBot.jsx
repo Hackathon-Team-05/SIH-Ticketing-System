@@ -855,8 +855,14 @@ const Chatbot = () => {
 
                     let dateString = `${year}-${month}-${day}`
                     console.log("eventAppend:" + eventAppendString)
+                    let url = ""
+                    if (eventAppendString.length !== 0) {
+                        url = `https://o05edcws0c.execute-api.ap-south-1.amazonaws.com/payment-gateway-dev/api/create-order/${totalBill}/${name}/${phoneNumber}/${noOfChildren}/${noOfForeigners}/${noOfAdults}/${museumName}/${dateString}/${eventAppendString}`
 
-                    let url = `https://o05edcws0c.execute-api.ap-south-1.amazonaws.com/payment-gateway-dev/api/create-order/${totalBill}/${name}/${phoneNumber}/${noOfChildren}/${noOfForeigners}/${noOfAdults}/${museumName}/${dateString}/${eventAppendString}`
+                    } else {
+                        url = `https://o05edcws0c.execute-api.ap-south-1.amazonaws.com/payment-gateway-dev/api/create-order/${totalBill}/${name}/${phoneNumber}/${noOfChildren}/${noOfForeigners}/${noOfAdults}/${museumName}/${dateString}/null`
+
+                    }
 
 
                     await axios.post(url).then((response) => {
@@ -868,15 +874,9 @@ const Chatbot = () => {
 
 
                         console.log(data)
-                        await handlePayment(url).then(async response => {
+                        await handlePayment(url).then(response => {
 
-                            try {
-                                const response = await axios.post('https://o05edcws0c.execute-api.ap-south-1.amazonaws.com/payment-gateway-dev/api/payment-success', data);
-                                console.log('Ticket inserted successfully:', response.data);
-                            } catch (error) {
-                                console.error('Error inserting ticket:', error);
-                            }
-
+                            console.log(response)
 
                         })
 
