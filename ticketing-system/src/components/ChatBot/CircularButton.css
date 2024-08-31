@@ -1,0 +1,32 @@
+
+.circular-button svg {
+    color: #ffffff;
+}
+
+.circular-button:hover {
+    background-color: #0056b3;
+}
+
+
+.circular-button {
+    background:  linear-gradient(to right, #4c2500, #aa4c00);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    padding: 0;
+}
+
+.circular-button svg {
+    color: #ffffff;
+}
+
+.circular-button:hover {
+    background-color: #0056b3;
+}
+

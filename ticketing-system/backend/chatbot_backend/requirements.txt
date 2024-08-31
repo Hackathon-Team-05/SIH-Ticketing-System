@@ -1,0 +1,15 @@
+langchain
+langchain_community
+langchain_cohere
+flask
+flask_cors
+mysql-connector-python
+scikit-learn
+
+
+
+
+
+
+
+
