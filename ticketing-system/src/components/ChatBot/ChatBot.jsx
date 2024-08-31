@@ -32,6 +32,8 @@ const GREETINGS_ = 2
 const COMPLAINT_ = 3
 let isBookingProcessStarted = false
 let isComplainProcessStarted = false
+let totalEventPrice = 0
+
 const Chatbot = () => {
     const [organisationDiscount, setOrganisationDiscount] = useState(5)
     const [input, setInput] = useState('');
@@ -76,6 +78,7 @@ const Chatbot = () => {
     const [languageCode, setLanguageCode] = useState('en');
     const [complainDescription, setAskedForComplainDescription] = useState(false);
     const [finalArrayOfValidTickets, setArrayOfValidTickets] = useState([]);
+    const [totalBill, setTotalBill] = useState(0);
 
     const handleOpenDialog = () => {
         setIsDialogOpen(true);
@@ -651,6 +654,7 @@ const Chatbot = () => {
                 if (isOrganisation) {
                     totalMoney = totalMoney - ((organisationDiscount / 100) * totalMoney)
                 }
+                setTotalBill(totalMoney)
 
                 await updateConversation({
                     sender: 'bot', text: `
@@ -660,13 +664,13 @@ const Chatbot = () => {
                     (3). Foreigner: ${foreignerPrice != null ? foreignerPrice : "Not specified."}
                 `
                 });
-
+                setTotalBill(totalMoney)
                 await updateConversation({
                     sender: 'bot', text: `
                 Your total bill amount is ${totalMoney}.
-                Number of adult tickets is ${noOfAdults} which adds up to ${totalAdultPrice}.
-                Number of child tickets is ${noOfChildren} which adds up to ${totalChildPrice}.
-                Number of foreigner tickets is ${noOfForeigners} which adds up to ${totalForeignerPrice}.
+                Number of adult tickets is ${noOfAdults} which adds up to Rs ${totalAdultPrice}.
+                Number of child tickets is ${noOfChildren} which adds up to Rs ${totalChildPrice}.
+                Number of foreigner tickets is ${noOfForeigners} which adds up to Rs ${totalForeignerPrice}.
                 `
                 });
 
@@ -731,8 +735,6 @@ const Chatbot = () => {
                 }
             } else if (checkEventAdded) {
                 if (message.trim() === "skip") {
-
-
                     await updateConversation({
                         sender: 'bot', text: "Do you really want to skip the event booking for this museum?"
                     });
@@ -740,39 +742,69 @@ const Chatbot = () => {
                     setTicketEventAdded(false)
                     setAskedForPaymentCheckout(true)
                     setIsLoading(false);
-
                 } else {
-
-
                     const eventIds = extractIdsFromString(message.trim())
-                    const prices = {}
-                    // handle the loop to add pricing
 
 
-                    const json = {events: eventIds};
+                    // Fetch prices for each event and calculate total
                     for (let i = 0; i < eventIds.length; i++) {
-                        const request = await axios.get(`http://localhost:${backendPort}/api/fetch_price/event/${eventIds[i]}`);
+                        try {
+                            // {
+                            //     "event_name": "Art Exibition",
+                            //
+                            //     "adult_price": 20
+                            //
+                            // }
+                            await axios.get(`http://localhost:${backendPort}/api/fetch_price/event/${eventIds[i]}`).then((response) => {
 
-                        const result = await request.data
-                        prices[eventIds[i]] = result.price
-                        console.log(result)
+                                return response.data
 
+                            }).then(data => {
+                                // {
+                                //     "event_name": "Art Exibition",
+                                //
+                                //     "adult_price": 20
+                                //
+                                // }
+                                console.log(data)
+
+
+                                let priceEventTotal = Number(data.adult_price) * (noOfAdults + noOfForeigners + noOfChildren)
+
+
+                                totalEventPrice += priceEventTotal
+
+
+                            })
+
+
+                        } catch (error) {
+                            console.error(`Error fetching price for event ${eventIds[i]}:`, error);
+                            await updateConversation({
+                                sender: 'bot',
+                                text: `There was an error fetching the price for event ${eventIds[i]}. Please try again.`
+                            });
+                            setIsLoading(false);
+                            return;
+                        }
                     }
-                    console.log(prices)
+
+                    let totalBillEvnAdded = totalBill + totalEventPrice
+                    console.log("totalEventprice" + totalEventPrice)
+                    setTotalBill(totalBillEvnAdded)
 
 
                     await updateConversation({
                         sender: 'bot', text: "Proceed to payments?"
                     });
+
                     setFetchMuseumId(false)
                     setTicketEventAdded(false)
                     setAskedForPaymentCheckout(true)
                     setIsLoading(false);
-
                 }
-
-
             } else if (paymentCheckout) {
+                console.log(totalBill)
                 const answerForCheckout = message.trim()
                 const response = await fetch("https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english", {
                     headers: {
