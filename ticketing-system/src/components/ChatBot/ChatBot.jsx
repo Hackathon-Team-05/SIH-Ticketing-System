@@ -74,6 +74,8 @@ const Chatbot = () => {
     const [totalTickets, setTotal] = useState(0);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [languageCode, setLanguageCode] = useState('en');
+    const [complainDescription, setAskedForComplainDescription] = useState(false);
+    const [finalArrayOfValidTickets, setArrayOfValidTickets] = useState([]);
 
     const handleOpenDialog = () => {
         setIsDialogOpen(true);
@@ -372,52 +374,82 @@ const Chatbot = () => {
                 setIsLoading(false)
             }
         } else if (isComplainProcessStarted) {
+            if (!complainDescription) {
+                ///////////////////////////////////
+                let prompts = notValidPrompts
 
-            ///////////////////////////////////
-            let prompts = notValidPrompts
 
-
-            const ticketIdMessage = message.trim()
-            const ticketIds = extractTicketIds(ticketIdMessage)
-            if (ticketIds.length === 1) {
-                if (checkValidTicketStructure(ticketIds[0])) {
-                    updateConversation({sender: 'bot', text: `Your given ticket id is ${ticketIds[0]}`})
-                    //
-
-                } else {
-                    const random = Math.floor(Math.random() * prompts.length)
-                    let noValidPrompt = prompts[random];
-                    updateConversation({sender: 'bot', text: noValidPrompt})
-
-                }
-
-            } else if (ticketIds.length > 1) {
-                updateConversation({sender: 'bot', text: `You have given more than 1 ticket ids.`})
-                let arrayOfValidTickets = []
-                let arrayOfNonValidTickets = []
-                for (let i = 0; i < ticketIds.length; i++) {
-                    if (checkValidTicketStructure(ticketIds[i])) {
-                        arrayOfValidTickets.push(ticketIds[i])
+                const ticketIdMessage = message.trim()
+                const ticketIds = extractTicketIds(ticketIdMessage)
+                if (ticketIds.length === 1) {
+                    if (checkValidTicketStructure(ticketIds[0])) {
+                        updateConversation({sender: 'bot', text: `Your given ticket id is ${ticketIds[0]}`})
+                        //
 
                     } else {
-                        arrayOfNonValidTickets.push(ticketIds[i])
+                        const random = Math.floor(Math.random() * prompts.length)
+                        let noValidPrompt = prompts[random];
+                        updateConversation({sender: 'bot', text: noValidPrompt})
+
                     }
 
-                }
+                } else if (ticketIds.length > 1) {
+                    updateConversation({sender: 'bot', text: `You have given more than 1 ticket ids.`})
+                    let arrayOfValidTickets = []
+                    let arrayOfNonValidTickets = []
+                    for (let i = 0; i < ticketIds.length; i++) {
+                        if (checkValidTicketStructure(ticketIds[i])) {
+                            arrayOfValidTickets.push(ticketIds[i])
 
-                if (arrayOfValidTickets.length === ticketIds.length) {
-                    //alll are valids
+                        } else {
+                            arrayOfNonValidTickets.push(ticketIds[i])
+                        }
+
+                    }
+
+                    if (arrayOfValidTickets.length === ticketIds.length) {
+                        //alll are valids
+
+
+                        updateConversation({sender: 'bot', text: 'Give me some time. Fetching the details...'})
+                        updateConversation({sender: 'bot', text: 'Reply the description of your complain.'})
+                        setArrayOfValidTickets(arrayOfValidTickets)
+                        setAskedForComplainDescription(true)
+
+                    } else {
+                        //any non valid ticket is there
+                        updateConversation({
+                            sender: 'bot',
+                            text: 'You have given a wrong structured ticket id. Please reply with the valid ticket ids.'
+                        })
+                        updateConversation({sender: 'bot', text: 'Here are the invalid ticket ids.'})
+                        for (let i = 0; i < ticketIds.length; i++) {
+
+                            updateConversation({sender: 'bot', text: arrayOfNonValidTickets[i]})
+
+                        }
+
+                    }
 
 
                 } else {
-                    //any non valid ticket is there
+                    updateConversation({sender: 'bot', text: 'Can you again reply the ticket id?'})
+                }
+            } else if (complainDescription) {
+                const description = message.trim()
+                //backend call to push complain
+                let complainUrl = ""
+                for (let i = 0; i < finalArrayOfValidTickets.length; i++) {
 
+                    let request = await axios.post(complainUrl, {
+                        ticket_id: finalArrayOfValidTickets[i],
+                        description: description
+                    })
+                    let response = request.data
 
                 }
 
 
-            } else {
-                updateConversation({sender: 'bot', text: 'Can you again reply the ticket id?'})
             }
 
 
