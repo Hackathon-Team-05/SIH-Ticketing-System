@@ -283,6 +283,25 @@ const Chatbot = () => {
         }
     }
 
+    const downloadImage = async (ticketId, email) => {
+        try {
+            const response = await fetch(
+                `http://localhost:${backendPort}/api/generate-image/${ticketId}/${email}`
+            );
+            const data = await response.json();
+            console.log(data);
+            const dataURI = `data:image/png;base64,${data.imageData}`;
+
+            const link = document.createElement("a");
+            link.href = dataURI;
+            link.download = `ticket-${data.ticket_id}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error("Error downloading the image:", error);
+        }
+    };
 
     const handleSendMessage = async (message) => {
         setInput('')
@@ -882,7 +901,11 @@ const Chatbot = () => {
 
                         await handlePayment(url).then(ticketID => {
                             console.log("Updated response");
-                            console.log(ticketID); // This should log the ticketID
+                            console.log(ticketID);
+                            let ticketIDD = ticketID.ticket_id
+                            downloadImage(ticketIDD, "satwik.k.2000@gmail.com")
+
+
                         }).catch(error => {
                             console.error("An error occurred:", error);
                         });
