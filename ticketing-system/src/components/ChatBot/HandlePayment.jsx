@@ -1,9 +1,9 @@
 import axios from "axios";
-
+const backendPort = 8080;
 const postdata = async (data) => {
     try {
         const response = await axios.post(
-            "https://o05edcws0c.execute-api.ap-south-1.amazonaws.com/payment-gateway-dev/api/payment-success",
+            `http://localhost:${backendPort}/api/payment-success`,
             data
         );
 

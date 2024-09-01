@@ -23,7 +23,6 @@ import {GENERAL_INQUIRY, MUSEUM_TICKET_BOOK_QUERY} from "./query_constants";
 import LanguageButton from "./LanguageButton";
 import AlertDialog from "./AlertDialog";
 import {handlePayment} from "./HandlePayment";
-import Mailjet from "node-mailjet";
 
 let bookingIndex = 0;
 let backendPort = 8080
@@ -305,6 +304,7 @@ const Chatbot = () => {
             const data = await response.json();
             console.log(data);
             const dataURI = `data:image/png;base64,${data.imageData}`;
+
             setImageData(data.imageData)
 
             const link = document.createElement("a");
@@ -318,51 +318,22 @@ const Chatbot = () => {
         }
     };
     const sendTicketMail = (base64String, email = null, ticketid) => {
-        if (email === null || email === "null") {
-            return;
-        }
+        console.log(base64String)
 
-        const pubkey = "7773977fa4c821182c2e6c0b39ccf93b";
-        const seckey = "e4658c43c7eeca489681e1be54e5001a";
+        axios.get(`http://localhost:${backendPort}/send-email/${email}/${ticketid}/${base64String}`).then((response) => {
 
-        const mailjet = Mailjet.apiConnect(pubkey, seckey);
+            if (response.status === 200) {
+                return response.data;
 
-        const request = mailjet.post("send", {version: "v3.1"}).request({
-            Messages: [
-                {
-                    From: {
-                        Email: "ashish.kumar.samantaray2003@gmail.com",
-                        Name: "SangrahaMitra",
-                    },
-                    To: [
-                        {
-                            Email: email,
-                            Name: ticketid,
-                        },
-                    ],
-                    Subject: "SangrahaMitra ticket booking",
-                    TextPart:
-                        "Dear users, welcome to the advanced AI based ticketing system",
-                    HTMLPart:
-                        "<h3>Welcome to SangrahaMitra</h3><br/>May the museum visit be flawless",
-                    Attachments: [
-                        {
-                            ContentType: "image/png",
-                            Filename: `ticket${ticketid}.png`,
-                            Base64Content: base64String,
-                        },
-                    ],
-                },
-            ],
-        });
+            } else {
+                console.error(response.data)
+            }
 
-        request
-            .then((result) => {
-                console.log(result.body);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        }).then(data => {
+            console.log(data.message)
+        })
+
+
     };
 
     const handleSendMessage = async (message) => {
@@ -945,10 +916,10 @@ const Chatbot = () => {
                     console.log("eventAppend:" + eventAppendString)
                     let url = ""
                     if (eventAppendString.length !== 0) {
-                        url = `https://o05edcws0c.execute-api.ap-south-1.amazonaws.com/payment-gateway-dev/api/create-order/${totalBill}/${name}/${phoneNumber}/${noOfChildren}/${noOfForeigners}/${noOfAdults}/${museumName}/${dateString}/${eventAppendString}`
+                        url = `http://localhost:${backendPort}/api/create-order/${totalBill}/${name}/${phoneNumber}/${noOfChildren}/${noOfForeigners}/${noOfAdults}/${museumName}/${dateString}/${eventAppendString}`
 
                     } else {
-                        url = `https://o05edcws0c.execute-api.ap-south-1.amazonaws.com/payment-gateway-dev/api/create-order/${totalBill}/${name}/${phoneNumber}/${noOfChildren}/${noOfForeigners}/${noOfAdults}/${museumName}/${dateString}/null`
+                        url = `http://localhost:${backendPort}/api/create-order/${totalBill}/${name}/${phoneNumber}/${noOfChildren}/${noOfForeigners}/${noOfAdults}/${museumName}/${dateString}/null`
 
                     }
 
@@ -970,6 +941,7 @@ const Chatbot = () => {
                                 sender: 'bot',
                                 text: 'Ticket ID generated successfully.Here is your ticket ID'
                             })
+                            sendTicketMail(imageData, "satwik.k.2000@gmail.com", ticketId)
                             updateConversation({sender: 'bot', text: ticketIDD})
 
                             downloadImage(ticketIDD)
@@ -982,7 +954,7 @@ const Chatbot = () => {
                                 text: "Do you want to send the ticket in your email?"
                             })
                             setCheckWantEmail(true)
-
+                            setAskedForPaymentCheckout(false)
 
                         }).catch(error => {
                             console.error("An error occurred:", error);
@@ -1069,7 +1041,7 @@ const Chatbot = () => {
 
                 if (email !== null) {
 
-                    sendTicketMail(imageData, email, ticketId)
+                    // sendTicketMail(imageData, email, ticketId)
                     await updateConversation({
                         sender: 'bot',
                         text: "Ticket successfully sent to your email address. Thank you for your co-operation."

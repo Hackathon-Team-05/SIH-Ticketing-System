@@ -11,6 +11,12 @@ const sharp = require("sharp");
 const Jimp = require("jimp");
 
 const Mailjet = require("node-mailjet");
+const Razorpay = require("razorpay");
+
+const razorpay = new Razorpay({
+    key_id: "rzp_test_ZJlM6qFwFKlLhB",
+    key_secret: "LW1X3XzRf2Lf5833yGOnpIRA",
+});
 app.use(cors());
 app.use(express.json());
 
@@ -217,6 +223,169 @@ const genimage = async function generateTicket(ticketid) {
         console.error("Error generating ticket:", error.message);
     }
 };
+app.post("/api/payment-success", async (req, res) => {
+    try {
+        console.log("payment-success");
+
+        const {
+            name,
+            mobile_no,
+            noofchildren,
+            noofforeigners,
+            noofadults,
+            museum_name,
+            status,
+            date,
+            events,
+        } = req.body;
+
+        // Insert the ticket into the database
+
+        let query =
+            "INSERT INTO Ticket (name, phone_number, no_of_adults, no_of_children, no_of_foreigners, museum_name, status, purchase_date, events) VALUES (?, ?, ?, ?, ?, ?, ? ,?, ?)";
+
+        db.query(
+            query,
+            [
+                name,
+                mobile_no,
+                noofchildren,
+                noofforeigners,
+                noofadults,
+                museum_name,
+                status,
+                date,
+                events,
+            ],
+            (err, results) => {
+                if (err) {
+                    console.log("Error :-", err);
+                }
+                console.log(results);
+            }
+        );
+
+        let query2 =
+            "SELECT ticket_id FROM Ticket WHERE name = ? AND phone_number = ? AND no_of_adults = ? AND no_of_children = ? AND no_of_foreigners = ? AND museum_name = ? AND status = ? AND purchase_date = ? AND events = ?";
+        db.query(
+            query2,
+            [
+                name,
+                mobile_no,
+                noofchildren,
+                noofforeigners,
+                noofadults,
+                museum_name,
+                status,
+                date,
+                events,
+            ],
+            (err, results) => {
+                if (err) {
+                    console.log("Error :-", err);
+                }
+                res.status(200).json({ticket_id: results[0].ticket_id});
+            }
+        );
+    } catch (error) {
+        console.error("Error inserting ticket:", error);
+        res.status(500).json({error: "Error inserting ticket"});
+    }
+});
+app.post(
+    "/api/create-order/:amount/:name/:number/:noc/:nof/:noa/:museum_name/:date/:events",
+    async (req, res) => {
+        console.log("create-order");
+        try {
+            const amt = req.params.amount;
+            const nme = req.params.name;
+            const mobno = req.params.number;
+            const no_of_child = req.params.noc;
+            const no_of_for = req.params.nof;
+            const no_of_ad = req.params.noa;
+            const museum_name = req.params.museum_name;
+            const date = req.params.date;
+            const events = req.params.events;
+
+            const order = await razorpay.orders.create({
+                amount: amt * 100,
+                currency: "INR",
+                receipt: "KCH" + Math.random().toString(36).substring(7),
+            });
+
+            res.json({
+                orderId: order.id,
+                amount: amt,
+                name: nme,
+                mobile_number: mobno,
+                no_of_children: no_of_child,
+                no_of_adults: no_of_ad,
+                no_of_foreigners: no_of_for,
+                museum_name: museum_name,
+                status: "allowed",
+                date: date,
+                events: events,
+            });
+        } catch (error) {
+            console.error("Error creating order:", error);
+            res.status(500).json({error: "Error creating order"});
+        }
+    }
+);
+
+app.get("/send-email/:email/:ticketid/:imageData", async (req, res) => {
+    const email = req.params.email;
+    const ticketid = req.params.ticketid;
+    const base64String = req.params.imageData;
+
+    if (email === null || email === "null") {
+        return;
+    }
+
+    const pubkey = "7773977fa4c821182c2e6c0b39ccf93b";
+    const seckey = "e4658c43c7eeca489681e1be54e5001a";
+
+    const mailjet = Mailjet.apiConnect(pubkey, seckey);
+
+    const request = mailjet.post("send", {version: "v3.1"}).request({
+        Messages: [
+            {
+                From: {
+                    Email: "ashish.kumar.samantaray2003@gmail.com",
+                    Name: "Ashish Kumar Samantaray",
+                },
+                To: [
+                    {
+                        Email: email,
+                        Name: ticketid,
+                    },
+                ],
+                Subject: "SANGRAMITRA Test Email",
+                TextPart:
+                    "Dear users, welcome to the advanced AI based ticketing system",
+                HTMLPart:
+                    "<h3>Welcome to SangrahaMitra</h3><br/>May the museum visit be flawless",
+                Attachments: [
+                    {
+                        ContentType: "image/png",
+                        Filename: `ticket${ticketid}.png`,
+                        Base64Content: base64String,
+                    },
+                ],
+            },
+        ],
+    });
+
+    request
+        .then((result) => {
+            return res.status(200).json({message: "Successfully sent successfully."});
+        })
+        .catch((err) => {
+            console.log(err);
+            return res.status(500).json({message: "error."});
+        });
+
+})
 app.get("/api/generate-image/:ticketid/", async (req, res) => {
     const tid = req.params.ticketid;
 
