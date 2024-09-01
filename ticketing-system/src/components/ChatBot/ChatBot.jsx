@@ -318,7 +318,7 @@ const Chatbot = () => {
         }
     };
     const sendTicketMail = (base64String, email = null, ticketid) => {
-        console.log(base64String)
+        console.log(base64String, `imageData:${imageData}`)
 
         axios.get(`http://localhost:${backendPort}/send-email/${email}/${ticketid}/${base64String}`).then((response) => {
 
@@ -941,7 +941,7 @@ const Chatbot = () => {
                                 sender: 'bot',
                                 text: 'Ticket ID generated successfully.Here is your ticket ID'
                             })
-                            sendTicketMail(imageData, "satwik.k.2000@gmail.com", ticketId)
+
                             updateConversation({sender: 'bot', text: ticketIDD})
 
                             downloadImage(ticketIDD)
@@ -1004,8 +1004,11 @@ const Chatbot = () => {
                         text: "Reply you email to send the ticket..."
                     })
                     setWantTicketInEmail(true)
+                    setCheckWantEmail(false)
 
                 } else {
+
+
                     await updateConversation({
                         sender: 'bot',
                         text: "Booking successfully done. Thank you for your cooperation. Enjoy your trip!!"
@@ -1041,7 +1044,7 @@ const Chatbot = () => {
 
                 if (email !== null) {
 
-                    // sendTicketMail(imageData, email, ticketId)
+                    sendTicketMail(imageData, "satwik.k.2000@gmail.com", ticketId)
                     await updateConversation({
                         sender: 'bot',
                         text: "Ticket successfully sent to your email address. Thank you for your co-operation."
