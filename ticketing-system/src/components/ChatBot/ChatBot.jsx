@@ -9,6 +9,7 @@ import {startSpeechRecognition} from './SpeechRecognition';
 import {RingLoader} from 'react-spinners';
 import {
     bookingProcessStart,
+    goodbyeReplies,
     notValidPrompts,
     sorryNess,
     startComplaint,
@@ -27,10 +28,19 @@ import {handlePayment} from "./HandlePayment";
 let bookingIndex = 0;
 let backendPort = 8080
 let chatbotBackend = 5000
+//intents
 const GENERAL_INQUIRY_ = 0
 const TICKET_BOOK_QUERY_ = 1
 const GREETINGS_ = 2
 const COMPLAINT_ = 3
+const FAREWELL = 4
+const OPENING_HOURS = 5
+const PRICE_INQUIRY = 6
+const EVENT_BOOKING = 7
+const ABOUT_MUSEUM = 8
+const NOT_VALID_QUERY = 9
+
+let isEventBookingProcessStarted = false
 let isBookingProcessStarted = false
 let isComplainProcessStarted = false
 let totalEventPrice = 0
@@ -199,6 +209,18 @@ const Chatbot = () => {
             return TICKET_BOOK_QUERY_
         } else if (data.intent === "COMPLAINT") {
             return COMPLAINT_
+        } else if (data.intent === 'FAREWELL') {
+            return FAREWELL
+        } else if (data.intent === 'OPENING_HOURS') {
+            return OPENING_HOURS
+        } else if (data.intent === 'PRICE_INQUIRY') {
+            return PRICE_INQUIRY
+        } else if (data.intent === 'EVENT_BOOKING') {
+            return EVENT_BOOKING
+        } else if (data.intent === 'ABOUT_MUSEUM') {
+            return ABOUT_MUSEUM
+        } else if (data.intent === 'NOT_VALID_QUERY') {
+            return NOT_VALID_QUERY
         }
         return false
     }
@@ -431,6 +453,29 @@ const Chatbot = () => {
                     console.error('Error:', error);
                     setIsLoading(false)
                 }
+
+            } else if (query === ABOUT_MUSEUM) {
+                //eb pi oh farewell
+            } else if (query === NOT_VALID_QUERY) {
+                console.log("This is a not valid intent")
+                updateConversation({sender: 'bot', text: "I am not allowed to given this sensitive information."});
+                updateConversation({sender: 'bot', text: "You can ask anything else."});
+
+
+            } else if (query === OPENING_HOURS) {
+
+
+            } else if (query === FAREWELL) {
+                let goodByes = goodbyeReplies
+                let randomIndex = Math.floor(Math.random() * goodByes.length)
+                let statement = goodByes[randomIndex]
+                console.log("This is a not valid intent")
+                updateConversation({sender: 'bot', text: statement});
+
+
+            } else if (query === EVENT_BOOKING) {
+
+            } else if (query === PRICE_INQUIRY) {
 
             } else {
                 await updateConversation({

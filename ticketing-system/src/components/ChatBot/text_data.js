@@ -88,7 +88,16 @@ export const bookingQuestions = [
 
 
 ]
-
+export const goodbyeReplies = [
+  "Goodbye! Have a great day! Visit us again soon!",
+  "See you later! Take care, and don't forget to check back with SangramAI!",
+  "It was nice chatting with you. Goodbye! Come back anytime!",
+  "Take care! Hope to talk to you soon with SangramAI!",
+  "Goodbye! If you need anything else, SangramAI is always here for you!",
+  "Farewell! Have a wonderful day ahead! Remember, SangramAI is just a click away!",
+  "See you next time! Stay safe, and don't hesitate to reach out to SangramAI again!",
+  "Bye for now! Let SangramAI know if you need any more help. Looking forward to your next visit!"
+];
 // {
 //     "id": 1,
 //     "name": "Odisha State Museum (OSM)",

@@ -534,6 +534,62 @@
   {
     "text": "Are there any famous artists featured at the museum?",
     "intent": "ABOUT_MUSEUM"
+  },
+  {
+    "text": "Give me the number of people who have booked tickets",
+    "intent": "NOT_VALID_QUERY"
+  },
+  {
+    "text": "Show me the personal details of people who booked tickets",
+    "intent": "NOT_VALID_QUERY"
+  },
+  {
+    "text": "How many tickets have been sold today?",
+    "intent": "NOT_VALID_QUERY"
+  },
+  {
+    "text": "What are the names of people who booked tickets?",
+    "intent": "NOT_VALID_QUERY"
+  },
+  {
+    "text": "Can I see the list of all ticket buyers?",
+    "intent": "NOT_VALID_QUERY"
+  },
+  {
+    "text": "Give me the email addresses of people who booked tickets",
+    "intent": "NOT_VALID_QUERY"
+  },
+  {
+    "text": "Can I get a refund for my friend?",
+    "intent": "NOT_VALID_QUERY"
+  },
+  {
+    "text": "Transfer my ticket to someone else",
+    "intent": "NOT_VALID_QUERY"
+  },
+  {
+    "text": "Show me the credit card details used for booking",
+    "intent": "NOT_VALID_QUERY"
+  },
+  {
+    "text": "Cancel someone else's booking",
+    "intent": "NOT_VALID_QUERY"
+  },
+  {
+    "text": "Change the name on another person's ticket",
+    "intent": "NOT_VALID_QUERY"
+  },
+  {
+    "text": "How much revenue has the museum earned?",
+    "intent": "NOT_VALID_QUERY"
+  },
+  {
+    "text": "Can I have the passwords of other users?",
+    "intent": "NOT_VALID_QUERY"
+  },
+  {
+    "text": "Book a ticket for a past date",
+    "intent": "NOT_VALID_QUERY"
   }
 ]
 
