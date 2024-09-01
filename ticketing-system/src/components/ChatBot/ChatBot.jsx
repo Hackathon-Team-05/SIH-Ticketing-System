@@ -456,6 +456,11 @@ const Chatbot = () => {
 
             } else if (query === ABOUT_MUSEUM) {
                 //eb pi oh farewell
+                console.log("This is a about museum inquiry intent")
+
+                const result = await axios.post(`http://localhost:${chatbotBackend}/chat`, {"message": message});
+                await updateConversation({sender: 'bot', text: result.data.response});
+                setIsLoading(false)
             } else if (query === NOT_VALID_QUERY) {
                 console.log("This is a not valid intent")
                 updateConversation({sender: 'bot', text: "I am not allowed to given this sensitive information."});
@@ -463,7 +468,11 @@ const Chatbot = () => {
 
 
             } else if (query === OPENING_HOURS) {
+                console.log("This is a opening hours inquiry intent")
 
+                const result = await axios.post(`http://localhost:${chatbotBackend}/chat`, {"message": message});
+                await updateConversation({sender: 'bot', text: result.data.response});
+                setIsLoading(false)
 
             } else if (query === FAREWELL) {
                 let goodByes = goodbyeReplies
@@ -476,7 +485,11 @@ const Chatbot = () => {
             } else if (query === EVENT_BOOKING) {
 
             } else if (query === PRICE_INQUIRY) {
+                console.log("This is a pricing inquiry intent")
 
+                const result = await axios.post(`http://localhost:${chatbotBackend}/chat`, {"message": message});
+                await updateConversation({sender: 'bot', text: result.data.response});
+                setIsLoading(false)
             } else {
                 await updateConversation({
                     sender: 'bot',

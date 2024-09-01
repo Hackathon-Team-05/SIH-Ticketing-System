@@ -28,7 +28,7 @@
     "intent": "GREETINGS"
   },
   {
-    "text": "What's up?",
+    "text": "What's up",
     "intent": "GREETINGS"
   },
   {
@@ -160,7 +160,7 @@
     "intent": "MUSEUM_TICKET_BOOK_QUERY"
   },
   {
-    "text": "Could you help me get a ticket for the museum?",
+    "text": "Could you help me get a ticket for the museum",
     "intent": "MUSEUM_TICKET_BOOK_QUERY"
   },
   {
@@ -172,15 +172,15 @@
     "intent": "MUSEUM_TICKET_BOOK_QUERY"
   },
   {
-    "text": "How can I secure a ticket for the museum?",
+    "text": "How can I secure a ticket for the museum",
     "intent": "MUSEUM_TICKET_BOOK_QUERY"
   },
   {
-    "text": "What's the easiest way to book a museum ticket?",
+    "text": "What's the easiest way to book a museum ticket",
     "intent": "MUSEUM_TICKET_BOOK_QUERY"
   },
   {
-    "text": "Can I book my museum visit now?",
+    "text": "Can I book my museum visit now",
     "intent": "MUSEUM_TICKET_BOOK_QUERY"
   },
   {
@@ -188,11 +188,11 @@
     "intent": "MUSEUM_TICKET_BOOK_QUERY"
   },
   {
-    "text": "Is it possible to book a museum ticket here?",
+    "text": "Is it possible to book a museum ticket here",
     "intent": "MUSEUM_TICKET_BOOK_QUERY"
   },
   {
-    "text": "Can you book me a ticket to the museum?",
+    "text": "Can you book me a ticket to the museum",
     "intent": "MUSEUM_TICKET_BOOK_QUERY"
   },
   {
@@ -220,55 +220,55 @@
     "intent": "GENERAL_INQUIRY"
   },
   {
-    "text": "What are the visiting hours for the museum?",
+    "text": "What are the visiting hours for the museum",
     "intent": "GENERAL_INQUIRY"
   },
   {
-    "text": "Can you tell me more about the exhibits at the museum?",
+    "text": "Can you tell me more about the exhibits at the museum",
     "intent": "GENERAL_INQUIRY"
   },
   {
-    "text": "Is there a museum guide available?",
+    "text": "Is there a museum guide available",
     "intent": "GENERAL_INQUIRY"
   },
   {
-    "text": "Which museums are currently open?",
+    "text": "Which museums are currently open",
     "intent": "GENERAL_INQUIRY"
   },
   {
-    "text": "Can you provide information about upcoming museum events?",
+    "text": "Can you provide information about upcoming museum events",
     "intent": "GENERAL_INQUIRY"
   },
   {
-    "text": "What facilities does the museum offer?",
+    "text": "What facilities does the museum offer",
     "intent": "GENERAL_INQUIRY"
   },
   {
-    "text": "Is there a cafeteria in the museum?",
+    "text": "Is there a cafeteria in the museum",
     "intent": "GENERAL_INQUIRY"
   },
   {
-    "text": "Do the museums offer any special tours?",
+    "text": "Do the museums offer any special tours",
     "intent": "GENERAL_INQUIRY"
   },
   {
-    "text": "Can I get information about the museum's history?",
+    "text": "Can I get information about the museum's history",
     "intent": "GENERAL_INQUIRY"
   },
   {
-    "text": "Are there any family-friendly activities at the museum?",
+    "text": "Are there any family-friendly activities at the museum",
     "intent": "GENERAL_INQUIRY"
   },
   {
-    "text": "Does the museum have a gift shop?",
+    "text": "Does the museum have a gift shop",
     "intent": "GENERAL_INQUIRY"
   },
   {
-    "text": "Which museums have the most popular exhibits?",
+    "text": "Which museums have the most popular exhibits",
     "intent": "GENERAL_INQUIRY"
   },
   {
-    "text": "Can I find parking near the museum?",
+    "text": "Can I find parking near the museum",
     "intent": "GENERAL_INQUIRY"
   },
   {
@@ -312,107 +312,107 @@
     "intent": "FAREWELL"
   },
   {
-    "text": "What time does the museum close?",
+    "text": "What time does the museum close",
     "intent": "OPENING_HOURS"
   },
   {
-    "text": "Are there specific hours for weekdays and weekends?",
+    "text": "Are there specific hours for weekdays and weekends",
     "intent": "OPENING_HOURS"
   },
   {
-    "text": "Can you tell me the museum's schedule?",
+    "text": "Can you tell me the museum's schedule",
     "intent": "OPENING_HOURS"
   },
   {
-    "text": "Is the museum open during holidays?",
+    "text": "Is the museum open during holidays",
     "intent": "OPENING_HOURS"
   },
   {
-    "text": "What are the museum's opening times for this month?",
+    "text": "What are the museum's opening times for this month",
     "intent": "OPENING_HOURS"
   },
   {
-    "text": "Do the opening hours change by season?",
+    "text": "Do the opening hours change by season",
     "intent": "OPENING_HOURS"
   },
   {
-    "text": "What time can I start visiting the museum?",
+    "text": "What time can I start visiting the museum",
     "intent": "OPENING_HOURS"
   },
   {
-    "text": "When does the museum start welcoming visitors?",
+    "text": "When does the museum start welcoming visitors",
     "intent": "OPENING_HOURS"
   },
   {
-    "text": "Are there any special opening hours this week?",
+    "text": "Are there any special opening hours this week",
     "intent": "OPENING_HOURS"
   },
   {
-    "text": "What time does the museum open?",
+    "text": "What time does the museum open",
     "intent": "OPENING_HOURS"
   },
   {
-    "text": "When can I visit the museum?",
+    "text": "When can I visit the museum",
     "intent": "OPENING_HOURS"
   },
   {
-    "text": "What are the opening hours?",
+    "text": "What are the opening hours",
     "intent": "OPENING_HOURS"
   },
   {
-    "text": "Is the museum open today?",
+    "text": "Is the museum open today",
     "intent": "OPENING_HOURS"
   },
   {
-    "text": "How much is a museum ticket?",
+    "text": "How much is a museum ticket",
     "intent": "PRICE_INQUIRY"
   },
   {
-    "text": "What is the cost of a ticket?",
+    "text": "What is the cost of a ticket",
     "intent": "PRICE_INQUIRY"
   },
   {
-    "text": "Are there any discounts on tickets?",
+    "text": "Are there any discounts on tickets",
     "intent": "PRICE_INQUIRY"
   },
   {
-    "text": "Is there a fee to enter the museum?",
+    "text": "Is there a fee to enter the museum",
     "intent": "PRICE_INQUIRY"
   },
   {
-    "text": "What’s the price for a family ticket?",
+    "text": "What’s the price for a family ticket",
     "intent": "PRICE_INQUIRY"
   },
   {
-    "text": "How much is a student ticket?",
+    "text": "How much is a student ticket",
     "intent": "PRICE_INQUIRY"
   },
   {
-    "text": "Do you offer group rates for museum tickets?",
+    "text": "Do you offer group rates for museum tickets",
     "intent": "PRICE_INQUIRY"
   },
   {
-    "text": "What is the cost for a senior citizen ticket?",
+    "text": "What is the cost for a senior citizen ticket",
     "intent": "PRICE_INQUIRY"
   },
   {
-    "text": "Are there any special rates for children?",
+    "text": "Are there any special rates for children",
     "intent": "PRICE_INQUIRY"
   },
   {
-    "text": "How much is an annual membership for the museum?",
+    "text": "How much is an annual membership for the museum",
     "intent": "PRICE_INQUIRY"
   },
   {
-    "text": "Can I get a discount if I buy tickets online?",
+    "text": "Can I get a discount if I buy tickets online",
     "intent": "PRICE_INQUIRY"
   },
   {
-    "text": "What’s the pricing for a guided tour ticket?",
+    "text": "What’s the pricing for a guided tour ticket",
     "intent": "PRICE_INQUIRY"
   },
   {
-    "text": "Are there any special promotions for tickets this month?",
+    "text": "Are there any special promotions for tickets this month",
     "intent": "PRICE_INQUIRY"
   },
   {
@@ -420,7 +420,7 @@
     "intent": "EVENT_BOOKING"
   },
   {
-    "text": "Can you help me with booking for the event?",
+    "text": "Can you help me with booking for the event",
     "intent": "EVENT_BOOKING"
   },
   {
@@ -428,7 +428,7 @@
     "intent": "EVENT_BOOKING"
   },
   {
-    "text": "How do I book tickets for the event?",
+    "text": "How do I book tickets for the event",
     "intent": "EVENT_BOOKING"
   },
   {
@@ -440,7 +440,7 @@
     "intent": "EVENT_BOOKING"
   },
   {
-    "text": "What’s the process for booking event tickets?",
+    "text": "What’s the process for booking event tickets",
     "intent": "EVENT_BOOKING"
   },
   {
@@ -448,11 +448,11 @@
     "intent": "EVENT_BOOKING"
   },
   {
-    "text": "How can I get tickets for the event?",
+    "text": "How can I get tickets for the event",
     "intent": "EVENT_BOOKING"
   },
   {
-    "text": "Are there still tickets available for the event?",
+    "text": "Are there still tickets available for the event",
     "intent": "EVENT_BOOKING"
   },
   {
@@ -460,7 +460,7 @@
     "intent": "ABOUT_MUSEUM"
   },
   {
-    "text": "What can you tell me about the museum?",
+    "text": "What can you tell me about the museum ",
     "intent": "ABOUT_MUSEUM"
   },
   {
@@ -468,15 +468,15 @@
     "intent": "ABOUT_MUSEUM"
   },
   {
-    "text": "What is the history of the museum?",
+    "text": "What is the history of the museum ",
     "intent": "ABOUT_MUSEUM"
   },
   {
-    "text": "Can you provide details about the museum?",
+    "text": "Can you provide details about the museum ",
     "intent": "ABOUT_MUSEUM"
   },
   {
-    "text": "What exhibits does the museum have?",
+    "text": "What exhibits does the museum have ",
     "intent": "ABOUT_MUSEUM"
   },
   {
@@ -484,55 +484,55 @@
     "intent": "ABOUT_MUSEUM"
   },
   {
-    "text": "What is the museum known for?",
+    "text": "What is the museum known for",
     "intent": "ABOUT_MUSEUM"
   },
   {
-    "text": "What are the key attractions in the museum?",
+    "text": "What are the key attractions in the museum",
     "intent": "ABOUT_MUSEUM"
   },
   {
-    "text": "What kind of art or artifacts does the museum display?",
+    "text": "What kind of art or artifacts does the museum display",
     "intent": "ABOUT_MUSEUM"
   },
   {
-    "text": "What are the museum's main highlights?",
+    "text": "What are the museum's main highlights",
     "intent": "ABOUT_MUSEUM"
   },
   {
-    "text": "Can you describe the museum’s architecture?",
+    "text": "Can you describe the museum’s architecture",
     "intent": "ABOUT_MUSEUM"
   },
   {
-    "text": "What special events does the museum host?",
+    "text": "What special events does the museum host",
     "intent": "ABOUT_MUSEUM"
   },
   {
-    "text": "How did the museum get its name?",
+    "text": "How did the museum get its name",
     "intent": "ABOUT_MUSEUM"
   },
   {
-    "text": "Who founded the museum and when?",
+    "text": "Who founded the museum and when",
     "intent": "ABOUT_MUSEUM"
   },
   {
-    "text": "What are the must-see pieces in the museum?",
+    "text": "What are the must-see pieces in the museum",
     "intent": "ABOUT_MUSEUM"
   },
   {
-    "text": "Does the museum have any notable artifacts?",
+    "text": "Does the museum have any notable artifacts",
     "intent": "ABOUT_MUSEUM"
   },
   {
-    "text": "What makes this museum unique?",
+    "text": "What makes this museum unique",
     "intent": "ABOUT_MUSEUM"
   },
   {
-    "text": "What is the museum’s mission or vision?",
+    "text": "What is the museum’s mission or vision",
     "intent": "ABOUT_MUSEUM"
   },
   {
-    "text": "Are there any famous artists featured at the museum?",
+    "text": "Are there any famous artists featured at the museum",
     "intent": "ABOUT_MUSEUM"
   },
   {
@@ -544,15 +544,15 @@
     "intent": "NOT_VALID_QUERY"
   },
   {
-    "text": "How many tickets have been sold today?",
+    "text": "How many tickets have been sold today",
     "intent": "NOT_VALID_QUERY"
   },
   {
-    "text": "What are the names of people who booked tickets?",
+    "text": "What are the names of people who booked tickets",
     "intent": "NOT_VALID_QUERY"
   },
   {
-    "text": "Can I see the list of all ticket buyers?",
+    "text": "Can I see the list of all ticket buyers",
     "intent": "NOT_VALID_QUERY"
   },
   {
@@ -560,7 +560,7 @@
     "intent": "NOT_VALID_QUERY"
   },
   {
-    "text": "Can I get a refund for my friend?",
+    "text": "Can I get a refund for my friend",
     "intent": "NOT_VALID_QUERY"
   },
   {
@@ -580,11 +580,11 @@
     "intent": "NOT_VALID_QUERY"
   },
   {
-    "text": "How much revenue has the museum earned?",
+    "text": "How much revenue has the museum earned",
     "intent": "NOT_VALID_QUERY"
   },
   {
-    "text": "Can I have the passwords of other users?",
+    "text": "Can I have the passwords of other users",
     "intent": "NOT_VALID_QUERY"
   },
   {
