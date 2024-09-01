@@ -24,6 +24,7 @@ import {GENERAL_INQUIRY, MUSEUM_TICKET_BOOK_QUERY} from "./query_constants";
 import LanguageButton from "./LanguageButton";
 import AlertDialog from "./AlertDialog";
 import {handlePayment} from "./HandlePayment";
+import DropdownComponent from "./DropDownComponent";
 
 let bookingIndex = 0;
 let backendPort = 8080
@@ -97,6 +98,17 @@ const Chatbot = () => {
     const [checkWantEmail, setCheckWantEmail] = useState(false);
     const [imageData, setImageData] = useState('');
     const [ticketId, setTicketId] = useState('');
+    const [dropDownTexts, setDropDownTexts] = useState([]);
+    const [noOfButton, setNoOfButtons] = useState(0);
+    const [buttonOptions, setButtonOptions] = useState([]);
+    const [visibleDropdown, setVisibleDropDown] = useState(false);
+    const [noOfDropdown, setNoOfDropdown] = useState(0);
+
+    const [noOfChildSelected, setNoOfChildSelected] = useState(0);
+    const [noOfAdultSelected, setNoOfAdultSelected] = useState(0);
+    const [noOfForeignerSelected, setNoOfForeignerSelected] = useState(0);
+    const [peopleNumber, setHandlePeopleNumber] = useState(false);
+
 
     const handleOpenDialog = () => {
         setIsDialogOpen(true);
@@ -360,6 +372,10 @@ const Chatbot = () => {
 
     const handleSendMessage = async (message) => {
         setInput('')
+        setButtonOptions([])
+        if (peopleNumber) {
+            message = `${noOfChildSelected} child, ${noOfAdultSelected} adult, ${noOfForeignerSelected} foreigner`
+        }
         setIsLoading(true)
         if (message.trim() === '') return;
         if (isBookingProcessStarted === false) {
@@ -386,7 +402,7 @@ const Chatbot = () => {
                     const randomIndex = Math.floor(Math.random() * bookingProcessStartStatement.length);
                     const sentence = bookingProcessStartStatement[randomIndex];
                     setInput('')
-
+                    setButtonOptions(['individual', 'organisation'])
                     await updateConversation({sender: 'bot', text: sentence});
                     await updateConversation({
                         sender: 'bot',
@@ -588,6 +604,7 @@ const Chatbot = () => {
                     setInput('')
                     setHandleZerothQuestion(false)
                     setHandleFirstQuestion(true)
+
                     await updateConversation({sender: 'bot', text: "Provide your mobile number for authentication."});
                     setIsLoading(false);
 
@@ -633,16 +650,19 @@ const Chatbot = () => {
                 }
             } else if (handleSecondQuestion) {
                 if (handleCheckOtp(message)) {
-
+                    setNoOfDropdown(3)
+                    setDropDownTexts(["Child", "Adult", "Foreigner"])
                     setInput('')
                     setHandleSecondQuestion(false)
                     setHandleThirdQuestion(true)
                     await updateConversation({sender: 'bot', text: 'OTP verified!'});
+                    setVisibleDropDown(true)
                     await updateConversation({
                         sender: 'bot',
                         text: "How many of these are for adults, children, and foreigners? \nExample -> X child, X adult, X foreigners"
                     });
                     setIsLoading(false);
+
 
                 } else {
                     await updateConversation({sender: 'bot', text: 'OTP invalid!.'});
@@ -650,6 +670,11 @@ const Chatbot = () => {
 
                 }
             } else if (handleThirdQuestion) {
+                setDropDownTexts([])
+                setHandlePeopleNumber(false)
+                setButtonOptions(['Yes','No'])
+                setHintText('Send your reply here....')
+
                 const json = parseTicketInfo(message)
                 console.log(json)
                 const adult = Number(json.adults)
@@ -670,7 +695,7 @@ const Chatbot = () => {
                 setIsLoading(false);
 
             } else if (handleForthQuestion) {
-                const response = await fetch("https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english", {
+                 const response = await fetch("https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english", {
                     headers: {
                         Authorization: "Bearer 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",
                         "Content-Type": "application/json",
@@ -1191,32 +1216,76 @@ const Chatbot = () => {
                         <div className="scrollable">
                             <div className="message-container" ref={messageContainerRef}>
                                 {conversation.map((msg, index) => (
-                                    <div key={index} className={`message ${msg.sender} message-anim`}>
-                                        {msg.text}
-                                        {msg.sender === 'bot' && (<Button onClick={() => {
-                                            speakMessage(msg.text)
-                                        }}
-                                                                          type="primary"
-                                                                          shape="circle"
-                                                                          icon={<SpeakerButton
-                                                                              style={{
-                                                                                  cursor: 'pointer',
-                                                                                  marginLeft: '8px'
-                                                                              }}/>}
-                                                                          style={{
-                                                                              backgroundColor: '#ffffff',
-                                                                              alignSelf: 'flex-end'
-                                                                          }}
-                                        />)}
-                                    </div>))}
+                                    <>
+                                        <div key={index} className={`message ${msg.sender} message-anim`}>
+                                            {msg.text}
+
+                                            {msg.sender === 'bot' && (
+
+
+                                                <Button onClick={() => {
+                                                    speakMessage(msg.text)
+                                                }}
+                                                        type="primary"
+                                                        shape="circle"
+                                                        icon={<SpeakerButton
+                                                            style={{
+                                                                cursor: 'pointer',
+                                                                marginLeft: '8px'
+                                                            }}/>}
+                                                        style={{
+                                                            backgroundColor: '#ffffff',
+                                                            alignSelf: 'flex-end'
+                                                        }}
+                                                />
+
+
+                                            )}
+
+
+                                        </div>
+
+
+                                    </>
+                                ))}
+                                <div className={'buttonDiv'}>
+                                    {buttonOptions.length !== 0 && (
+
+                                        buttonOptions.map((option, index) => (
+
+                                            <button onClick={() => {
+                                                handleSendMessage(option)
+                                            }}>{option}</button>
+
+
+                                        ))
+
+
+                                    )}
+
+
+                                    {dropDownTexts.length !== 0 && (
+
+                                        <DropdownComponent setNumberHandle={setHandlePeopleNumber}
+                                                           setAdultNumber={setNoOfAdults}
+                                                           setChildNo={setNoOfChildren}
+                                                           setForeigner={setNoOfForeigners}
+                                                           setNoOfAdultSelected={setNoOfAdultSelected}
+                                                           setNoOfChildSelected={setNoOfChildSelected}
+                                                           setNoOfForeignerSelected={setNoOfForeignerSelected}
+                                                           setHintText={setHintText}/>
+
+                                    )}
+
+
+                                </div>
                             </div>
                             <div className={"chatbot-footer"}>
                                 <div className={'shortcuts'}>
                                     <button onClick={handleTicketStatus} className="shortcut_btn">Check ticket status
                                     </button>
-                                    <button onClick={handleMyBookings} className="shortcut_btn">My bookings</button>
-                                    <button onClick={handleCheckAvailability} className="shortcut_btn">Check
-                                        Availability
+                                    <button onClick={handleCheckAvailability} className="shortcut_btn">Register a
+                                        complain
                                     </button>
                                     <button onClick={handleStartBooking} className="shortcut_btn">Book my ticket now
                                     </button>
@@ -1268,12 +1337,13 @@ const Chatbot = () => {
                         </div>
                     </div>
                 </div>
+
+
             </div>
-
-
         </div>
 
-    );
+    )
+        ;
 };
 
 export default Chatbot;
