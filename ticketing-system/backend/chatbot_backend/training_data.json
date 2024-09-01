@@ -28,8 +28,32 @@
     "intent": "GREETINGS"
   },
   {
-    "text": "I have a complaint",
-    "intent": "COMPLAINT"
+    "text": "What's up?",
+    "intent": "GREETINGS"
+  },
+  {
+    "text": "Greetings!",
+    "intent": "GREETINGS"
+  },
+  {
+    "text": "Howdy!",
+    "intent": "GREETINGS"
+  },
+  {
+    "text": "Salutations!",
+    "intent": "GREETINGS"
+  },
+  {
+    "text": "Yo!",
+    "intent": "GREETINGS"
+  },
+  {
+    "text": "Good day!",
+    "intent": "GREETINGS"
+  },
+  {
+    "text": "Hello there!",
+    "intent": "GREETINGS"
   },
   {
     "text": "I want to make a complaint",
@@ -48,6 +72,62 @@
     "intent": "COMPLAINT"
   },
   {
+    "text": "Hey chatbot, I was charged the wrong amount for my ticket",
+    "intent": "COMPLAINT"
+  },
+  {
+    "text": "Your system booked the wrong date for my ticket",
+    "intent": "COMPLAINT"
+  },
+  {
+    "text": "Chatbot, my booking didn’t go through, but I was still charged",
+    "intent": "COMPLAINT"
+  },
+  {
+    "text": "I didn’t get a confirmation after booking through you",
+    "intent": "COMPLAINT"
+  },
+  {
+    "text": "Chatbot, I can’t find my booking in your system",
+    "intent": "COMPLAINT"
+  },
+  {
+    "text": "Your chatbot crashed during my booking process",
+    "intent": "COMPLAINT"
+  },
+  {
+    "text": "I couldn’t apply my discount while booking through the chatbot",
+    "intent": "COMPLAINT"
+  },
+  {
+    "text": "I'm dissatisfied with the service",
+    "intent": "COMPLAINT"
+  },
+  {
+    "text": "This is unacceptable",
+    "intent": "COMPLAINT"
+  },
+  {
+    "text": "I need to report an issue",
+    "intent": "COMPLAINT"
+  },
+  {
+    "text": "The experience was disappointing",
+    "intent": "COMPLAINT"
+  },
+  {
+    "text": "I'm really upset with what happened",
+    "intent": "COMPLAINT"
+  },
+  {
+    "text": "There was a problem with my visit",
+    "intent": "COMPLAINT"
+  },
+  {
+    "text": "I have a serious issue to report",
+    "intent": "COMPLAINT"
+  },
+  {
     "text": "I want to book a museum ticket",
     "intent": "MUSEUM_TICKET_BOOK_QUERY"
   },
@@ -61,6 +141,58 @@
   },
   {
     "text": "How do I book a museum ticket",
+    "intent": "MUSEUM_TICKET_BOOK_QUERY"
+  },
+  {
+    "text": "I want to book a museum ticket",
+    "intent": "MUSEUM_TICKET_BOOK_QUERY"
+  },
+  {
+    "text": "Can you help me with a ticket booking",
+    "intent": "MUSEUM_TICKET_BOOK_QUERY"
+  },
+  {
+    "text": "Book a ticket for the museum",
+    "intent": "MUSEUM_TICKET_BOOK_QUERY"
+  },
+  {
+    "text": "How do I book a museum ticket",
+    "intent": "MUSEUM_TICKET_BOOK_QUERY"
+  },
+  {
+    "text": "Could you help me get a ticket for the museum?",
+    "intent": "MUSEUM_TICKET_BOOK_QUERY"
+  },
+  {
+    "text": "I need assistance booking a museum ticket",
+    "intent": "MUSEUM_TICKET_BOOK_QUERY"
+  },
+  {
+    "text": "Reserve a spot for me at the museum",
+    "intent": "MUSEUM_TICKET_BOOK_QUERY"
+  },
+  {
+    "text": "How can I secure a ticket for the museum?",
+    "intent": "MUSEUM_TICKET_BOOK_QUERY"
+  },
+  {
+    "text": "What's the easiest way to book a museum ticket?",
+    "intent": "MUSEUM_TICKET_BOOK_QUERY"
+  },
+  {
+    "text": "Can I book my museum visit now?",
+    "intent": "MUSEUM_TICKET_BOOK_QUERY"
+  },
+  {
+    "text": "I want to confirm a ticket for the museum",
+    "intent": "MUSEUM_TICKET_BOOK_QUERY"
+  },
+  {
+    "text": "Is it possible to book a museum ticket here?",
+    "intent": "MUSEUM_TICKET_BOOK_QUERY"
+  },
+  {
+    "text": "Can you book me a ticket to the museum?",
     "intent": "MUSEUM_TICKET_BOOK_QUERY"
   },
   {
@@ -88,6 +220,58 @@
     "intent": "GENERAL_INQUIRY"
   },
   {
+    "text": "What are the visiting hours for the museum?",
+    "intent": "GENERAL_INQUIRY"
+  },
+  {
+    "text": "Can you tell me more about the exhibits at the museum?",
+    "intent": "GENERAL_INQUIRY"
+  },
+  {
+    "text": "Is there a museum guide available?",
+    "intent": "GENERAL_INQUIRY"
+  },
+  {
+    "text": "Which museums are currently open?",
+    "intent": "GENERAL_INQUIRY"
+  },
+  {
+    "text": "Can you provide information about upcoming museum events?",
+    "intent": "GENERAL_INQUIRY"
+  },
+  {
+    "text": "What facilities does the museum offer?",
+    "intent": "GENERAL_INQUIRY"
+  },
+  {
+    "text": "Is there a cafeteria in the museum?",
+    "intent": "GENERAL_INQUIRY"
+  },
+  {
+    "text": "Do the museums offer any special tours?",
+    "intent": "GENERAL_INQUIRY"
+  },
+  {
+    "text": "Can I get information about the museum's history?",
+    "intent": "GENERAL_INQUIRY"
+  },
+  {
+    "text": "Are there any family-friendly activities at the museum?",
+    "intent": "GENERAL_INQUIRY"
+  },
+  {
+    "text": "Does the museum have a gift shop?",
+    "intent": "GENERAL_INQUIRY"
+  },
+  {
+    "text": "Which museums have the most popular exhibits?",
+    "intent": "GENERAL_INQUIRY"
+  },
+  {
+    "text": "Can I find parking near the museum?",
+    "intent": "GENERAL_INQUIRY"
+  },
+  {
     "text": "Goodbye",
     "intent": "FAREWELL"
   },
@@ -102,6 +286,66 @@
   {
     "text": "Catch you later",
     "intent": "FAREWELL"
+  },
+  {
+    "text": "Take care, chatbot!",
+    "intent": "FAREWELL"
+  },
+  {
+    "text": "Talk to you soon, chatbot!",
+    "intent": "FAREWELL"
+  },
+  {
+    "text": "Have a great day, chatbot!",
+    "intent": "FAREWELL"
+  },
+  {
+    "text": "Later, chatbot!",
+    "intent": "FAREWELL"
+  },
+  {
+    "text": "So long, chatbot!",
+    "intent": "FAREWELL"
+  },
+  {
+    "text": "Peace out, chatbot!",
+    "intent": "FAREWELL"
+  },
+  {
+    "text": "What time does the museum close?",
+    "intent": "OPENING_HOURS"
+  },
+  {
+    "text": "Are there specific hours for weekdays and weekends?",
+    "intent": "OPENING_HOURS"
+  },
+  {
+    "text": "Can you tell me the museum's schedule?",
+    "intent": "OPENING_HOURS"
+  },
+  {
+    "text": "Is the museum open during holidays?",
+    "intent": "OPENING_HOURS"
+  },
+  {
+    "text": "What are the museum's opening times for this month?",
+    "intent": "OPENING_HOURS"
+  },
+  {
+    "text": "Do the opening hours change by season?",
+    "intent": "OPENING_HOURS"
+  },
+  {
+    "text": "What time can I start visiting the museum?",
+    "intent": "OPENING_HOURS"
+  },
+  {
+    "text": "When does the museum start welcoming visitors?",
+    "intent": "OPENING_HOURS"
+  },
+  {
+    "text": "Are there any special opening hours this week?",
+    "intent": "OPENING_HOURS"
   },
   {
     "text": "What time does the museum open?",
@@ -134,5 +378,166 @@
   {
     "text": "Is there a fee to enter the museum?",
     "intent": "PRICE_INQUIRY"
+  },
+  {
+    "text": "What’s the price for a family ticket?",
+    "intent": "PRICE_INQUIRY"
+  },
+  {
+    "text": "How much is a student ticket?",
+    "intent": "PRICE_INQUIRY"
+  },
+  {
+    "text": "Do you offer group rates for museum tickets?",
+    "intent": "PRICE_INQUIRY"
+  },
+  {
+    "text": "What is the cost for a senior citizen ticket?",
+    "intent": "PRICE_INQUIRY"
+  },
+  {
+    "text": "Are there any special rates for children?",
+    "intent": "PRICE_INQUIRY"
+  },
+  {
+    "text": "How much is an annual membership for the museum?",
+    "intent": "PRICE_INQUIRY"
+  },
+  {
+    "text": "Can I get a discount if I buy tickets online?",
+    "intent": "PRICE_INQUIRY"
+  },
+  {
+    "text": "What’s the pricing for a guided tour ticket?",
+    "intent": "PRICE_INQUIRY"
+  },
+  {
+    "text": "Are there any special promotions for tickets this month?",
+    "intent": "PRICE_INQUIRY"
+  },
+  {
+    "text": "I want to book tickets for the event",
+    "intent": "EVENT_BOOKING"
+  },
+  {
+    "text": "Can you help me with booking for the event?",
+    "intent": "EVENT_BOOKING"
+  },
+  {
+    "text": "Reserve seats for the upcoming event",
+    "intent": "EVENT_BOOKING"
+  },
+  {
+    "text": "How do I book tickets for the event?",
+    "intent": "EVENT_BOOKING"
+  },
+  {
+    "text": "I need to secure my spot for the event",
+    "intent": "EVENT_BOOKING"
+  },
+  {
+    "text": "Book me a place for the event",
+    "intent": "EVENT_BOOKING"
+  },
+  {
+    "text": "What’s the process for booking event tickets?",
+    "intent": "EVENT_BOOKING"
+  },
+  {
+    "text": "Please reserve my tickets for the event",
+    "intent": "EVENT_BOOKING"
+  },
+  {
+    "text": "How can I get tickets for the event?",
+    "intent": "EVENT_BOOKING"
+  },
+  {
+    "text": "Are there still tickets available for the event?",
+    "intent": "EVENT_BOOKING"
+  },
+  {
+    "text": "Tell me about the museum",
+    "intent": "ABOUT_MUSEUM"
+  },
+  {
+    "text": "What can you tell me about the museum?",
+    "intent": "ABOUT_MUSEUM"
+  },
+  {
+    "text": "Give me some information about the museum",
+    "intent": "ABOUT_MUSEUM"
+  },
+  {
+    "text": "What is the history of the museum?",
+    "intent": "ABOUT_MUSEUM"
+  },
+  {
+    "text": "Can you provide details about the museum?",
+    "intent": "ABOUT_MUSEUM"
+  },
+  {
+    "text": "What exhibits does the museum have?",
+    "intent": "ABOUT_MUSEUM"
+  },
+  {
+    "text": "Tell me more about the museum’s collections",
+    "intent": "ABOUT_MUSEUM"
+  },
+  {
+    "text": "What is the museum known for?",
+    "intent": "ABOUT_MUSEUM"
+  },
+  {
+    "text": "What are the key attractions in the museum?",
+    "intent": "ABOUT_MUSEUM"
+  },
+  {
+    "text": "What kind of art or artifacts does the museum display?",
+    "intent": "ABOUT_MUSEUM"
+  },
+  {
+    "text": "What are the museum's main highlights?",
+    "intent": "ABOUT_MUSEUM"
+  },
+  {
+    "text": "Can you describe the museum’s architecture?",
+    "intent": "ABOUT_MUSEUM"
+  },
+  {
+    "text": "What special events does the museum host?",
+    "intent": "ABOUT_MUSEUM"
+  },
+  {
+    "text": "How did the museum get its name?",
+    "intent": "ABOUT_MUSEUM"
+  },
+  {
+    "text": "Who founded the museum and when?",
+    "intent": "ABOUT_MUSEUM"
+  },
+  {
+    "text": "What are the must-see pieces in the museum?",
+    "intent": "ABOUT_MUSEUM"
+  },
+  {
+    "text": "Does the museum have any notable artifacts?",
+    "intent": "ABOUT_MUSEUM"
+  },
+  {
+    "text": "What makes this museum unique?",
+    "intent": "ABOUT_MUSEUM"
+  },
+  {
+    "text": "What is the museum’s mission or vision?",
+    "intent": "ABOUT_MUSEUM"
+  },
+  {
+    "text": "Are there any famous artists featured at the museum?",
+    "intent": "ABOUT_MUSEUM"
   }
 ]
+
+
+
+
+
