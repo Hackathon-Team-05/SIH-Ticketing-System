@@ -234,28 +234,29 @@ app.post("/api/payment-success", async (req, res) => {
             noofforeigners,
             noofadults,
             museum_name,
+            museum_id,
             status,
             date,
             events,
         } = req.body;
 
-        // Insert the ticket into the database
 
         let query =
-            "INSERT INTO Ticket (name, phone_number, no_of_adults, no_of_children, no_of_foreigners, museum_name, status, purchase_date, events) VALUES (?, ?, ?, ?, ?, ?, ? ,?, ?)";
+            "INSERT INTO Ticket (name, phone_number, no_of_adults, no_of_children, no_of_foreigners,museum_id, museum_name, status, visit_date, events) VALUES (?, ?, ?, ?,?, ?, ?, ? ,?, ?)";
 
         db.query(
             query,
             [
                 name,
                 mobile_no,
+                noofadults,
                 noofchildren,
                 noofforeigners,
-                noofadults,
+                museum_id,
                 museum_name,
                 status,
                 date,
-                events,
+                events
             ],
             (err, results) => {
                 if (err) {
@@ -266,15 +267,16 @@ app.post("/api/payment-success", async (req, res) => {
         );
 
         let query2 =
-            "SELECT ticket_id FROM Ticket WHERE name = ? AND phone_number = ? AND no_of_adults = ? AND no_of_children = ? AND no_of_foreigners = ? AND museum_name = ? AND status = ? AND purchase_date = ? AND events = ?";
+            "SELECT ticket_id FROM Ticket WHERE name = ? AND phone_number = ? AND no_of_adults = ? AND no_of_children = ? AND no_of_foreigners = ? AND museum_id = ? AND museum_name = ? AND status = ? AND visit_date = ? AND events = ?";
         db.query(
             query2,
             [
                 name,
                 mobile_no,
+                noofadults,
                 noofchildren,
                 noofforeigners,
-                noofadults,
+                museum_id,
                 museum_name,
                 status,
                 date,
@@ -293,10 +295,11 @@ app.post("/api/payment-success", async (req, res) => {
     }
 });
 app.post(
-    "/api/create-order/:amount/:name/:number/:noc/:nof/:noa/:museum_name/:date/:events",
+    "/api/create-order/:amount/:name/:number/:noc/:nof/:noa/:museumId/:museum_name/:date/:events",
     async (req, res) => {
         console.log("create-order");
         try {
+            const museumId = req.params.museumId
             const amt = req.params.amount;
             const nme = req.params.name;
             const mobno = req.params.number;
@@ -322,6 +325,7 @@ app.post(
                 no_of_adults: no_of_ad,
                 no_of_foreigners: no_of_for,
                 museum_name: museum_name,
+                museum_id: museumId,
                 status: "allowed",
                 date: date,
                 events: events,

@@ -41,6 +41,7 @@ export const handlePayment = async (urlForPayment) => {
                         noofforeigners: data.no_of_foreigners,
                         noofadults: data.no_of_adults,
                         museum_name: data.museum_name,
+                        museum_id: data.museum_id,
                         status: data.status,
                         date: data.date,
                         events: data.events,

@@ -974,10 +974,10 @@ const Chatbot = () => {
                     console.log("eventAppend:" + eventAppendString)
                     let url = ""
                     if (eventAppendString.length !== 0) {
-                        url = `http://localhost:${backendPort}/api/create-order/${totalBill}/${name}/${phoneNumber}/${noOfChildren}/${noOfForeigners}/${noOfAdults}/${museumName}/${dateString}/${eventAppendString}`
+                        url = `http://localhost:${backendPort}/api/create-order/${totalBill}/${name}/${phoneNumber}/${noOfChildren}/${noOfForeigners}/${noOfAdults}/${museumId}/${museumName}/${dateString}/${eventAppendString}`
 
                     } else {
-                        url = `http://localhost:${backendPort}/api/create-order/${totalBill}/${name}/${phoneNumber}/${noOfChildren}/${noOfForeigners}/${noOfAdults}/${museumName}/${dateString}/null`
+                        url = `http://localhost:${backendPort}/api/create-order/${totalBill}/${name}/${phoneNumber}/${noOfChildren}/${noOfForeigners}/${noOfAdults}/${museumId}/${museumName}/${dateString}/null`
 
                     }
 
@@ -1009,11 +1009,14 @@ const Chatbot = () => {
                             })
                             updateConversation({
                                 sender: 'bot',
-                                text: "Do you want to send the ticket in your email?"
+                                text: "Booking is closed."
                             })
-                            setCheckWantEmail(true)
                             setAskedForPaymentCheckout(false)
+                            ///ask for email
+                            // setCheckWantEmail(true)
 
+
+                            isBookingProcessStarted = false
                         }).catch(error => {
                             console.error("An error occurred:", error);
                         });
@@ -1031,96 +1034,99 @@ const Chatbot = () => {
                     setIsLoading(false);
 
                 }
-            } else if (checkWantEmail) {
-                let answer = message.trim()
-                console.log("checkWantEmail:" + answer)
-                ///////////////////////////
-                const response = await fetch("https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english", {
-                    headers: {
-                        Authorization: "Bearer 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",
-                        "Content-Type": "application/json",
-                    }, method: "POST", body: JSON.stringify(answer),
-                });
-                const result = await response.json();
-                let positiveScore = null;
-                let negativeScore = null;
-
-                result.forEach(innerArray => {
-                    innerArray.forEach(item => {
-                        if (item.label === "POSITIVE") {
-                            positiveScore = item.score;
-                        } else if (item.label === "NEGATIVE") {
-                            negativeScore = item.score;
-                        }
-                    });
-                });
-                console.log("p:" + positiveScore)
-                console.log("n:" + negativeScore)
-                if (positiveScore >= negativeScore) {
-                    await updateConversation({
-                        sender: 'bot',
-                        text: "Reply you email to send the ticket..."
-                    })
-                    setWantTicketInEmail(true)
-                    setCheckWantEmail(false)
-
-                } else {
-
-
-                    await updateConversation({
-                        sender: 'bot',
-                        text: "Booking successfully done. Thank you for your cooperation. Enjoy your trip!!"
-                    })
-                    setWantTicketInEmail(false)
-                    isBookingProcessStarted = false
-
-                }
-
-            } else if (wantTicketInEmail) {
-                function extractAndValidateEmail(sentence) {
-                    // Regular expression for validating an email address
-                    const emailRegex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,})/;
-
-                    // Extract email address from the sentence
-                    const match = sentence.match(emailRegex);
-
-                    if (match) {
-                        // Extracted email
-                        const email = match[0];
-
-                        // Validate the email address (you can enhance this regex as needed)
-                        const isValidEmail = emailRegex.test(email);
-
-                        return isValidEmail ? email : null;
-                    }
-
-                    return null;
-                }
-
-
-                let email = extractAndValidateEmail(message.trim())
-
-                if (email !== null) {
-
-                    sendTicketMail(imageData, "satwik.k.2000@gmail.com", ticketId)
-                    await updateConversation({
-                        sender: 'bot',
-                        text: "Ticket successfully sent to your email address. Thank you for your co-operation."
-                    })
-                    await updateConversation({
-                        sender: 'bot',
-                        text: "Have a great day."
-                    })
-                    setWantTicketInEmail(false)
-                    isBookingProcessStarted = false
-
-
-                } else {
-                    await updateConversation({sender: 'bot', text: "This is not a valid email. Please try again."});
-                }
-
-
-            } else if (!wantTicketInEmail && !checkEventAdded && !paymentCheckout && !fetchMuseumId && !handleEighthQuestion && !handleZerothQuestion && !handleFirstQuestion && !handleSecondQuestion && !handleThirdQuestion && !handleForthQuestion && !handleFifthQuestion && !handleSixthQuestion && !handleSeventhQuestion) {
+            }
+                // else if (checkWantEmail) {
+                //     let answer = message.trim()
+                //     console.log("checkWantEmail:" + answer)
+                //     ///////////////////////////
+                //     const response = await fetch("https://api-inference.huggingface.co/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english", {
+                //         headers: {
+                //             Authorization: "Bearer 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",
+                //             "Content-Type": "application/json",
+                //         }, method: "POST", body: JSON.stringify(answer),
+                //     });
+                //     const result = await response.json();
+                //     let positiveScore = null;
+                //     let negativeScore = null;
+                //
+                //     result.forEach(innerArray => {
+                //         innerArray.forEach(item => {
+                //             if (item.label === "POSITIVE") {
+                //                 positiveScore = item.score;
+                //             } else if (item.label === "NEGATIVE") {
+                //                 negativeScore = item.score;
+                //             }
+                //         });
+                //     });
+                //     console.log("p:" + positiveScore)
+                //     console.log("n:" + negativeScore)
+                //     if (positiveScore >= negativeScore) {
+                //         await updateConversation({
+                //             sender: 'bot',
+                //             text: "Reply you email to send the ticket..."
+                //         })
+                //         setWantTicketInEmail(true)
+                //         setCheckWantEmail(false)
+                //
+                //     } else {
+                //
+                //
+                //         await updateConversation({
+                //             sender: 'bot',
+                //             text: "Booking successfully done. Thank you for your cooperation. Enjoy your trip!!"
+                //         })
+                //         setWantTicketInEmail(false)
+                //         isBookingProcessStarted = false
+                //
+                //     }
+                //
+                // }
+                // else if (wantTicketInEmail) {
+                //     function extractAndValidateEmail(sentence) {
+                //         // Regular expression for validating an email address
+                //         const emailRegex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,})/;
+                //
+                //         // Extract email address from the sentence
+                //         const match = sentence.match(emailRegex);
+                //
+                //         if (match) {
+                //             // Extracted email
+                //             const email = match[0];
+                //
+                //             // Validate the email address (you can enhance this regex as needed)
+                //             const isValidEmail = emailRegex.test(email);
+                //
+                //             return isValidEmail ? email : null;
+                //         }
+                //
+                //         return null;
+                //     }
+                //
+                //
+                //     let email = extractAndValidateEmail(message.trim())
+                //
+                //     if (email !== null) {
+                //
+                //         sendTicketMail(imageData, "satwik.k.2000@gmail.com", ticketId)
+                //         await updateConversation({
+                //             sender: 'bot',
+                //             text: "Ticket successfully sent to your email address. Thank you for your co-operation."
+                //         })
+                //         await updateConversation({
+                //             sender: 'bot',
+                //             text: "Have a great day."
+                //         })
+                //         setWantTicketInEmail(false)
+                //         isBookingProcessStarted = false
+                //
+                //
+                //     } else {
+                //         await updateConversation({sender: 'bot', text: "This is not a valid email. Please try again."});
+                //     }
+                //
+                //
+            // }
+            else if (!wantTicketInEmail && !checkEventAdded && !paymentCheckout && !fetchMuseumId && !handleEighthQuestion && !handleZerothQuestion && !handleFirstQuestion && !handleSecondQuestion && !handleThirdQuestion && !handleForthQuestion && !handleFifthQuestion && !handleSixthQuestion && !handleSeventhQuestion) {
 
 
             }
